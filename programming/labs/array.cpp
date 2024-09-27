@@ -5,9 +5,25 @@ using namespace std;
 template <typename T>
 struct MyArray {
   T *arr;
+
+ private:
   size_t size;  // отслеживает количество элементов
   size_t capacity;  // вместимость
 
+  void resize(size_t new_capacity) {
+    if (new_capacity < size) {
+      throw length_error("New capacity is smaller than current size");
+    }
+    T *newArr = new T[new_capacity];
+    for (size_t i = 0; i < size; i++) {
+      newArr[i] = arr[i];
+    }
+    delete[] arr;
+    arr = newArr;
+    capacity = new_capacity;
+  }
+
+ public:
   MyArray(size_t init_capacity) : size(0), capacity(init_capacity) {
     if (init_capacity == 0) {
       throw length_error("length error");
@@ -22,19 +38,6 @@ struct MyArray {
       throw out_of_range("Index out of bounds");
     }
     return arr[index];
-  }
-
-  void resize(size_t new_capacity) {
-    if (new_capacity < size) {
-      throw length_error("New capacity is smaller than current size");
-    }
-    T *newArr = new T[new_capacity];
-    for (size_t i = 0; i < size; i++) {
-      newArr[i] = arr[i];
-    }
-    delete[] arr;
-    arr = newArr;
-    capacity = new_capacity;
   }
 
   void emplace_back(T element) {
@@ -90,17 +93,29 @@ struct MyArray {
     if (indexInput >= capacity || indexInput < 0) {
       throw invalid_argument("нет такой позиции");
     }
+
+    if (size <= indexInput) {
+      size = indexInput;
+    }
+
+    if (indexInput == 0) {
+      size++;
+    }
+
     arr[indexInput] = element;
   }
 
   void getSize() { cout << capacity << endl; }
 
   void print() {
-    for (int i = 0; i < capacity; i++) {
+    for (int i = 0; i < size; i++) {
       cout << arr[i] << " ";
     }
     cout << endl;
   }
 };
 
-int main() { MyArray<int> arr{5}; }
+int main() {
+  MyArray<int> arr{5};
+  return 0;
+}
