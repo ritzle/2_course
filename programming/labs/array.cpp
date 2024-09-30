@@ -68,7 +68,14 @@ struct MyArray {
       arr[indexInput] = element;
     }
 
-    size++;
+    if (size < indexInput) {
+      size += indexInput + 1;
+    } else {
+      size++;
+    }
+    if (size > capacity) {
+      resize(capacity * 2);
+    }
   }
 
   void erase(size_t indexInput) {
@@ -115,7 +122,4 @@ struct MyArray {
   }
 };
 
-int main() {
-  MyArray<int> arr{5};
-  return 0;
-}
+int main() { return 0; }
