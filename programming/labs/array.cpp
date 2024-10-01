@@ -122,4 +122,7 @@ struct MyArray {
   }
 };
 
-int main() { return 0; }
+int main() {
+  MyArray<int> arr{5};
+  return 0;
+}
