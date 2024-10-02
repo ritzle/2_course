@@ -16,6 +16,7 @@ class Stack {
   void push(T data);
   void pop();
   void print();
+  void fillFromFile(const std::string& filename);
 
  private:
   struct Node {

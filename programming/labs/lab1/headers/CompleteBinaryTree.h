@@ -1,8 +1,10 @@
 #ifndef COMPLETEBINARYTREE_H
 #define COMPLETEBINARYTREE_H
 
+#include <fstream>
 #include <iostream>
 #include <stdexcept>
+#include <string>
 
 class CompleteBinaryTree {
  public:
@@ -11,6 +13,8 @@ class CompleteBinaryTree {
   bool search(int value);
   bool isComplete();
   void printLevelOrder();
+  void fillTreeFromFile(const std::string& filename);  // New method for filling
+                                                       // the tree from a file
   ~CompleteBinaryTree();
 
  private:
@@ -36,6 +40,8 @@ class CompleteBinaryTree {
     Node* peek();
     bool isEmpty();
     int getSize();
+    void fillFromFile(
+        const std::string& filename);  // Correct usage of std::string
 
    private:
     NodeQueue* front;

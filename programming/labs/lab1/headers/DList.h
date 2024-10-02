@@ -21,6 +21,7 @@ class DList {
   void search_by_value(T searchData);
   T& operator[](size_t index);
   void print();
+  void fillFromFile(const std::string& filename);
 
  private:
   struct Node {
