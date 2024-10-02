@@ -98,6 +98,18 @@ void CompleteBinaryTree::printLevelOrder() {
   }
 }
 
+// Метод заполнения дерева из файла
+void CompleteBinaryTree::fillTreeFromFile(const std::string& filename) {
+  CustomQueue queue;
+  queue.fillFromFile(filename);  // Use the CustomQueue's fillFromFile
+
+  // Insert values from the queue into the tree
+  while (!queue.isEmpty()) {
+    insert(queue.peek()->data);  // Insert the data from the front of the queue
+    queue.dequeue();             // Remove the item from the queue
+  }
+}
+
 // Удаление дерева
 CompleteBinaryTree::~CompleteBinaryTree() { destroyTree(root); }
 
@@ -159,3 +171,21 @@ bool CompleteBinaryTree::CustomQueue::isEmpty() { return front == nullptr; }
 
 // Получение размера очереди
 int CompleteBinaryTree::CustomQueue::getSize() { return size; }
+
+// Метод заполнения из файла
+void CompleteBinaryTree::CustomQueue::fillFromFile(
+    const std::string& filename) {
+  std::ifstream file(filename);
+  if (!file.is_open()) {
+    std::cerr << "Could not open the file: " << filename << std::endl;
+    return;
+  }
+
+  int value;  // Переменная для хранения значения
+  while (file >> value) {
+    enqueue(
+        new Node(value));  // Используйте enqueue для добавления узла в очередь
+  }
+
+  file.close();
+}

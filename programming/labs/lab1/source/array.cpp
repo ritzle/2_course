@@ -1,7 +1,5 @@
 #include "../headers/array.h"
 
-#include <stdexcept>
-
 using namespace std;
 
 // Конструктор
@@ -21,7 +19,7 @@ Array<T>::~Array() {
 
 // Оператор доступа по индексу
 template <typename T>
-T &Array<T>::operator[](size_t index) {
+T& Array<T>::operator[](size_t index) {
   if (index >= size) {
     throw out_of_range("Index out of bounds");
   }
@@ -43,7 +41,7 @@ void Array<T>::resize(size_t new_capacity) {
   if (new_capacity < size) {
     throw length_error("New capacity is smaller than current size");
   }
-  T *newArr = new T[new_capacity];
+  T* newArr = new T[new_capacity];
   for (size_t i = 0; i < size; i++) {
     newArr[i] = arr[i];
   }
@@ -60,7 +58,7 @@ void Array<T>::insert(size_t indexInput, T element) {
   }
 
   if (size == capacity) {
-    resize(capacity * 2);  // Увеличиваем размер массива
+    resize(capacity * 2);
   }
 
   for (size_t i = size; i > indexInput; --i) {
@@ -107,5 +105,19 @@ void Array<T>::print() const {
   cout << endl;
 }
 
-// Экспортируем реализацию для конкретного типа, например, int
-// template class Array<int>;
+// Метод заполнения из файла
+template <typename T>
+void Array<T>::fillFromFile(const string& filename) {
+  ifstream file(filename);
+  if (!file.is_open()) {
+    cerr << "Could not open the file: " << filename << endl;
+    return;
+  }
+
+  T value;  // Замените int на T для универсальности
+  while (file >> value) {
+    emplace_back(value);
+  }
+
+  file.close();
+}

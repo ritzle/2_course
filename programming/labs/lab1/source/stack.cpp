@@ -58,3 +58,19 @@ void Stack<T>::print() {
   }
   cout << endl;
 }
+
+template <typename T>
+void Stack<T>::fillFromFile(const std::string& filename) {
+  std::ifstream file(filename);
+  if (!file.is_open()) {
+    std::cerr << "Could not open the file: " << filename << std::endl;
+    return;
+  }
+
+  T value;
+  while (file >> value) {
+    push(value);  // Используем метод push для добавления элемента в очередь
+  }
+
+  file.close();
+}
