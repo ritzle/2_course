@@ -3,6 +3,10 @@
 
 #include <string>
 
+#include "../headers/array.hpp"
+#include "../headers/hash_map.hpp"
+#include "Table.hpp"
+
 using namespace std;
 
 class DB {
@@ -11,6 +15,7 @@ class DB {
   string schemaName;
   int tuplesLimit;
   string pathSchema;
+  Hash_map<string, Table, 10> structure;
 
   DB(){};
   ~DB(){};
