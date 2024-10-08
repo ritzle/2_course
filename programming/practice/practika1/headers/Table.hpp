@@ -25,9 +25,6 @@ class Table {
 
   // Оператор присваивания
   Table& operator=(const Table& other);
-
-  // Метод для печати информации о таблице
-  void print();
 };
 
 #include "../source/Table.cpp"

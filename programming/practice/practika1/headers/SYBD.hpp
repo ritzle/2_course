@@ -1,13 +1,14 @@
 #ifndef BD_HPP
 #define BD_HPP
 
+#include <filesystem>
 #include <string>
 
-#include "../headers/array.hpp"
-#include "../headers/hash_map.hpp"
 #include "Table.hpp"
+#include "array.hpp"
 
 using namespace std;
+namespace fs = filesystem;
 
 class DB {
  private:
@@ -15,12 +16,14 @@ class DB {
   string schemaName;
   int tuplesLimit;
   string pathSchema;
-  Hash_map<string, Table, 10> structure;
+  Array<Table> structure;
 
   DB(){};
   ~DB(){};
 
   void readingConfiguration(string PathSchema);
+  void createDirectoriesAndFiles();
+  void printInfo() const;
 };
 #include "../source/SYBD.cpp"
 #endif

@@ -1,7 +1,10 @@
 #include "../headers/Table.hpp"
 
 // Конструктор по умолчанию
-Table::Table() : tableName(""), columns(Array<string>(2)), tuplesLimit(100) {}
+Table::Table()
+    : tableName(""),
+      columns(),
+      tuplesLimit(100) {}  // Используйте конструктор по умолчанию для Array
 
 // Конструктор с параметрами
 Table::Table(const string& name, const Array<string>& cols)
@@ -22,14 +25,4 @@ Table& Table::operator=(const Table& other) {
     tuplesLimit = other.tuplesLimit;
   }
   return *this;
-}
-
-// Метод печати
-void Table::print() {
-  std::cout << "Table: " << tableName << std::endl;
-  std::cout << "Columns: ";
-  for (auto& col : columns) {
-    std::cout << col << " ";
-  }
-  std::cout << std::endl;
 }
