@@ -1,4 +1,0 @@
-name,age,email,languages
-Alice,30,alice@example.com,"C++,Python,JavaScript"
-Bob,25,bob@example.com,"Java,Go,Rust"
-Charlie,35,charlie@example.com,"Python,JavaScript,HTML"

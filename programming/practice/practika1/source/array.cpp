@@ -28,6 +28,22 @@ void Array<T>::push_back(const T& value) {
   ++size;
 }
 
+// Вставка элемента в начало массива
+template <typename T>
+void Array<T>::insert_beginning(const T& value) {
+  if (size == capacity) {
+    resize(capacity == 0 ? 1 : capacity * 2);
+  }
+
+  for (size_t i = size; i > 0; --i) {
+    data[i] = data[i - 1];
+  }
+
+  data[0] = value;
+
+  ++size;
+}
+
 // Оператор доступа по индексу
 template <typename T>
 T& Array<T>::operator[](size_t index) {

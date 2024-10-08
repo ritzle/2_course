@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 
+#include "../headers/ComandParser.hpp"
 #include "../headers/SYBD.hpp"
 #include "../headers/Table.hpp"
 #include "../headers/array.hpp"
@@ -17,5 +18,11 @@ int main() {
   dataBase.printInfo();
   dataBase.createDirectoriesAndFiles();
 
+  cout << "-------------------" << endl;
+
+  SQLParser parser(dataBase);
+  parser.parse("INSERT INTO Таблица1 VALUES ('somedata', '12345')");
+
+  dataBase.printInfo();
   return 0;
 }

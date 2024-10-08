@@ -13,6 +13,8 @@ class Table {
   string tableName;
   Array<string> columns;
   int tuplesLimit;
+  int countCSVFile;
+  Array<Array<string>> line;
 
   // Конструктор по умолчанию
   Table();

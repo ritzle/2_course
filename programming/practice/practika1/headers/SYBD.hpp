@@ -17,13 +17,18 @@ class DB {
   int tuplesLimit;
   string pathSchema;
   Array<Table> structure;
+  int pk_sequence;
 
-  DB(){};
+  DB();
   ~DB(){};
 
   void readingConfiguration(string PathSchema);
   void createDirectoriesAndFiles();
   void printInfo() const;
+  void insertIntoTable(string TableName, Array<string> values);
+
+ private:
+  Table& searchTable(const string& TableName);
 };
 #include "../source/SYBD.cpp"
 #endif

@@ -8,6 +8,8 @@
 using json = nlohmann::json;
 using namespace std;
 
+DB::DB() : pk_sequence(0) {}
+
 void DB::readingConfiguration(string PathSchema) {
   ifstream file(PathSchema);
 
@@ -36,6 +38,7 @@ void DB::readingConfiguration(string PathSchema) {
           throw runtime_error("Колонка должна быть строкой");
         }
       }
+      table.columns.insert_beginning(table.tableName + "_pk");
 
       structure.push_back(table);
     }
@@ -47,23 +50,20 @@ void DB::readingConfiguration(string PathSchema) {
 };
 
 void DB::createDirectoriesAndFiles() {
-  // FIXME надо на дерикторию выше создавать папку
-  //  Получаем путь к родительской директории текущего файла
-  fs::path currentPath = fs::current_path();  // Получаем текущую директорию
-  fs::path newFolderPath = currentPath.parent_path() /
-                           "test";  // Указываем путь к новой папке "Схема 1"
+  // Задаем путь к папке practica1, внутри которой создадим папку схемы
+  fs::path practicaDir = fs::path("..") / schemaName;
 
   // Создаем директорию для схемы, если ее еще нет
-  if (!fs::exists(schemaName)) {
-    fs::create_directory(schemaName);
+  if (!fs::exists(practicaDir)) {
+    fs::create_directory(practicaDir);
   }
 
   // Перебираем все таблицы в структуре
   for (size_t i = 0; i < structure.getSize(); ++i) {
     Table& table = structure[i];
 
-    // Создаем директорию для таблицы
-    fs::path tableDir = fs::path(schemaName) / table.tableName;
+    // Создаем директорию для таблицы внутри папки схемы
+    fs::path tableDir = practicaDir / table.tableName;
     if (!fs::exists(tableDir)) {
       fs::create_directory(tableDir);
     }
@@ -83,17 +83,63 @@ void DB::createDirectoriesAndFiles() {
     } else {
       cerr << "Ошибка при создании файла: " << csvFile << endl;
     }
+
+    fs::path pkSeqenceFile = tableDir / (table.tableName + "pk_seqence");
+    if (!fs::exists(pkSeqenceFile)) {
+      ofstream file(pkSeqenceFile);
+      if (file.is_open()) {
+        file << pk_sequence;
+        file.close();
+      } else {
+        std::cerr << "Ошибка при создании файла: "
+                  << table.tableName + "pk_seqence" << std::endl;
+      }
+    }
   }
 }
 
+// TODO добавить обновление  CSV файлов + pk_seqence
+
+// TODO незобыть добавить проверку(и создание) на случай tuplesLimit;
+void DB::insertIntoTable(string TableName, Array<string> arrValues) {
+  Table& currentTable = searchTable(TableName);
+
+  // TODO может конечно надо сдеать получше но пока как естьж
+  ++pk_sequence;
+  arrValues.insert_beginning(to_string(pk_sequence));
+
+  currentTable.line.push_back(arrValues);
+}
+
+Table& DB::searchTable(const string& TableName) {
+  for (auto& table : structure) {
+    if (table.tableName == TableName) {
+      return table;
+    }
+  }
+
+  throw std::runtime_error("Table not found: " + TableName);
+}
+
+// FIXME добваить вывод линий
 void DB::printInfo() const {
   cout << "Schema Name: " << schemaName << endl;
   cout << "Tuples Limit: " << tuplesLimit << endl;
   cout << "Path to Schema: " << pathSchema << endl;
   cout << "Tables in Structure: " << structure.getSize() << endl;
+  cout << "pk_sequence: " << pk_sequence << endl;
 
   for (size_t i = 0; i < structure.getSize(); ++i) {
-    cout << "Table " << (i + 1) << ":" << endl;
+    cout << "Table " << (i + 1) << ": " << structure[i].tableName << endl;
+
+    // Вывод колонок таблицы
+    cout << "Columns: ";
     structure[i].columns.print();
+
+    // Вывод строк данных
+    for (auto& line : structure[i].line) {
+      line.print();
+    }
   }
+  cout << endl;
 }
