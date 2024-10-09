@@ -86,11 +86,25 @@ void DB::createDirectoriesAndFiles() {
       cerr << "Ошибка при создании файла: " << csvFile << endl;
     }
 
+    // sequence
     fs::path pkSeqenceFile = tableDir / (table.tableName + "pk_seqence");
     if (!fs::exists(pkSeqenceFile)) {
       ofstream file(pkSeqenceFile);
       if (file.is_open()) {
         file << table.pk_sequence;
+        file.close();
+      } else {
+        cerr << "Ошибка при создании файла: " << table.tableName + "pk_seqence"
+             << endl;
+      }
+    }
+
+    // lock
+    fs::path lockFile = tableDir / (table.tableName + "_lock");
+    if (!fs::exists(lockFile)) {
+      ofstream file(lockFile);
+      if (file.is_open()) {
+        file << table.lock;
         file.close();
       } else {
         cerr << "Ошибка при создании файла: " << table.tableName + "pk_seqence"
@@ -104,12 +118,30 @@ void DB::createDirectoriesAndFiles() {
 void DB::insertIntoTable(string TableName, Array<string> arrValues) {
   Table& currentTable = searchTable(TableName);
 
+  currentTable.lock = readLockFromFile(currentTable);
+
+  // Ожидание разблокировки таблицы
+  while (currentTable.lock == 1) {
+    this_thread::sleep_for(chrono::milliseconds(100));
+    currentTable.lock = readLockFromFile(currentTable);
+    cout << "жду разблокировки" << endl;
+  }
+
+  // Блокируем таблицу для работы
+  currentTable.lock = 1;
+  updateLock(currentTable);
+
   ++currentTable.pk_sequence;
   arrValues.insert_beginning(to_string(currentTable.pk_sequence));
+
+  currentTable.line.push_back(
+      arrValues);  // добовление значение непосредственно в структуру
   updatePkSeqence(currentTable);
   updateCSVFile(currentTable);
 
-  currentTable.line.push_back(arrValues);
+  // Разблокируем таблицу для других операций
+  currentTable.lock = 0;
+  updateLock(currentTable);
 }
 
 Table& DB::searchTable(const string& TableName) {
@@ -132,27 +164,22 @@ void DB::updatePkSeqence(Table& table) {
   }
 }
 
-// FIXME не рабоатет
 void DB::updateCSVFile(Table& table) {
-  // Открываем файл для записи (перезаписываем содержимое файла)
-  ofstream out("../Схема 1/Таблица1/1.csv");
+  ofstream out(table.pathTable + "/" + to_string(table.countCSVFile) + ".csv");
 
-  // table.pathTable + "/" + to_string(table.countCSVFile) +
-  //     ".csv"
-
-  // Проверяем, открылся ли файл
   if (out.is_open()) {
-    // Записываем заголовки (названия колонок)
     for (size_t i = 0; i < table.columns.getSize(); ++i) {
       out << table.columns[i];
       if (i < table.columns.getSize() - 1) {
-        out << ",";  // Добавляем запятую между колонками
+        out << ",";
       }
     }
-
     out << endl;
 
-    // Записываем строки (данные)
+    if (table.line.getSize() == 0) {
+      cerr << "Нет данных для записи в строки!" << endl;
+    }
+
     for (size_t j = 0; j < table.line.getSize(); ++j) {
       for (size_t k = 0; k < table.line[j].getSize(); ++k) {
         out << table.line[j][k];
@@ -169,6 +196,31 @@ void DB::updateCSVFile(Table& table) {
     cerr << "Ошибка при работе с файлом: " << table.pathTable << "/"
          << to_string(table.countCSVFile) << ".csv" << endl;
   }
+}
+
+void DB::updateLock(Table& table) {
+  ofstream out(table.pathTable + "/" + table.tableName + "_lock");
+  if (out.is_open()) {
+    out << table.lock;
+  } else {
+    cerr << "Ошибка при работе с файлом: " << table.tableName + "_lock" << endl;
+  }
+}
+
+int DB::readLockFromFile(Table& table) {
+  string lockFilePath = table.pathTable + "/" + table.tableName + "_lock";
+  ifstream lockFile(lockFilePath);
+
+  if (!lockFile.is_open()) {
+    cerr << "Ошибка при открытии файла: " << lockFilePath << endl;
+    return -1;  // Код ошибки, если файл не удалось открыть
+  }
+
+  int lockStatus;
+  lockFile >> lockStatus;  // Считываем значение из файла
+
+  lockFile.close();
+  return lockStatus;  // Возвращаем значение блокировки
 }
 
 void DB::printInfo() const {

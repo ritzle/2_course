@@ -17,6 +17,7 @@ class Table {
   int tuplesLimit;
   int countCSVFile;
   int pk_sequence;
+  int lock;  // 0-фаил открыт 1-фаил закрыт
 
   // Конструктор по умолчанию
   Table();

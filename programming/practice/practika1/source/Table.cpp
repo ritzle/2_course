@@ -6,9 +6,11 @@ Table::Table()
       columns(),
       pk_sequence(0),
       pathTable(),
+      lock(0),
       countCSVFile(1),
       tuplesLimit(100) {}  // Используйте конструктор по умолчанию для Array
 
+// FIXME доделать
 // Конструктор с параметрами
 Table::Table(const string& name, const Array<string>& cols)
     : tableName(name), countCSVFile(1), columns(cols) {}
@@ -17,6 +19,7 @@ Table::Table(const string& name, const Array<string>& cols)
 Table::Table(const Table& other)
     : tableName(other.tableName),
       columns(other.columns),
+      lock(other.lock),
       pathTable(other.pathTable),
       pk_sequence(other.pk_sequence),
       countCSVFile(other.countCSVFile),
@@ -27,6 +30,7 @@ Table& Table::operator=(const Table& other) {
   if (this != &other) {  // Проверка на самоприсваивание
     tableName = other.tableName;
     columns = other.columns;
+    lock = other.lock;
     pathTable = other.pathTable;
     pk_sequence = other.pk_sequence;
     tuplesLimit = other.tuplesLimit;

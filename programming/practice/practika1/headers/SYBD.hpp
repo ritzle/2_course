@@ -1,8 +1,10 @@
 #ifndef BD_HPP
 #define BD_HPP
 
+#include <chrono>
 #include <filesystem>
 #include <string>
+#include <thread>
 
 #include "Table.hpp"
 #include "array.hpp"
@@ -28,8 +30,12 @@ class DB {
 
  private:
   Table& searchTable(const string& TableName);
+
+  // TODO можно конечн заченить на просто путь и значение но ....
   void updatePkSeqence(Table& table);
   void updateCSVFile(Table& table);
+  void updateLock(Table& table);
+  int readLockFromFile(Table& table);
 };
 #include "../source/SYBD.cpp"
 #endif
