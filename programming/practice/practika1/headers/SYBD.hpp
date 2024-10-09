@@ -17,7 +17,6 @@ class DB {
   int tuplesLimit;
   string pathSchema;
   Array<Table> structure;
-  int pk_sequence;
 
   DB();
   ~DB(){};
@@ -29,6 +28,8 @@ class DB {
 
  private:
   Table& searchTable(const string& TableName);
+  void updatePkSeqence(Table& table);
+  void updateCSVFile(Table& table);
 };
 #include "../source/SYBD.cpp"
 #endif

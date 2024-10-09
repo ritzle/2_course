@@ -11,10 +11,12 @@ using namespace std;
 class Table {
  public:
   string tableName;
+  string pathTable;
   Array<string> columns;
+  Array<Array<string>> line;
   int tuplesLimit;
   int countCSVFile;
-  Array<Array<string>> line;
+  int pk_sequence;
 
   // Конструктор по умолчанию
   Table();

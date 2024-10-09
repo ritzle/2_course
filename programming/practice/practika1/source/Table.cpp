@@ -4,6 +4,8 @@
 Table::Table()
     : tableName(""),
       columns(),
+      pk_sequence(0),
+      pathTable(),
       countCSVFile(1),
       tuplesLimit(100) {}  // Используйте конструктор по умолчанию для Array
 
@@ -15,6 +17,8 @@ Table::Table(const string& name, const Array<string>& cols)
 Table::Table(const Table& other)
     : tableName(other.tableName),
       columns(other.columns),
+      pathTable(other.pathTable),
+      pk_sequence(other.pk_sequence),
       countCSVFile(other.countCSVFile),
       tuplesLimit(other.tuplesLimit) {}
 
@@ -22,8 +26,9 @@ Table::Table(const Table& other)
 Table& Table::operator=(const Table& other) {
   if (this != &other) {  // Проверка на самоприсваивание
     tableName = other.tableName;
-    columns = other.columns;  // Предполагается, что оператор присваивания для
-                              // Array корректно реализован
+    columns = other.columns;
+    pathTable = other.pathTable;
+    pk_sequence = other.pk_sequence;
     tuplesLimit = other.tuplesLimit;
     countCSVFile = other.countCSVFile;
   }

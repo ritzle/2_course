@@ -8,7 +8,7 @@
 using json = nlohmann::json;
 using namespace std;
 
-DB::DB() : pk_sequence(0) {}
+DB::DB(){};
 
 void DB::readingConfiguration(string PathSchema) {
   ifstream file(PathSchema);
@@ -68,6 +68,8 @@ void DB::createDirectoriesAndFiles() {
       fs::create_directory(tableDir);
     }
 
+    table.pathTable = tableDir;
+
     // Создаем файл CSV для таблицы
     fs::path csvFile = tableDir / "1.csv";
     ofstream file(csvFile);
@@ -88,25 +90,24 @@ void DB::createDirectoriesAndFiles() {
     if (!fs::exists(pkSeqenceFile)) {
       ofstream file(pkSeqenceFile);
       if (file.is_open()) {
-        file << pk_sequence;
+        file << table.pk_sequence;
         file.close();
       } else {
-        std::cerr << "Ошибка при создании файла: "
-                  << table.tableName + "pk_seqence" << std::endl;
+        cerr << "Ошибка при создании файла: " << table.tableName + "pk_seqence"
+             << endl;
       }
     }
   }
 }
 
-// TODO добавить обновление  CSV файлов + pk_seqence
-
 // TODO незобыть добавить проверку(и создание) на случай tuplesLimit;
 void DB::insertIntoTable(string TableName, Array<string> arrValues) {
   Table& currentTable = searchTable(TableName);
 
-  // TODO может конечно надо сдеать получше но пока как естьж
-  ++pk_sequence;
-  arrValues.insert_beginning(to_string(pk_sequence));
+  ++currentTable.pk_sequence;
+  arrValues.insert_beginning(to_string(currentTable.pk_sequence));
+  updatePkSeqence(currentTable);
+  updateCSVFile(currentTable);
 
   currentTable.line.push_back(arrValues);
 }
@@ -118,19 +119,68 @@ Table& DB::searchTable(const string& TableName) {
     }
   }
 
-  throw std::runtime_error("Table not found: " + TableName);
+  throw runtime_error("Table not found: " + TableName);
 }
 
-// FIXME добваить вывод линий
+void DB::updatePkSeqence(Table& table) {
+  ofstream out(table.pathTable + "/" + table.tableName + "pk_seqence");
+  if (out.is_open()) {
+    out << table.pk_sequence;
+  } else {
+    cerr << "Ошибка при работе с файлом: " << table.tableName + "pk_seqence"
+         << endl;
+  }
+}
+
+// FIXME не рабоатет
+void DB::updateCSVFile(Table& table) {
+  // Открываем файл для записи (перезаписываем содержимое файла)
+  ofstream out("../Схема 1/Таблица1/1.csv");
+
+  // table.pathTable + "/" + to_string(table.countCSVFile) +
+  //     ".csv"
+
+  // Проверяем, открылся ли файл
+  if (out.is_open()) {
+    // Записываем заголовки (названия колонок)
+    for (size_t i = 0; i < table.columns.getSize(); ++i) {
+      out << table.columns[i];
+      if (i < table.columns.getSize() - 1) {
+        out << ",";  // Добавляем запятую между колонками
+      }
+    }
+
+    out << endl;
+
+    // Записываем строки (данные)
+    for (size_t j = 0; j < table.line.getSize(); ++j) {
+      for (size_t k = 0; k < table.line[j].getSize(); ++k) {
+        out << table.line[j][k];
+
+        if (k < table.line[j].getSize() - 1) {
+          out << ",";
+        }
+      }
+      out << endl;
+    }
+
+    out.close();
+  } else {
+    cerr << "Ошибка при работе с файлом: " << table.pathTable << "/"
+         << to_string(table.countCSVFile) << ".csv" << endl;
+  }
+}
+
 void DB::printInfo() const {
   cout << "Schema Name: " << schemaName << endl;
   cout << "Tuples Limit: " << tuplesLimit << endl;
   cout << "Path to Schema: " << pathSchema << endl;
   cout << "Tables in Structure: " << structure.getSize() << endl;
-  cout << "pk_sequence: " << pk_sequence << endl;
 
   for (size_t i = 0; i < structure.getSize(); ++i) {
     cout << "Table " << (i + 1) << ": " << structure[i].tableName << endl;
+    cout << "pk_sequence: " << structure[i].pk_sequence << endl;
+    cout << "pathTable: " << structure[i].pathTable << endl;
 
     // Вывод колонок таблицы
     cout << "Columns: ";
@@ -140,6 +190,8 @@ void DB::printInfo() const {
     for (auto& line : structure[i].line) {
       line.print();
     }
+
+    cout << endl;
   }
   cout << endl;
 }
