@@ -5,7 +5,7 @@ namespace fs = filesystem;
 // Конструктор по умолчанию
 Table::Table()
     : tableName(""),
-      columns(),
+      csv{},
       pk_sequence(0),
       pathTable(),
       lock(0),
@@ -15,12 +15,12 @@ Table::Table()
 // FIXME доделать
 // Конструктор с параметрами
 Table::Table(const string& name, const Array<string>& cols)
-    : tableName(name), countCSVFile(1), columns(cols) {}
+    : tableName(name), countCSVFile(1), csv(csv) {}
 
 // Конструктор копирования
 Table::Table(const Table& other)
     : tableName(other.tableName),
-      columns(other.columns),
+      csv(other.csv),
       lock(other.lock),
       pathTable(other.pathTable),
       pk_sequence(other.pk_sequence),
@@ -31,7 +31,7 @@ Table::Table(const Table& other)
 Table& Table::operator=(const Table& other) {
   if (this != &other) {  // Проверка на самоприсваивание
     tableName = other.tableName;
-    columns = other.columns;
+    csv = other.csv;
     lock = other.lock;
     pathTable = other.pathTable;
     pk_sequence = other.pk_sequence;
@@ -77,4 +77,13 @@ void Table::readPKSequenceFile() {
     throw runtime_error("Не удалось открыть файл последовательности PK: " +
                         pkSequenceFilePath);
   }
+}
+
+int Table::counterAllLine() {
+  int totalLines = 0;
+
+  for (auto csv : csv) {
+    totalLines += csv.line.getSize();
+  }
+  return totalLines;
 }

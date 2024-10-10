@@ -36,7 +36,7 @@ class DB {
 
   // TODO можно конечн заченить на просто путь и значение но ....
   void updatePkSeqence(Table& table);
-  void updateCSVFile(Table& table);
+  void updateCSVFile(Table& tableб);
   void updateLock(Table& table);
 };
 #include "../source/SYBD.cpp"

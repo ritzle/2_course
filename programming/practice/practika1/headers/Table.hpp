@@ -5,6 +5,7 @@
 #include <string>
 
 #include "../headers/array.hpp"
+#include "../headers/csv.hpp"
 
 using namespace std;
 
@@ -12,8 +13,7 @@ class Table {
  public:
   string tableName;
   string pathTable;
-  Array<string> columns;
-  Array<Array<string>> line;
+  Array<CSV> csv;
   int tuplesLimit;
   int countCSVFile;
   int pk_sequence;
@@ -34,6 +34,7 @@ class Table {
   void countCSVFiles();  // Подсчитывает количество CSV-файлов
   void readLockFile();  // Читает файл блокировки
   void readPKSequenceFile();  // Читает файл последовательности pk_sequence
+  int counterAllLine();
 };
 
 #include "../source/Table.cpp"

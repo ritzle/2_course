@@ -106,3 +106,11 @@ template <typename T>
 bool Array<T>::empty() {
   return size == 0;
 }
+
+template <typename T>
+T& Array<T>::back() {
+  if (size == 0) {
+    throw std::out_of_range("Array is empty");
+  }
+  return data[size - 1];  // Assuming data is the underlying array
+}

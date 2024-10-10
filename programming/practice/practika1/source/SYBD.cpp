@@ -1,5 +1,6 @@
 #include "../headers/SYBD.hpp"
 
+#include <filesystem>  // Для проверки существования директории
 #include <fstream>
 #include <stdexcept>
 
@@ -9,8 +10,6 @@ using json = nlohmann::json;
 using namespace std;
 
 DB::DB(){};
-
-#include <filesystem>  // Для проверки существования директории
 
 // чтение конфигурации
 void DB::readingConfiguration(string PathSchema) {
@@ -34,14 +33,17 @@ void DB::readingConfiguration(string PathSchema) {
       table.tableName = JTable.key();
       table.tuplesLimit = this->tuplesLimit;
 
+      CSV csv;  // Создаем объект CSV для хранения данных
       for (auto& col : JTable.value()) {
         if (col.is_string()) {
-          table.columns.push_back(col.get<string>());
+          csv.columns.push_back(col.get<string>());
         } else {
           throw runtime_error("Колонка должна быть строкой");
         }
       }
-      table.columns.insert_beginning(table.tableName + "_pk");
+      table.csv.push_back(csv);  // Добавляем CSV объект в таблицу
+
+      table.csv[0].columns.insert_beginning(table.tableName + "_pk");
 
       structure.push_back(table);
     }
@@ -61,9 +63,8 @@ void DB::readingConfiguration(string PathSchema) {
   }
 
   file.close();
-};
+}
 
-// Метод для чтения данных из существующей схемы
 void DB::loadExistingSchemaData() {
   for (auto& table : structure) {
     table.pathTable = fs::path("..") / schemaName / table.tableName;
@@ -75,9 +76,14 @@ void DB::loadExistingSchemaData() {
     table.readLockFile();
     table.readPKSequenceFile();
 
-    // 3. Загружаем данные из всех CSV файлов
+    // 3. Инициализируем нужное количество CSV объектов
+    while (table.csv.getSize() < table.countCSVFile) {
+      table.csv.push_back(CSV());
+    }
+
+    // 4. Загружаем данные из всех CSV файлов
     for (int i = 1; i <= table.countCSVFile; ++i) {
-      string csvFilePath = table.pathTable + "/" + to_string(i) + ".csv";
+      string csvFilePath = fs::path(table.pathTable) / (to_string(i) + ".csv");
       ifstream csvFile(csvFilePath);
 
       if (!csvFile.is_open()) {
@@ -87,26 +93,26 @@ void DB::loadExistingSchemaData() {
       string line;
       bool isFirstLine = true;  // Флаг для отслеживания первой строки
       while (getline(csvFile, line)) {
-        if (isFirstLine) {
-          isFirstLine = false;  // Пропускаем первую строку
-          continue;  // Переходим к следующей итерации
-        }
+        if (line.empty()) continue;  // Пропускаем пустые строки
 
         Array<string> row = parseCSVLine(line);
-        table.line.push_back(row);  // Сохраняем строку в rows
+
+        if (isFirstLine) {
+          // Сохраняем первую строку в columns
+          table.csv[i - 1].columns = row;
+          isFirstLine = false;  // После обработки первой строки
+        } else {
+          // Все остальные строки добавляем в line
+          table.csv[i - 1].line.push_back(row);
+        }
       }
 
       csvFile.close();  // Закрываем файл после обработки
     }
 
-    // Проверяем и выводим статус блокировки таблицы
-    if (table.lock) {
-      cout << "Таблица " << table.tableName << " заблокирована." << endl;
-    }
-
     cout << "Таблица " << table.tableName
-         << " загружена успешно. Количество строк: " << table.line.getSize()
-         << endl;
+         << " загружена успешно. Количество строк: "
+         << to_string(table.counterAllLine()) << endl;
   }
 }
 
@@ -149,9 +155,9 @@ void DB::createDirectoriesAndFiles() {
     fs::path csvFile = tableDir / "1.csv";
     ofstream file(csvFile);
     if (file.is_open()) {
-      for (size_t j = 0; j < table.columns.getSize(); ++j) {
-        file << table.columns[j];
-        if (j < table.columns.getSize() - 1) {
+      for (size_t j = 0; j < table.csv[0].columns.getSize(); ++j) {
+        file << table.csv[0].columns[j];
+        if (j < table.csv[0].columns.getSize() - 1) {
           file << ",";
         }
       }
@@ -182,14 +188,13 @@ void DB::createDirectoriesAndFiles() {
         file << table.lock;
         file.close();
       } else {
-        cerr << "Ошибка при создании файла: " << table.tableName + "pk_seqence"
+        cerr << "Ошибка при создании файла: " << table.tableName + "_lock"
              << endl;
       }
     }
   }
 }
 
-// TODO незобыть добавить проверку(и создание) на случай tuplesLimit;
 void DB::insertIntoTable(string TableName, Array<string> arrValues) {
   Table& currentTable = searchTable(TableName);
 
@@ -198,8 +203,8 @@ void DB::insertIntoTable(string TableName, Array<string> arrValues) {
   // Ожидание разблокировки таблицы
   while (currentTable.lock == 1) {
     this_thread::sleep_for(chrono::milliseconds(100));
+    cout << "жду разблокировки файла";
     currentTable.readLockFile();
-    cout << "жду разблокировки" << endl;
   }
 
   // Блокируем таблицу для работы
@@ -209,14 +214,25 @@ void DB::insertIntoTable(string TableName, Array<string> arrValues) {
   ++currentTable.pk_sequence;
   arrValues.insert_beginning(to_string(currentTable.pk_sequence));
 
-  currentTable.line.push_back(
-      arrValues);  // добовление значение непосредственно в структуру
-  updatePkSeqence(currentTable);
+  // Проверяем, достиг ли лимит строк в текущем CSV файле
+  if (currentTable.csv.back().line.getSize() >= tuplesLimit) {
+    // Создаем новый CSV файл
+    string newCsvName = to_string(currentTable.csv.getSize() + 1) + ".csv";
+    CSV newCsv(newCsvName, currentTable.csv.back().columns);
+    currentTable.csv.push_back(newCsv);
+    currentTable.countCSVFile++;  // Обновляем количество CSV файлов
+  }
+
+  // Добавляем строку в последний CSV
+  currentTable.csv.back().line.push_back(arrValues);
+
+  // Обновляем только один раз после завершения вставки
   updateCSVFile(currentTable);
 
-  // Разблокируем таблицу для других операций
+  // Разблокируем таблицу
   currentTable.lock = 0;
   updateLock(currentTable);
+  updatePkSeqence(currentTable);
 }
 
 Table& DB::searchTable(const string& TableName) {
@@ -240,26 +256,26 @@ void DB::updatePkSeqence(Table& table) {
 }
 
 void DB::updateCSVFile(Table& table) {
-  ofstream out(table.pathTable + "/" + to_string(table.countCSVFile) + ".csv");
+  // Путь к файлу
+  string csvFilePath =
+      table.pathTable + "/" + to_string(table.countCSVFile) + ".csv";
+  ofstream out(csvFilePath);
 
   if (out.is_open()) {
-    for (size_t i = 0; i < table.columns.getSize(); ++i) {
-      out << table.columns[i];
-      if (i < table.columns.getSize() - 1) {
+    // Записываем заголовки столбцов только один раз
+    for (size_t i = 0; i < table.csv.back().columns.getSize(); ++i) {
+      out << table.csv.back().columns[i];
+      if (i < table.csv.back().columns.getSize() - 1) {
         out << ",";
       }
     }
     out << endl;
 
-    if (table.line.getSize() == 0) {
-      cerr << "Нет данных для записи в строки!" << endl;
-    }
-
-    for (size_t j = 0; j < table.line.getSize(); ++j) {
-      for (size_t k = 0; k < table.line[j].getSize(); ++k) {
-        out << table.line[j][k];
-
-        if (k < table.line[j].getSize() - 1) {
+    // Записываем строки
+    for (const auto& line : table.csv.back().line) {
+      for (size_t j = 0; j < line.getSize(); ++j) {
+        out << line[j];
+        if (j < line.getSize() - 1) {
           out << ",";
         }
       }
@@ -268,8 +284,7 @@ void DB::updateCSVFile(Table& table) {
 
     out.close();
   } else {
-    cerr << "Ошибка при работе с файлом: " << table.pathTable << "/"
-         << to_string(table.countCSVFile) << ".csv" << endl;
+    cerr << "Ошибка при открытии файла: " << csvFilePath << endl;
   }
 }
 
@@ -298,11 +313,13 @@ void DB::printInfo() const {
 
     // Вывод колонок таблицы
     cout << "Columns: ";
-    structure[i].columns.print();
+    structure[i].csv[0].columns.print();
 
     // Вывод строк данных
-    for (auto& line : structure[i].line) {
-      line.print();
+    for (auto& csv : structure[i].csv) {
+      for (auto line : csv.line) {
+        line.print();
+      }
     }
 
     cout << endl;
