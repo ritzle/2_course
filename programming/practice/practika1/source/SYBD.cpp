@@ -10,6 +10,9 @@ using namespace std;
 
 DB::DB(){};
 
+#include <filesystem>  // Для проверки существования директории
+
+// чтение конфигурации
 void DB::readingConfiguration(string PathSchema) {
   ifstream file(PathSchema);
 
@@ -46,8 +49,80 @@ void DB::readingConfiguration(string PathSchema) {
     throw runtime_error("Отсутствуют необходимые ключи в JSON файле");
   }
 
+  // Проверяем, существует ли директория схемы
+  string schemaPath = "../" + schemaName;
+  if (filesystem::exists(schemaPath)) {
+    // Если директория существует, загружаем данные существующей схемы
+    cout << "Схема " << schemaName << " уже существует. Загружаем данные..."
+         << endl;
+    loadExistingSchemaData();
+  } else {
+    createDirectoriesAndFiles();
+  }
+
   file.close();
 };
+
+// Метод для чтения данных из существующей схемы
+void DB::loadExistingSchemaData() {
+  for (auto& table : structure) {
+    table.pathTable = fs::path("..") / schemaName / table.tableName;
+
+    // 1. Считаем количество CSV файлов для таблицы
+    table.countCSVFiles();
+
+    // 2. Читаем информацию из файла блокировки и pk_sequence
+    table.readLockFile();
+    table.readPKSequenceFile();
+
+    // 3. Загружаем данные из всех CSV файлов
+    for (int i = 1; i <= table.countCSVFile; ++i) {
+      string csvFilePath = table.pathTable + "/" + to_string(i) + ".csv";
+      ifstream csvFile(csvFilePath);
+
+      if (!csvFile.is_open()) {
+        throw runtime_error("Не удалось открыть файл таблицы: " + csvFilePath);
+      }
+
+      string line;
+      bool isFirstLine = true;  // Флаг для отслеживания первой строки
+      while (getline(csvFile, line)) {
+        if (isFirstLine) {
+          isFirstLine = false;  // Пропускаем первую строку
+          continue;  // Переходим к следующей итерации
+        }
+
+        Array<string> row = parseCSVLine(line);
+        table.line.push_back(row);  // Сохраняем строку в rows
+      }
+
+      csvFile.close();  // Закрываем файл после обработки
+    }
+
+    // Проверяем и выводим статус блокировки таблицы
+    if (table.lock) {
+      cout << "Таблица " << table.tableName << " заблокирована." << endl;
+    }
+
+    cout << "Таблица " << table.tableName
+         << " загружена успешно. Количество строк: " << table.line.getSize()
+         << endl;
+  }
+}
+
+Array<string> DB::parseCSVLine(const string& line) {
+  Array<string> parsedRow;
+  stringstream ss(line);
+  string value;
+
+  while (getline(ss, value, ',')) {
+    value.erase(0, value.find_first_not_of(" \t\n\r\f\v"));
+    value.erase(value.find_last_not_of(" \t\n\r\f\v") + 1);
+    parsedRow.push_back(value);
+  }
+
+  return parsedRow;
+}
 
 void DB::createDirectoriesAndFiles() {
   // Задаем путь к папке practica1, внутри которой создадим папку схемы
@@ -87,14 +162,14 @@ void DB::createDirectoriesAndFiles() {
     }
 
     // sequence
-    fs::path pkSeqenceFile = tableDir / (table.tableName + "pk_seqence");
+    fs::path pkSeqenceFile = tableDir / (table.tableName + "_pk_seqence");
     if (!fs::exists(pkSeqenceFile)) {
       ofstream file(pkSeqenceFile);
       if (file.is_open()) {
         file << table.pk_sequence;
         file.close();
       } else {
-        cerr << "Ошибка при создании файла: " << table.tableName + "pk_seqence"
+        cerr << "Ошибка при создании файла: " << table.tableName + "_pk_seqence"
              << endl;
       }
     }
@@ -118,12 +193,12 @@ void DB::createDirectoriesAndFiles() {
 void DB::insertIntoTable(string TableName, Array<string> arrValues) {
   Table& currentTable = searchTable(TableName);
 
-  currentTable.lock = readLockFromFile(currentTable);
+  currentTable.readLockFile();
 
   // Ожидание разблокировки таблицы
   while (currentTable.lock == 1) {
     this_thread::sleep_for(chrono::milliseconds(100));
-    currentTable.lock = readLockFromFile(currentTable);
+    currentTable.readLockFile();
     cout << "жду разблокировки" << endl;
   }
 
@@ -155,11 +230,11 @@ Table& DB::searchTable(const string& TableName) {
 }
 
 void DB::updatePkSeqence(Table& table) {
-  ofstream out(table.pathTable + "/" + table.tableName + "pk_seqence");
+  ofstream out(table.pathTable + "/" + table.tableName + "_pk_seqence");
   if (out.is_open()) {
     out << table.pk_sequence;
   } else {
-    cerr << "Ошибка при работе с файлом: " << table.tableName + "pk_seqence"
+    cerr << "Ошибка при работе с файлом: " << table.tableName + "_pk_seqence"
          << endl;
   }
 }
@@ -207,30 +282,17 @@ void DB::updateLock(Table& table) {
   }
 }
 
-int DB::readLockFromFile(Table& table) {
-  string lockFilePath = table.pathTable + "/" + table.tableName + "_lock";
-  ifstream lockFile(lockFilePath);
-
-  if (!lockFile.is_open()) {
-    cerr << "Ошибка при открытии файла: " << lockFilePath << endl;
-    return -1;  // Код ошибки, если файл не удалось открыть
-  }
-
-  int lockStatus;
-  lockFile >> lockStatus;  // Считываем значение из файла
-
-  lockFile.close();
-  return lockStatus;  // Возвращаем значение блокировки
-}
-
 void DB::printInfo() const {
   cout << "Schema Name: " << schemaName << endl;
   cout << "Tuples Limit: " << tuplesLimit << endl;
   cout << "Path to Schema: " << pathSchema << endl;
   cout << "Tables in Structure: " << structure.getSize() << endl;
 
+  cout << endl;
+
   for (size_t i = 0; i < structure.getSize(); ++i) {
     cout << "Table " << (i + 1) << ": " << structure[i].tableName << endl;
+    cout << "count CSV: " << structure[i].countCSVFile << endl;
     cout << "pk_sequence: " << structure[i].pk_sequence << endl;
     cout << "pathTable: " << structure[i].pathTable << endl;
 

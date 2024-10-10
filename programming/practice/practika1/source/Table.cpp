@@ -1,5 +1,7 @@
 #include "../headers/Table.hpp"
 
+namespace fs = filesystem;
+
 // Конструктор по умолчанию
 Table::Table()
     : tableName(""),
@@ -37,4 +39,42 @@ Table& Table::operator=(const Table& other) {
     countCSVFile = other.countCSVFile;
   }
   return *this;
+}
+
+// Подсчет количества CSV-файлов
+void Table::countCSVFiles() {
+  countCSVFile = 0;  // Инициализируем счетчик
+  for (const auto& entry : fs::directory_iterator(pathTable + "/")) {
+    if (entry.path().extension() == ".csv") {
+      countCSVFile++;  // Увеличиваем счетчик для каждого найденного CSV
+    }
+  }
+}
+
+// Чтение файла блокировки
+void Table::readLockFile() {
+  string lockFilePath = pathTable + "/" + tableName + "_lock";
+  ifstream lockFile(lockFilePath);
+
+  if (lockFile.is_open()) {
+    lockFile >> lock;
+    lockFile.close();
+  } else {
+    throw runtime_error("Не удалось открыть файл блокировки: " + lockFilePath);
+  }
+}
+
+// Чтение файла последовательности pk_sequence
+void Table::readPKSequenceFile() {
+  string pkSequenceFilePath = pathTable + "/" + tableName + "_pk_seqence";
+  ifstream pkFile(pkSequenceFilePath);
+
+  if (pkFile.is_open()) {
+    pkFile >>
+        pk_sequence;  // Читаем значение последовательности первичного ключа
+    pkFile.close();
+  } else {
+    throw runtime_error("Не удалось открыть файл последовательности PK: " +
+                        pkSequenceFilePath);
+  }
 }

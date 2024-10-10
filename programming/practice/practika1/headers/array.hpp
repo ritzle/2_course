@@ -22,6 +22,7 @@ class Array {
   size_t getSize() const;  // Получение текущего размера
   size_t getCapacity() const;  // Получение вместимости
   void clear();                // Очистка вектора
+  bool empty();
 
   bool contains(const T& value) const;  // Проверка на наличие элемента
 

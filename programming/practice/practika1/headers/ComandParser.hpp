@@ -26,6 +26,11 @@ class SQLParser {
 
   void handleWhere(istringstream& stream);
 
+  // парсер услови для whehe
+  // возвращает список списков, где вложенный список отвечает за and, а сами
+  // списки за or
+  Array<Array<string>> parseConditions(string& condition);
+
   // для списка значений в insert
   Array<string> parseValues(const string& valuesList);
 };

@@ -101,3 +101,8 @@ void Array<T>::print() const {
   }
   std::cout << std::endl;  // Переход на новую строку после вывода
 }
+
+template <typename T>
+bool Array<T>::empty() {
+  return size == 0;
+}

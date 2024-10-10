@@ -31,11 +31,13 @@ class DB {
  private:
   Table& searchTable(const string& TableName);
 
+  void loadExistingSchemaData();
+  Array<string> parseCSVLine(const string& line);
+
   // TODO можно конечн заченить на просто путь и значение но ....
   void updatePkSeqence(Table& table);
   void updateCSVFile(Table& table);
   void updateLock(Table& table);
-  int readLockFromFile(Table& table);
 };
 #include "../source/SYBD.cpp"
 #endif

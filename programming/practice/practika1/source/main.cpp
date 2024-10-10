@@ -13,8 +13,6 @@ using namespace std;
 int main() {
   DB dataBase;
   dataBase.readingConfiguration("../schema.json");
-
-  dataBase.createDirectoriesAndFiles();
   cout << "-------------------" << endl;
 
   SQLParser parser(dataBase);

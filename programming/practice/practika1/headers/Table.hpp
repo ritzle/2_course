@@ -30,6 +30,10 @@ class Table {
 
   // Оператор присваивания
   Table& operator=(const Table& other);
+
+  void countCSVFiles();  // Подсчитывает количество CSV-файлов
+  void readLockFile();  // Читает файл блокировки
+  void readPKSequenceFile();  // Читает файл последовательности pk_sequence
 };
 
 #include "../source/Table.cpp"
