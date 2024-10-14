@@ -17,6 +17,7 @@ class CSV {
   CSV();
 
   CSV(const string& name, const Array<string>& cols);
+  CSV(const string& name);
 
   int countLine();
 };

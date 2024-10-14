@@ -116,6 +116,14 @@ T& Array<T>::back() {
 }
 
 template <typename T>
+T& Array<T>::front() {
+  if (size == 0) {
+    throw std::out_of_range("Array is empty");
+  }
+  return data[0];  // Assuming data is the underlying array
+}
+
+template <typename T>
 void Array<T>::erase(size_t index) {
   if (index >= size) {
     throw std::out_of_range("Index out of range");

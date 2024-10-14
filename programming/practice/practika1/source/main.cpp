@@ -35,10 +35,24 @@ int main() {
       cout << endl;
     } else if (input == "2") {
       // Запрос с условием WHERE
-      string query = "WHERE Таблица2.колонка2 = 5";
+      string query =
+          "WHERE Таблица2.колонка1 = data1  AND Таблица2.колонка2 = 5 OR "
+          "Таблица2.колонка2 = тест";
 
       parser.parse(query);
       cout << endl;
+    } else if (input == "3") {
+      // Запрос с условием WHERE
+      string query =
+          "DELETE FROM Таблица2 WHERE Таблица2.колонка1 = data1  AND "
+          "Таблица2.колонка2 = 5 OR "
+          "Таблица2.колонка2 = тест ";
+
+      parser.parse(query);
+      cout << endl;
+
+    } else if (input == "4") {
+      dataBase.printInfo();
     } else {
       cout << "Программа завершена." << endl;
       break;

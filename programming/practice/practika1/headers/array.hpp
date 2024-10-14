@@ -24,6 +24,7 @@ class Array {
   void clear();                // Очистка вектора
   bool empty();
   T& back();
+  T& front();
   void erase(size_t index);  // Удаление элемента по индексу
 
   bool contains(const T& value) const;  // Проверка на наличие элемента

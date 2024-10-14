@@ -53,7 +53,37 @@ void SQLParser::handleInsert(istringstream& stream) {
 void SQLParser::handleSelect(istringstream& stream) {}
 
 // Обработка команды DELETE
-void SQLParser::handleDelete(istringstream& stream) {}
+void SQLParser::handleDelete(istringstream& stream) {
+  string fromClause, tableName, condition;
+
+  // fromClause просто что бы считать from и забыть его
+  stream >> fromClause >> tableName;  // Ожидаем "FROM" после "DELETE"
+
+  tableName.erase(0, tableName.find_first_not_of(" \t\n\r\f\v"));
+  tableName.erase(tableName.find_last_not_of(" \t\n\r\f\v") + 1);
+
+  // Читаем условие
+  string whereClause;
+  getline(stream, whereClause);  // Считываем оставшуюся часть строки
+
+  // Убираем пробелы в начале и конце строки
+  whereClause.erase(0, whereClause.find_first_not_of(" \t\n\r\f\v"));
+  whereClause.erase(whereClause.find_last_not_of(" \t\n\r\f\v") + 1);
+
+  // Проверяем, начинается ли условие с "WHERE"
+  if (whereClause.substr(0, 5) == "WHERE") {
+    condition = whereClause.substr(5);  // Убираем "WHERE"
+  }
+
+  condition.erase(0, condition.find_first_not_of(" \t\n\r\f\v"));
+  condition.erase(condition.find_last_not_of(" \t\n\r\f\v") + 1);
+
+  // Обработка условий с использованием AND и OR
+  Array<Array<string>> parsedConditions = parseConditions(condition);
+
+  // Применяем условия к удалению строк из таблицы
+  db.applyDeleteConditions(tableName, parsedConditions);
+}
 
 // Обработка команды WHERE
 void SQLParser::handleWhere(istringstream& stream) {

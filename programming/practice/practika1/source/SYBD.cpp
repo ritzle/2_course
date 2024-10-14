@@ -78,8 +78,12 @@ void DB::loadExistingSchemaData() {
 
     // 3. Инициализируем нужное количество CSV объектов
     while (table.csv.getSize() < table.countCSVFile) {
-      table.csv.push_back(CSV());
+      string nameCSV = to_string(table.csv.getSize() + 1) + ".csv";
+      table.csv.push_back(CSV(nameCSV));
     }
+
+    // FIXME Костыль
+    table.csv[0].csvName = "1.csv";
 
     // 4. Загружаем данные из всех CSV файлов
     for (int i = 1; i <= table.countCSVFile; ++i) {
@@ -321,69 +325,91 @@ void DB::applyWhereConditions(const Array<Array<string>>& conditional) {
       }
 
       if (match) {
-        for (int col = 0; col < row.getSize(); ++col) {
-          cout << row[col] << " ";
-        }
+        cout << currentTable.tableName << "-" << currentCSV.csvName << ": ";
+        row.print();
+
         cout << endl;  // Переход на новую строку для вывода
       }
     }
   }
 }
+void DB::applyDeleteConditions(string& tableName,
+                               Array<Array<string>>& conditional) {
+  // Лямбда-функция для проверки условий с 'AND'
+  auto checkAndConditions = [&](const Array<string>& conditionGroup,
+                                const Array<string>& row,
+                                const CSV& currentCSV) -> bool {
+    for (int m = 0; m < conditionGroup.getSize(); ++m) {
+      string condition = conditionGroup[m];
+      size_t eqPos = condition.find('=');
 
-void DB::printFromQuery(const string& query) {
-  // Проверка на пустой запрос
-  if (query.empty()) {
-    cout << "Ошибка: пустой запрос." << endl;
-    return;  // Завершаем выполнение функции
-  }
+      if (eqPos != string::npos) {
+        // Извлекаем колонку и значение из условия
+        string column =
+            condition.substr(0, eqPos);  // Часть до '=' - это имя колонки
+        string value =
+            condition.substr(eqPos + 1);  // Часть после '=' - это значение
 
-  stringstream ss(query);
-  string tableName, columnName, value;
+        // Удаляем пробелы из строки
+        value.erase(remove(value.begin(), value.end(), ' '), value.end());
+        // Удаляем возможные пробелы с двух сторон
+        column.erase(remove(column.begin(), column.end(), ' '), column.end());
 
-  if (getline(ss, tableName, '.') && getline(ss, columnName, '=') &&
-      getline(ss, value)) {
-    // Убираем лишние пробелы и кавычки
-    value.erase(remove(value.begin(), value.end(), ' '), value.end());
-    value.erase(remove(value.begin(), value.end(), '\''), value.end());
+        // Теперь извлекаем только имя колонки без имени таблицы
+        size_t dotPos = column.find('.');
+        if (dotPos != string::npos) {
+          column = column.substr(
+              dotPos + 1);  // Извлекаем только имя колонки после точки
+        }
 
-    tableName = trim(tableName);
-    columnName = trim(columnName);
-    value = trim(value);
-
-    Table& table = searchTable(tableName);
-
-    // Ищем индекс колонки
-    int columnIndex = -1;
-    for (size_t i = 0; i < table.csv[0].columns.getSize(); ++i) {
-      if (table.csv[0].columns[i] == columnName) {
-        columnIndex = i;
-        break;
-      }
-    }
-
-    // Если колонка найдена, выводим строки, где значение совпадает
-    if (columnIndex != -1) {
-      for (size_t i = 0; i < table.csv.getSize(); ++i) {
-        CSV& csv = table.csv[i];
-        for (size_t j = 0; j < csv.line.getSize(); ++j) {
-          // Выводим индекс строки и текущее значение для отладки
-          cout << "Сравнение: " << csv.line[j][columnIndex] << " с " << value
-               << endl;
-
-          if (csv.line[j][columnIndex] == value) {
-            // Выводим строку
-            cout << table.tableName << ": ";
-            csv.line[j].print();
-            cout << endl;
+        // Находим индекс колонки
+        int columnIndex = -1;
+        for (int colIdx = 0; colIdx < currentCSV.columns.getSize(); ++colIdx) {
+          if (currentCSV.columns[colIdx] == column) {
+            columnIndex = colIdx;
+            break;
           }
         }
+
+        // Если колонка не найдена или значение не совпадает, возвращаем false
+        if (columnIndex == -1 || row[columnIndex] != value) {
+          return false;
+        }
       }
-    } else {
-      cout << "Колонка " << columnName << " не найдена." << endl;
     }
-  } else {
-    cout << "Неправильный запрос." << endl;
+    return true;
+  };
+
+  Table& currentTable = searchTable(tableName);
+
+  // Перебираем все CSV-файлы в найденной таблице
+  for (int i = 0; i < currentTable.csv.getSize(); ++i) {
+    CSV& currentCSV = currentTable.csv[i];
+
+    // Перебираем все строки в CSV в обратном порядке
+    for (int j = currentCSV.line.getSize() - 1; j >= 0; --j) {
+      Array<string>& row = currentCSV.line[j];
+
+      bool match = false;
+
+      // 1 цикл
+      for (int k = 0; k < conditional.getSize(); ++k) {
+        const Array<string>& conditionGroup = conditional[k];
+
+        // Проверка вложенных
+        if (checkAndConditions(conditionGroup, row, currentCSV)) {
+          match = true;
+          break;
+        }
+      }
+
+      if (match) {
+        currentCSV.line.erase(0 + j);  // Удаление строки
+      }
+    }
   }
+
+  rewriteAllCSVFiles(currentTable);
 }
 
 // Метод для удаления пробелов по краям строки
@@ -458,6 +484,70 @@ void DB::updateLock(Table& table) {
     out << table.lock;
   } else {
     cerr << "Ошибка при работе с файлом: " << table.tableName + "_lock" << endl;
+  }
+}
+
+void DB::rewriteAllCSVFiles(Table& table) {
+  // Перемещение строк между CSV-файлами
+  for (size_t i = 0; i < table.csv.getSize(); ++i) {
+    // Проверяем, заполнен ли текущий файл
+    while (i < table.csv.getSize() &&
+           table.csv[i].line.getSize() < table.tuplesLimit) {
+      // Если есть следующий файл, переносим строки
+      if (i + 1 < table.csv.getSize() && !table.csv[i + 1].line.empty()) {
+        size_t linesToMove = table.tuplesLimit - table.csv[i].line.getSize();
+
+        // Перемещаем строки из следующего файла в текущий
+        for (size_t j = 0; j < linesToMove && !table.csv[i + 1].line.empty();
+             ++j) {
+          table.csv[i].line.push_back(table.csv[i + 1].line.front());
+          table.csv[i + 1].line.erase(0);  // Удаляем первую строку
+        }
+      } else {
+        // Если следующего файла нет, выходим из цикла
+        break;
+      }
+    }
+  }
+
+  // Обновляем CSV файлы после завершения перемещения строк
+  for (int i = 0; i < table.csv.getSize(); ++i) {
+    rewriteFil(table, i);
+  }
+}
+
+void DB::rewriteFil(Table& table, int numberCsv) {
+  // Путь к файлу
+  string csvFilePath = table.pathTable + "/" + table.csv[numberCsv].csvName;
+  ofstream out(csvFilePath);
+
+  if (out.is_open()) {
+    // Записываем заголовки столбцов только один раз из текущего CSV
+    const CSV& currentCSV = table.csv[numberCsv];
+
+    // Записываем заголовки столбцов
+    for (size_t i = 0; i < currentCSV.columns.getSize(); ++i) {
+      out << currentCSV.columns[i];
+      if (i < currentCSV.columns.getSize() - 1) {
+        out << ",";
+      }
+    }
+    out << endl;
+
+    // Записываем строки
+    for (const auto& line : currentCSV.line) {
+      for (size_t j = 0; j < line.getSize(); ++j) {
+        out << line[j];
+        if (j < line.getSize() - 1) {
+          out << ",";
+        }
+      }
+      out << endl;
+    }
+
+    out.close();
+  } else {
+    cerr << "Ошибка при открытии файла: " << csvFilePath << endl;
   }
 }
 
