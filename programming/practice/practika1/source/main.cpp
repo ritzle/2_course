@@ -20,8 +20,8 @@ int main() {
   string input;
 
   while (true) {
-    cout << "Нажмите 1 для добавления данных, или любую другую клавишу "
-            "для выхода: ";
+    cout << "Нажмите 1 для добавления данных, 2 для выполнения запроса WHERE, "
+            "или любую другую клавишу для выхода: ";
     cin >> input;
 
     if (input == "1") {
@@ -32,6 +32,12 @@ int main() {
       cout << "Добавлены данные: data" << i << " value" << i << endl;
       ++i;
       dataBase.printInfo();
+      cout << endl;
+    } else if (input == "2") {
+      // Запрос с условием WHERE
+      string query = "WHERE Таблица2.колонка2 = 5";
+
+      parser.parse(query);
       cout << endl;
     } else {
       cout << "Программа завершена." << endl;

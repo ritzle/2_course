@@ -57,13 +57,6 @@ void SQLParser::handleDelete(istringstream& stream) {}
 
 // Обработка команды WHERE
 void SQLParser::handleWhere(istringstream& stream) {
-  string whereKeyword;
-  stream >> whereKeyword;
-
-  if (whereKeyword != "WHERE") {
-    throw runtime_error("Ожидалось 'WHERE', но получено: " + whereKeyword);
-  }
-
   string condition;
   getline(stream, condition);
 
@@ -73,89 +66,58 @@ void SQLParser::handleWhere(istringstream& stream) {
   // Обработка условий с использованием AND и OR
   Array<Array<string>> parsedConditions = parseConditions(condition);
 
-  // TODO подумать так как where не используется сам по себе то в bd он не нужен
-  // TODO и будет вызываться в другий запросах
-  // db.applyWhereConditions(tableName,parsedConditions);
+  db.applyWhereConditions(parsedConditions);
 }
 
-// FIXME доработать
-Array<Array<string>> SQLParser::parseConditions(string& condition) {
-  Array<Array<string>> parsedConditions;  // Внешний массив для условий OR
-  Array<string> currentAndConditions;  // Временный вектор для условий AND
+Array<Array<string>> SQLParser::parseConditions(string& query) {
+  Array<Array<string>> result;
 
-  // Убираем лишние пробелы в начале и конце
-  condition.erase(0, condition.find_first_not_of(" \t\n\r\f\v"));
-  condition.erase(condition.find_last_not_of(" \t\n\r\f\v") + 1);
+  // Лямбда-функция для разбора части строки с условиями через 'AND'
+  auto parseAndConditions = [](const string& subquery) -> Array<string> {
+    Array<string> conditions;
+    size_t start = 0;
+    size_t andPos = subquery.find(" AND ");
 
-  size_t pos = 0;
+    while (andPos != string::npos) {
+      // Вырезаем условие между двумя 'AND'
+      string condition = subquery.substr(start, andPos - start);
+      conditions.push_back(condition);  // Добавляем условие
 
-  while ((pos = condition.find("OR")) != string::npos) {
-    string orCondition = condition.substr(0, pos);
-    condition.erase(0, pos + 2);  // Удаляем "OR"
-
-    // Обрабатываем условия AND в текущем фрагменте
-    size_t andPos = 0;
-    while ((andPos = orCondition.find("AND")) != string::npos) {
-      string andCondition = orCondition.substr(0, andPos);
-      orCondition.erase(0, andPos + 3);  // Удаляем "AND"
-
-      andCondition.erase(0, andCondition.find_first_not_of(" \t\n\r\f\v"));
-      andCondition.erase(andCondition.find_last_not_of(" \t\n\r\f\v") + 1);
-
-      currentAndConditions.push_back(andCondition);
+      // Обновляем индексы для следующего поиска
+      start = andPos + 5;  // Пропускаем " AND "
+      andPos = subquery.find(" AND ", start);
     }
 
-    // Добавляем остаток условия AND
-    if (!orCondition.empty()) {
-      orCondition.erase(
-          0, orCondition.find_first_not_of(" \t\n\r\f\v"));  // Убираем пробелы
-      orCondition.erase(orCondition.find_last_not_of(" \t\n\r\f\v") + 1);
-      currentAndConditions.push_back(orCondition);
+    // Добавляем последнюю часть, которая идёт после последнего 'AND'
+    if (start < subquery.size()) {
+      string condition = subquery.substr(start);
+      conditions.push_back(condition);
     }
 
-    // Добавляем текущую группу AND в массив OR
-    if (!currentAndConditions.empty()) {
-      parsedConditions.push_back(currentAndConditions);
-      currentAndConditions.clear();  // Очищаем текущую группу
-    }
+    return conditions;
+  };
+
+  size_t orPos = query.find(" OR ");  // Ищем первое вхождение 'OR'
+
+  if (orPos != string::npos) {
+    // Обрабатываем часть до 'OR'
+    string leftPart = query.substr(0, orPos);
+    result.push_back(
+        parseAndConditions(leftPart));  // Разбираем и добавляем левую часть
+
+    // Обрабатываем часть после 'OR'
+    string rightPart = query.substr(orPos + 4);  // Обрезаем строку после 'OR'
+    result.push_back(
+        parseAndConditions(rightPart));  // Разбираем и добавляем правую часть
+  } else {
+    // Если 'OR' не найден, просто разбираем всю строку
+    result.push_back(parseAndConditions(query));
   }
 
-  // Обработка последнего фрагмента после последнего OR
-  if (!condition.empty()) {
-    // Убираем лишние пробелы
-    condition.erase(0, condition.find_first_not_of(" \t\n\r\f\v"));
-    condition.erase(condition.find_last_not_of(" \t\n\r\f\v") + 1);
-
-    // Обрабатываем условия AND в последнем фрагменте
-    size_t andPos = 0;
-    while ((andPos = condition.find("AND")) != string::npos) {
-      string andCondition = condition.substr(0, andPos);
-      condition.erase(0, andPos + 3);  // Удаляем "AND"
-
-      // Убираем лишние пробелы
-      andCondition.erase(0, andCondition.find_first_not_of(" \t\n\r\f\v"));
-      andCondition.erase(andCondition.find_last_not_of(" \t\n\r\f\v") + 1);
-
-      currentAndConditions.push_back(andCondition);
-    }
-
-    // Добавляем остаток условия AND
-    if (!condition.empty()) {
-      condition.erase(
-          0, condition.find_first_not_of(" \t\n\r\f\v"));  // Убираем пробелы
-      condition.erase(condition.find_last_not_of(" \t\n\r\f\v") + 1);
-      currentAndConditions.push_back(condition);
-    }
-
-    // Если остались условия в текущей группе AND, добавляем их
-    if (!currentAndConditions.empty()) {
-      parsedConditions.push_back(currentAndConditions);
-    }
-  }
-
-  return parsedConditions;  // Возвращаем структуру условий
+  return result;
 }
 
+// в insert используется
 Array<string> SQLParser::parseValues(const string& valuesList) {
   Array<string> values;
   string cleanedValues = valuesList;

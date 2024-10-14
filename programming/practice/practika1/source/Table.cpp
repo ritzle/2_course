@@ -12,7 +12,7 @@ Table::Table()
       countCSVFile(1),
       tuplesLimit(100) {}  // Используйте конструктор по умолчанию для Array
 
-// FIXME доделать
+// FIXME доделать может быть
 // Конструктор с параметрами
 Table::Table(const string& name, const Array<string>& cols)
     : tableName(name), countCSVFile(1), csv(csv) {}

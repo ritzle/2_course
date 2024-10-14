@@ -235,6 +235,170 @@ void DB::insertIntoTable(string TableName, Array<string> arrValues) {
   updatePkSeqence(currentTable);
 }
 
+void DB::applyWhereConditions(const Array<Array<string>>& conditional) {
+  // Лямбда-функция для проверки условий с 'AND'
+  auto checkAndConditions = [&](const Array<string>& conditionGroup,
+                                const Array<string>& row,
+                                const CSV& currentCSV) -> bool {
+    for (int m = 0; m < conditionGroup.getSize(); ++m) {
+      string condition = conditionGroup[m];
+      size_t eqPos = condition.find('=');
+
+      if (eqPos != string::npos) {
+        // Извлекаем колонку и значение из условия
+        string column =
+            condition.substr(0, eqPos);  // Часть до '=' - это имя колонки
+        string value =
+            condition.substr(eqPos + 1);  // Часть после '=' - это значение
+
+        // Удаляем пробелы из строки
+        value.erase(remove(value.begin(), value.end(), ' '), value.end());
+        // Удаляем возможные пробелы с двух сторон
+        column.erase(remove(column.begin(), column.end(), ' '), column.end());
+
+        // Теперь извлекаем только имя колонки без имени таблицы
+        size_t dotPos = column.find('.');
+        if (dotPos != string::npos) {
+          column = column.substr(
+              dotPos + 1);  // Извлекаем только имя колонки после точки
+        }
+
+        // Находим индекс колонки
+        int columnIndex = -1;
+        for (int colIdx = 0; colIdx < currentCSV.columns.getSize(); ++colIdx) {
+          if (currentCSV.columns[colIdx] == column) {
+            columnIndex = colIdx;
+            break;
+          }
+        }
+
+        // Если колонка не найдена или значение не совпадает, возвращаем false
+        if (columnIndex == -1 || row[columnIndex] != value) {
+          return false;
+        }
+      }
+    }
+    return true;
+  };
+
+  // Проверка наличия условий
+  if (conditional.getSize() == 0 || conditional[0].getSize() == 0) {
+    cerr << "Ошибка: Условие не указано" << endl;
+    return;
+  }
+
+  // Извлекаем имя таблицы из первого условия
+  string firstCondition = conditional[0][0];
+  size_t dotPos = firstCondition.find('.');
+  if (dotPos == string::npos) {
+    cerr << "Ошибка: Некорректный формат условия (отсутствует имя таблицы)"
+         << endl;
+    return;
+  }
+  string tableName = firstCondition.substr(0, dotPos);
+
+  Table& currentTable = searchTable(tableName);
+
+  // Перебираем все CSV-файлы в найденной таблице
+  for (int i = 0; i < currentTable.csv.getSize(); ++i) {
+    CSV& currentCSV = currentTable.csv[i];
+
+    // Перебираем все строки в CSV
+    for (int j = 0; j < currentCSV.line.getSize(); ++j) {
+      Array<string>& row = currentCSV.line[j];
+
+      bool match = false;
+
+      // 1 цикл
+      for (int k = 0; k < conditional.getSize(); ++k) {
+        const Array<string>& conditionGroup = conditional[k];
+
+        // проверка вложенных
+        if (checkAndConditions(conditionGroup, row, currentCSV)) {
+          match = true;
+          break;
+        }
+      }
+
+      if (match) {
+        for (int col = 0; col < row.getSize(); ++col) {
+          cout << row[col] << " ";
+        }
+        cout << endl;  // Переход на новую строку для вывода
+      }
+    }
+  }
+}
+
+void DB::printFromQuery(const string& query) {
+  // Проверка на пустой запрос
+  if (query.empty()) {
+    cout << "Ошибка: пустой запрос." << endl;
+    return;  // Завершаем выполнение функции
+  }
+
+  stringstream ss(query);
+  string tableName, columnName, value;
+
+  if (getline(ss, tableName, '.') && getline(ss, columnName, '=') &&
+      getline(ss, value)) {
+    // Убираем лишние пробелы и кавычки
+    value.erase(remove(value.begin(), value.end(), ' '), value.end());
+    value.erase(remove(value.begin(), value.end(), '\''), value.end());
+
+    tableName = trim(tableName);
+    columnName = trim(columnName);
+    value = trim(value);
+
+    Table& table = searchTable(tableName);
+
+    // Ищем индекс колонки
+    int columnIndex = -1;
+    for (size_t i = 0; i < table.csv[0].columns.getSize(); ++i) {
+      if (table.csv[0].columns[i] == columnName) {
+        columnIndex = i;
+        break;
+      }
+    }
+
+    // Если колонка найдена, выводим строки, где значение совпадает
+    if (columnIndex != -1) {
+      for (size_t i = 0; i < table.csv.getSize(); ++i) {
+        CSV& csv = table.csv[i];
+        for (size_t j = 0; j < csv.line.getSize(); ++j) {
+          // Выводим индекс строки и текущее значение для отладки
+          cout << "Сравнение: " << csv.line[j][columnIndex] << " с " << value
+               << endl;
+
+          if (csv.line[j][columnIndex] == value) {
+            // Выводим строку
+            cout << table.tableName << ": ";
+            csv.line[j].print();
+            cout << endl;
+          }
+        }
+      }
+    } else {
+      cout << "Колонка " << columnName << " не найдена." << endl;
+    }
+  } else {
+    cout << "Неправильный запрос." << endl;
+  }
+}
+
+// Метод для удаления пробелов по краям строки
+string DB::trim(const string& str) {
+  const char* whitespace = " \t\n\r";
+  size_t start = str.find_first_not_of(whitespace);
+  size_t end = str.find_last_not_of(whitespace);
+
+  if (start == string::npos || end == string::npos) {
+    return "";  // Пустая строка, если только пробелы
+  }
+
+  return str.substr(start, end - start + 1);
+}
+
 Table& DB::searchTable(const string& TableName) {
   for (auto& table : structure) {
     if (table.tableName == TableName) {

@@ -29,7 +29,7 @@ class SQLParser {
   // парсер услови для whehe
   // возвращает список списков, где вложенный список отвечает за and, а сами
   // списки за or
-  Array<Array<string>> parseConditions(string& condition);
+  Array<Array<string>> parseConditions(string& query);
 
   // для списка значений в insert
   Array<string> parseValues(const string& valuesList);

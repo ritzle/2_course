@@ -114,3 +114,17 @@ T& Array<T>::back() {
   }
   return data[size - 1];  // Assuming data is the underlying array
 }
+
+template <typename T>
+void Array<T>::erase(size_t index) {
+  if (index >= size) {
+    throw std::out_of_range("Index out of range");
+  }
+
+  // Сдвигаем элементы на одну позицию влево
+  for (size_t i = index; i < size - 1; ++i) {
+    data[i] = data[i + 1];
+  }
+
+  --size;  // Уменьшаем размер массива
+}
