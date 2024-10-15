@@ -102,8 +102,23 @@ void SQLParser::handleWhere(istringstream& stream) {
 Array<Array<string>> SQLParser::parseConditions(string& query) {
   Array<Array<string>> result;
 
+  // Лямбда-функция для удаления одинарных кавычек из значений
+  auto removeQuotes = [](string& condition) -> string {
+    size_t pos1 = condition.find('\'');
+    size_t pos2 = condition.rfind('\'');
+
+    // Проверяем, есть ли кавычки в начале и конце, и удаляем их
+    if (pos1 != string::npos && pos2 != string::npos && pos1 != pos2) {
+      condition.erase(pos2, 1);  // Удаляем правую кавычку
+      condition.erase(pos1, 1);  // Удаляем левую кавычку
+    }
+
+    return condition;
+  };
+
   // Лямбда-функция для разбора части строки с условиями через 'AND'
-  auto parseAndConditions = [](const string& subquery) -> Array<string> {
+  auto parseAndConditions =
+      [&removeQuotes](const string& subquery) -> Array<string> {
     Array<string> conditions;
     size_t start = 0;
     size_t andPos = subquery.find(" AND ");
@@ -111,7 +126,8 @@ Array<Array<string>> SQLParser::parseConditions(string& query) {
     while (andPos != string::npos) {
       // Вырезаем условие между двумя 'AND'
       string condition = subquery.substr(start, andPos - start);
-      conditions.push_back(condition);  // Добавляем условие
+      condition = removeQuotes(condition);  // Удаляем кавычки
+      conditions.push_back(condition);      // Добавляем условие
 
       // Обновляем индексы для следующего поиска
       start = andPos + 5;  // Пропускаем " AND "
@@ -121,6 +137,7 @@ Array<Array<string>> SQLParser::parseConditions(string& query) {
     // Добавляем последнюю часть, которая идёт после последнего 'AND'
     if (start < subquery.size()) {
       string condition = subquery.substr(start);
+      condition = removeQuotes(condition);  // Удаляем кавычки
       conditions.push_back(condition);
     }
 

@@ -3,6 +3,7 @@
 
 #include <chrono>
 #include <filesystem>
+#include <functional>
 #include <string>
 #include <thread>
 
@@ -27,10 +28,12 @@ class DB {
   void createDirectoriesAndFiles();
   void printInfo() const;
 
+  // FIXME Инсерт после удалние если удалился csv фаил и последний не заполнен
+  // создает новый а не добовляет в старый
   void insertIntoTable(string TableName, Array<string> values);
   void applyWhereConditions(const Array<Array<string>>& conditional);
-  void applyDeleteConditions(string& tableName,
-                             Array<Array<string>>& conditions);
+  void applyDeleteConditions(const string& tableName,
+                             const Array<Array<string>>& conditions);
 
  private:
   Table& searchTable(const string& TableName);
@@ -39,11 +42,30 @@ class DB {
   void loadExistingSchemaData();
   Array<string> parseCSVLine(const string& line);
 
+  bool checkAndConditions(const Array<string>& conditionGroup,
+                          const Array<string>& row, const CSV& currentCSV);
+
+  // для where
+  void processTableWithConditions(const string& tableName,
+                                  const Array<Array<string>>& conditional,
+                                  function<void(const Array<string>&)> action);
+
+  // для delete
+  void processTableWithConditions(const string& tableName,
+                                  const Array<Array<string>>& conditional,
+                                  const function<void(CSV&, int)>& action);
+
+  int findColumnIndex(const CSV& csv, const string& columnName);
+
   // TODO надо ли все эти функции в класс Table перенести???
-  // FIXME не совсем коректное название возможно, подрозумевается запись в фаил
+  // FIXME не совсем коректное название возможно, подрозумевается запись в
+  // фаил
   void updatePkSeqence(Table& table);
   void updateCSVFile(Table& table);  // только для вставки
   void updateLock(Table& table);
+
+  void moveLinesBetweenCSVs(Table& table);
+
   void rewriteAllCSVFiles(Table& table);
   void rewriteFil(Table& table, int numberCsv);  // для rewriteCSVFile
 };
