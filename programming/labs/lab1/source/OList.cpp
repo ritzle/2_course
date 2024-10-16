@@ -168,3 +168,18 @@ void OList<T>::fillFromFile(const std::string& filename) {
 
   file.close();
 }
+
+template <typename T>
+void OList<T>::writeToFile(const std::string& filename) const {
+  ofstream file(filename);
+  if (!file) {
+    cerr << "Не удалось открыть файл: " << filename << endl;
+    return;
+  }
+
+  Node* current = head;
+  while (current) {
+    file << current->data << " ";  // Записываем элементы в файл
+    current = current->pNext;
+  }
+}

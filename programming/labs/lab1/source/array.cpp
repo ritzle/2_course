@@ -2,6 +2,11 @@
 
 using namespace std;
 
+template <typename T>
+Array<T>::Array() : size(0), capacity(10) {  // Начальная вместимость 10
+  arr = new T[capacity];  // Выделяем память для массива
+}
+
 // Конструктор
 template <typename T>
 Array<T>::Array(size_t init_capacity) : size(0), capacity(init_capacity) {
@@ -105,19 +110,49 @@ void Array<T>::print() const {
   cout << endl;
 }
 
-// Метод заполнения из файла
 template <typename T>
-void Array<T>::fillFromFile(const string& filename) {
-  ifstream file(filename);
+void Array<T>::writeToFile(const std::string& filename) const {
+  std::ofstream file(filename);  // Открываем файл для записи
   if (!file.is_open()) {
-    cerr << "Could not open the file: " << filename << endl;
+    std::cerr << "Failed to open file for writing!" << std::endl;
     return;
   }
 
-  T value;  // Замените int на T для универсальности
-  while (file >> value) {
-    emplace_back(value);
+  for (size_t i = 0; i < size; ++i) {
+    file << arr[i];  // Записываем элемент в файл
+    if (i != size - 1) {
+      file << " ";  // Разделяем элементы пробелом
+    }
   }
 
-  file.close();
+  file.close();  // Закрываем файл
+  std::cout << "Data successfully written to " << filename << std::endl;
+}
+
+template <typename T>
+void Array<T>::fillFromFile(const std::string& filename) {
+  std::ifstream file(filename);  // Открываем файл для чтения
+  if (!file.is_open()) {
+    std::cerr << "Failed to open file for reading!" << std::endl;
+    return;
+  }
+
+  T element;
+  while (file >> element) {
+    emplace_back(element);  // Добавляем элемент в массив
+  }
+
+  file.close();  // Закрываем файл
+  std::cout << "Data successfully loaded from " << filename << std::endl;
+}
+
+template <typename T>
+void Array<T>::eraseByValue(const T& value) {
+  for (size_t i = 0; i < size; ++i) {
+    if (arr[i] == value) {
+      erase(i);  // Используем уже существующий метод erase по индексу
+      return;  // Удаляем только первый найденный элемент
+    }
+  }
+  std::cerr << "Значение '" << value << "' не найдено в массиве.\n";
 }

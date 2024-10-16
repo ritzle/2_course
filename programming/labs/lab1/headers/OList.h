@@ -22,6 +22,7 @@ class OList {
   T& operator[](size_t index);
   void print();
   void fillFromFile(const std::string& filename);
+  void writeToFile(const std::string& filename) const;
 
  private:
   struct Node {

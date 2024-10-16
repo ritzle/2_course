@@ -74,3 +74,17 @@ void Stack<T>::fillFromFile(const std::string& filename) {
 
   file.close();
 }
+template <typename T>
+void Stack<T>::writeToFile(const std::string& filename) const {
+  ofstream file(filename);
+  if (!file) {
+    cerr << "Не удалось открыть файл: " << filename << endl;
+    return;
+  }
+
+  Node* current = head;
+  while (current) {
+    file << current->data << " ";
+    current = current->pNext;
+  }
+}

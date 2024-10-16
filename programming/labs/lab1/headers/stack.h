@@ -17,6 +17,7 @@ class Stack {
   void pop();
   void print();
   void fillFromFile(const std::string& filename);
+  void writeToFile(const std::string& filename) const;
 
  private:
   struct Node {

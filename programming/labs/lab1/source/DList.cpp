@@ -191,3 +191,19 @@ void DList<T>::fillFromFile(const std::string& filename) {
 
   file.close();
 }
+
+template <typename T>
+void DList<T>::writeToFile(const std::string& filename) const {
+  std::ofstream outFile(filename);  // Открываем файл для записи
+  if (!outFile.is_open()) {
+    throw std::runtime_error("Не удалось открыть файл для записи.");
+  }
+
+  Node* current = head;  // Начинаем с головы списка
+  while (current != nullptr) {
+    outFile << current->data << " ";  // Записываем данные в файл
+    current = current->pNext;  // Переходим к следующему узлу
+  }
+
+  outFile.close();  // Закрываем файл
+}

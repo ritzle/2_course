@@ -1,6 +1,7 @@
 #ifndef COMPLETEBINARYTREE_H
 #define COMPLETEBINARYTREE_H
 
+#include <cmath>
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
@@ -15,6 +16,8 @@ class CompleteBinaryTree {
   void printLevelOrder();
   void fillTreeFromFile(const std::string& filename);  // New method for filling
                                                        // the tree from a file
+  void writeToFile(const std::string& filename);
+  int height();
   ~CompleteBinaryTree();
 
  private:
@@ -56,6 +59,8 @@ class CompleteBinaryTree {
   bool search(Node* node, int value);
   bool isComplete(Node* node, int index, int totalNodes);
   void destroyTree(Node* node);
+  void writeToFile(Node* node, std::ofstream& outFile);
+  int height(Node* node);
 };
 
 #include "../source/CompleteBinaryTree.cpp"

@@ -67,34 +67,57 @@ bool CompleteBinaryTree::isComplete(Node* node, int index, int totalNodes) {
          isComplete(node->right, 2 * index + 2, totalNodes);
 }
 
-// Печать дерева по уровням
+#include <iomanip>  // Для std::setw
+
 void CompleteBinaryTree::printLevelOrder() {
   if (root == nullptr) return;
 
+  int treeHeight = height();  // Получаем высоту дерева
   CustomQueue queue;
   queue.enqueue(root);
-  int currentLevelCount = 1;
-  int nextLevelCount = 0;
+  int currentLevelCount = 1;  // Количество узлов на текущем уровне
+  int nextLevelCount = 0;  // Количество узлов на следующем уровне
 
-  while (!queue.isEmpty()) {
-    Node* current = queue.peek();
-    queue.dequeue();
-    std::cout << current->data << " ";
+  for (int level = 0; level < treeHeight; ++level) {
+    int spaces = pow(2, treeHeight - level) - 1;  // Пробелы перед узлом
 
-    if (current->left) {
-      queue.enqueue(current->left);
-      nextLevelCount++;
-    }
-    if (current->right) {
-      queue.enqueue(current->right);
-      nextLevelCount++;
+    // Печатаем пробелы перед узлами на уровне
+    for (int i = 0; i < spaces; ++i) {
+      std::cout << " ";
     }
 
-    if (--currentLevelCount == 0) {
-      cout << endl;
-      currentLevelCount = nextLevelCount;
-      nextLevelCount = 0;
+    // Печатаем узлы на текущем уровне
+    for (int i = 0; i < currentLevelCount; ++i) {
+      Node* current = queue.peek();
+      queue.dequeue();
+
+      std::cout << current->data;  // Печать значения узла
+
+      // Если у узла есть дочерние узлы, добавляем их в очередь
+      if (current->left) {
+        queue.enqueue(current->left);
+        nextLevelCount++;
+      }
+      if (current->right) {
+        queue.enqueue(current->right);
+        nextLevelCount++;
+      }
+
+      // Печатаем пробелы между узлами
+      if (i <
+          currentLevelCount - 1) {  // Не добавляем пробел после последнего узла
+        // Увеличиваем расстояние между узлами для лучшего форматирования
+        for (int j = 0; j < spaces * 2 + 1;
+             ++j) {  // Adjust spacing for better alignment
+          std::cout << " ";
+        }
+      }
     }
+
+    std::cout << std::endl;  // Переход на новую строку
+    currentLevelCount =
+        nextLevelCount;  // Обновляем количество узлов текущего уровня
+    nextLevelCount = 0;  // Сбрасываем количество узлов следующего уровня
   }
 }
 
@@ -188,4 +211,39 @@ void CompleteBinaryTree::CustomQueue::fillFromFile(
   }
 
   file.close();
+}
+
+// Запись дерева в файл
+void CompleteBinaryTree::writeToFile(const std::string& filename) {
+  std::ofstream outFile(filename);
+  if (!outFile) {
+    std::cerr << "Не удалось открыть файл для записи: " << filename
+              << std::endl;
+    return;
+  }
+
+  writeToFile(root, outFile);
+}
+
+void CompleteBinaryTree::writeToFile(Node* node, std::ofstream& outFile) {
+  if (node) {
+    outFile << node->data << " ";
+    writeToFile(node->left, outFile);
+    writeToFile(node->right, outFile);
+  }
+}
+
+int CompleteBinaryTree::height(Node* node) {
+  if (node == nullptr) {
+    return 0;  // Высота пустого дерева - 0
+  }
+  // Рекурсивно вычисляем высоту левого и правого поддеревьев
+  int leftHeight = height(node->left);
+  int rightHeight = height(node->right);
+  // Возвращаем максимальную высоту
+  return std::max(leftHeight, rightHeight) + 1;
+}
+
+int CompleteBinaryTree::height() {
+  return height(root);  // Вызываем рекурсивный метод от корня
 }
