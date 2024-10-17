@@ -31,8 +31,10 @@ class DB {
   // FIXME Инсерт после удалние если удалился csv фаил и последний не заполнен
   // создает новый а не добовляет в старый
   void insertIntoTable(string TableName, Array<string> values);
-  void applyWhereConditions(const Array<Array<string>>& conditional);
-  void applyDeleteConditions(const string& tableName,
+  void applyWhereConditions(const Array<string>& tableNames,
+                            const Array<string>& tableColumns,
+                            const Array<Array<string>>& conditional);
+  void applyDeleteConditions(const Array<string>& tableNames,
                              const Array<Array<string>>& conditions);
 
  private:
@@ -42,16 +44,18 @@ class DB {
   void loadExistingSchemaData();
   Array<string> parseCSVLine(const string& line);
 
-  bool checkAndConditions(const Array<string>& conditionGroup,
-                          const Array<string>& row, const CSV& currentCSV);
+  bool checkAndConditionsAcrossTables(const Array<string>& conditionGroup,
+                                      const Array<string>& row,
+                                      const string& currentTableName,
+                                      int currentCSVIndex, int currentRowIndex);
 
   // для where
-  void processTableWithConditions(const string& tableName,
+  void processTableWithConditions(const Array<string>& tableNames,
                                   const Array<Array<string>>& conditional,
                                   function<void(const Array<string>&)> action);
 
   // для delete
-  void processTableWithConditions(const string& tableName,
+  void processTableWithConditions(const Array<string>& tableNames,
                                   const Array<Array<string>>& conditional,
                                   const function<void(CSV&, int)>& action);
 
@@ -68,6 +72,8 @@ class DB {
 
   void rewriteAllCSVFiles(Table& table);
   void rewriteFil(Table& table, int numberCsv);  // для rewriteCSVFile
+  void rewriteFil(string& fileName,
+                  Array<Array<string>> row);  // просто для записи в фаил
 };
 #include "../source/SYBD.cpp"
 #endif

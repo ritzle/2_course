@@ -220,6 +220,12 @@ void DB::insertIntoTable(string TableName, Array<string> arrValues) {
 
   // Проверяем, достиг ли лимит строк в текущем CSV файле
   if (currentTable.csv.back().line.getSize() >= tuplesLimit) {
+    if (currentTable.csv.getSize() == 0) {
+      CSV newCsv("1.csv", currentTable.csv.back().columns);
+      currentTable.csv.push_back(newCsv);
+      currentTable.countCSVFile++;  // Обновляем количество CSV файлов
+    }
+
     // Создаем новый CSV файл
     string newCsvName = to_string(currentTable.csv.getSize() + 1) + ".csv";
     CSV newCsv(newCsvName, currentTable.csv.back().columns);
@@ -239,115 +245,160 @@ void DB::insertIntoTable(string TableName, Array<string> arrValues) {
   updatePkSeqence(currentTable);
 }
 
-void DB::applyWhereConditions(const Array<Array<string>>& conditional) {
+// TODO в этих местах добавить считывание таблиц
+void DB::applyWhereConditions(const Array<string>& tableNames,
+                              const Array<string>& tableColumns,
+                              const Array<Array<string>>& conditional) {
   if (conditional.getSize() == 0 || conditional[0].getSize() == 0) {
     cerr << "Ошибка: Условие не указано" << endl;
     return;
   }
 
-  // Извлекаем имя таблицы из первого условия
-  string firstCondition = conditional[0][0];
-  size_t dotPos = firstCondition.find('.');
-  if (dotPos == string::npos) {
-    cerr << "Ошибка: Некорректный формат условия (отсутствует имя таблицы)"
-         << endl;
-    return;
-  }
-  string tableName = firstCondition.substr(0, dotPos);
+  // массив строк для файла фильтрации
+  Array<Array<string>> rowFiltration;
 
-  // Обрабатываем таблицу и выводим строки, удовлетворяющие условиям
-  processTableWithConditions(tableName, conditional,
+  processTableWithConditions(tableNames, conditional,
                              [&](const Array<string>& row) {
-                               cout << tableName << ": ";
+                               rowFiltration.insert_beginning(row);
                                row.print();
                                cout << endl;
                              });
+
+  string name = "";
+  for (auto& col : tableColumns) {
+    name += col + "_";
+    cout << col << " ";
+  }
+  rewriteFil(name, rowFiltration);
 }
 
-void DB::applyDeleteConditions(const string& tableName,
+void DB::applyDeleteConditions(const Array<string>& tableNames,
                                const Array<Array<string>>& conditional) {
   if (conditional.getSize() == 0 || conditional[0].getSize() == 0) {
     cerr << "Ошибка: Условие не указано" << endl;
     return;
   }
 
-  processTableWithConditions(tableName, conditional,
+  // Проверка и обработка условий для каждой таблицы
+  processTableWithConditions(tableNames, conditional,
                              [&](CSV& currentCSV, int indexToDelete) {
                                currentCSV.line.erase(indexToDelete);
                              });
-
-  Table table = searchTable(tableName);
-  moveLinesBetweenCSVs(table);
-  rewriteAllCSVFiles(table);
 }
 
 void DB::processTableWithConditions(
-    const string& tableName, const Array<Array<string>>& conditional,
+    const Array<string>& tableNames, const Array<Array<string>>& conditional,
     function<void(const Array<string>&)> action) {
-  // Ищем таблицу по имени
-  Table& currentTable = searchTable(tableName);
+  // Массив таблиц, участвующих в запросе
+  Array<Table> involvedTables;
 
-  // Перебираем все CSV-файлы в найденной таблице
-  for (int i = 0; i < currentTable.csv.getSize(); ++i) {
-    CSV& currentCSV = currentTable.csv[i];
+  // Загружаем все указанные таблицы
+  for (int i = 0; i < tableNames.getSize(); ++i) {
+    involvedTables.push_back(searchTable(tableNames[i]));
+  }
 
-    // Перебираем все строки в CSV
-    for (int j = 0; j < currentCSV.line.getSize(); ++j) {
-      Array<string>& row = currentCSV.line[j];
+  if (involvedTables.getSize() == 0) {
+    throw runtime_error("Ни одной таблицы не найдено");
+  }
 
-      bool match = false;
+  // Проходим по каждой таблице
+  for (int t = 0; t < involvedTables.getSize(); ++t) {
+    Table& currentTable = involvedTables[t];
 
-      // Перебираем все группы условий (OR)
-      for (int k = 0; k < conditional.getSize(); ++k) {
-        const Array<string>& conditionGroup = conditional[k];
+    if (currentTable.csv.getSize() == 0) {
+      throw runtime_error("Таблица " + tableNames[t] + " пуста");
+    }
 
-        // Проверка условий с 'AND' для данной строки
-        if (checkAndConditions(conditionGroup, row, currentCSV)) {
-          match = true;
-        }
+    // Перебираем все CSV-файлы в текущей таблице
+    for (int i = 0; i < currentTable.csv.getSize(); ++i) {
+      CSV& currentCSV = currentTable.csv[i];
 
-        if (match) {
-          action(row);
+      // Перебираем строки в CSV файла
+      for (int j = currentCSV.line.getSize() - 1; j >= 0; --j) {
+        Array<string>& row = currentCSV.line[j];
+
+        bool match = false;
+
+        // Перебираем все группы условий (OR)
+        for (int k = 0; k < conditional.getSize(); ++k) {
+          const Array<string>& conditionGroup = conditional[k];
+
+          // Проверка условий для данной строки с учетом всех таблиц
+          if (checkAndConditionsAcrossTables(conditionGroup, row,
+                                             currentTable.tableName, i, j)) {
+            match = true;
+
+            if (match) {
+              action(row);
+            }
+            break;
+          }
         }
       }
     }
   }
 }
 
-void DB::processTableWithConditions(const string& tableName,
+void DB::processTableWithConditions(const Array<string>& tableNames,
                                     const Array<Array<string>>& conditional,
                                     const function<void(CSV&, int)>& action) {
-  Table& currentTable = searchTable(tableName);
+  // Массив таблиц, участвующих в запросе
+  Array<Table> involvedTables;
 
-  // Перебираем все CSV-файлы в найденной таблице
-  for (int i = 0; i < currentTable.csv.getSize(); ++i) {
-    CSV& currentCSV = currentTable.csv[i];
+  // Загружаем все указанные таблицы
+  for (int i = 0; i < tableNames.getSize(); ++i) {
+    involvedTables.push_back(searchTable(tableNames[i]));
+  }
 
-    // Перебираем все строки в CSV
-    for (int j = currentCSV.line.getSize() - 1; j >= 0; --j) {
-      Array<string>& row = currentCSV.line[j];
+  if (involvedTables.getSize() == 0) {
+    throw runtime_error("Ни одной таблицы не найдено");
+  }
 
-      bool match = false;
+  // Проходим по каждой таблице
+  for (int t = 0; t < involvedTables.getSize(); ++t) {
+    Table& currentTable = involvedTables[t];
 
-      // Перебираем все группы условий (OR)
-      for (int k = 0; k < conditional.getSize(); ++k) {
-        const Array<string>& conditionGroup = conditional[k];
+    if (currentTable.csv.getSize() == 0) {
+      throw runtime_error("Таблица " + tableNames[t] + " пуста");
+    }
 
-        // Проверка условий с 'AND' для данной строки
-        if (checkAndConditions(conditionGroup, row, currentCSV)) {
-          match = true;
-        }
+    // Перебираем все CSV-файлы в текущей таблице
+    for (int i = 0; i < currentTable.csv.getSize(); ++i) {
+      CSV& currentCSV = currentTable.csv[i];
 
-        if (match) {
-          action(currentCSV, j);
+      // Перебираем строки в CSV файла
+      for (int j = currentCSV.line.getSize() - 1; j >= 0; --j) {
+        Array<string>& row = currentCSV.line[j];
+
+        bool match = false;
+
+        // Перебираем все группы условий (OR)
+        for (int k = 0; k < conditional.getSize(); ++k) {
+          const Array<string>& conditionGroup = conditional[k];
+
+          // Проверка условий для данной строки с учетом всех таблиц
+          if (checkAndConditionsAcrossTables(conditionGroup, row,
+                                             currentTable.tableName, i, j)) {
+            match = true;
+
+            if (match) {
+              action(currentCSV, j);
+            }
+            break;
+          }
         }
       }
     }
+    moveLinesBetweenCSVs(currentTable);
+    rewriteAllCSVFiles(currentTable);
   }
 }
 
-bool DB::checkAndConditions(const Array<string>& conditionGroup,
-                            const Array<string>& row, const CSV& currentCSV) {
+bool DB::checkAndConditionsAcrossTables(const Array<string>& conditionGroup,
+                                        const Array<string>& row,
+                                        const string& currentTableName,
+                                        int currentCSVIndex,
+                                        int currentRowIndex) {
   for (int m = 0; m < conditionGroup.getSize(); ++m) {
     string condition = conditionGroup[m];
     size_t eqPos = condition.find('=');
@@ -356,46 +407,67 @@ bool DB::checkAndConditions(const Array<string>& conditionGroup,
       string leftPart = condition.substr(0, eqPos);  // Левая часть до '='
       string rightPart = condition.substr(eqPos + 1);  // Правая часть после '='
 
-      // Удаляем пробелы из обеих частей
+      // Удаляем пробелы
       leftPart.erase(remove(leftPart.begin(), leftPart.end(), ' '),
                      leftPart.end());
       rightPart.erase(remove(rightPart.begin(), rightPart.end(), ' '),
                       rightPart.end());
 
-      // Проверяем, является ли правая часть колонкой другой таблицы
+      // Обработка левой части (имя таблицы и колонка)
       size_t leftDotPos = leftPart.find('.');
       string leftTableName =
           leftPart.substr(0, leftDotPos);  // Имя таблицы слева
-      string leftColumn = leftPart.substr(leftDotPos + 1);  // Колонка слева
+      string leftColumn = leftPart.substr(leftDotPos + 1);  // Имя колонки слева
 
+      // Если запросы в одном блоке не отнясятся к одной таблице
+      if (leftTableName != currentTableName) {
+        return false;  // все не относиться к одной таблице
+      }
+
+      // Поиск индекса колонки в текущей таблице
+      Table& leftTable = searchTable(leftTableName);
+      int leftColumnIndex = findColumnIndex(leftTable.csv[0], leftColumn);
+      if (leftColumnIndex == -1) {
+        cerr << "Ошибка: Колонка " << leftColumn << " не найдена в таблице "
+             << leftTableName << endl;
+        return false;
+      }
+
+      // Обработка правой части
       bool isRightPartColumn = rightPart.find('.') != string::npos;
-
       if (isRightPartColumn) {
         // Правая часть - это колонка другой таблицы
         size_t rightDotPos = rightPart.find('.');
-        string rightTableName =
-            rightPart.substr(0, rightDotPos);  // Имя таблицы справа
-        string rightColumn =
-            rightPart.substr(rightDotPos + 1);  // Колонка справа
+        string rightTableName = rightPart.substr(0, rightDotPos);
+        string rightColumn = rightPart.substr(rightDotPos + 1);
 
-        // Ищем таблицы для левой и правой части
-        Table& leftTable = searchTable(leftTableName);
+        // Поиск таблицы для правой части
         Table& rightTable = searchTable(rightTableName);
-
-        // Находим индексы колонок
-        int leftColumnIndex = findColumnIndex(leftTable.csv[0], leftColumn);
         int rightColumnIndex = findColumnIndex(rightTable.csv[0], rightColumn);
-
-        if (leftColumnIndex == -1 || rightColumnIndex == -1) {
-          cerr << "Ошибка: Колонка не найдена" << endl;
+        if (rightColumnIndex == -1) {
+          cerr << "Ошибка: Колонка " << rightColumn << " не найдена в таблице "
+               << rightTableName << endl;
           return false;
         }
 
-        // Сравниваем значение колонки из левой и правой таблиц
+        // Проверка наличия строки с данным индексом в правой таблице
+        if (currentCSVIndex >= rightTable.csv.getSize()) {
+          cerr << "Ошибка: CSV с номером " << currentCSVIndex
+               << " не найдена в таблице " << rightTableName << endl;
+          return false;
+        }
+
+        // Проверка наличия строки с данным индексом в правой таблице
+        if (currentRowIndex >= rightTable.csv[currentCSVIndex].line.getSize()) {
+          cerr << "Ошибка: Строка с индексом " << currentRowIndex
+               << " не найдена в таблице " << rightTableName << endl;
+          return false;
+        }
+
+        // Сравнение значений из обеих таблиц для текущей строки
         string leftValue = row[leftColumnIndex];
-        string rightValue =
-            rightTable.csv[0].line[0][rightColumnIndex];  // Берем первую строку
-                                                          // правой таблицы
+        string rightValue = rightTable.csv[currentCSVIndex]
+                                .line[currentRowIndex][rightColumnIndex];
 
         if (leftValue != rightValue) {
           return false;
@@ -405,12 +477,8 @@ bool DB::checkAndConditions(const Array<string>& conditionGroup,
         // Правая часть - это константа
         string value = rightPart;
 
-        // Находим индекс колонки
-        int columnIndex = findColumnIndex(currentCSV, leftColumn);
-
-        string nn = row[columnIndex];
-
-        if (columnIndex == -1 || row[columnIndex] != value) {
+        // Сравнение значения с колонкой текущей строки
+        if (row[leftColumnIndex] != value) {
           return false;
         }
       }
@@ -575,6 +643,29 @@ void DB::rewriteFil(Table& table, int numberCsv) {
     out.close();
   } else {
     cerr << "Ошибка при открытии файла: " << csvFilePath << endl;
+  }
+}
+void DB::rewriteFil(string& fileName, Array<Array<string>> row) {
+  // Путь к файлу
+
+  fs::path FilePath = fs::path("..") / (fileName + ".csv");
+  ofstream out(FilePath);
+
+  if (out.is_open()) {
+    // Записываем строки
+    for (const auto& line : row) {
+      for (size_t j = 0; j < line.getSize(); ++j) {
+        out << line[j];
+        if (j < line.getSize() - 1) {
+          out << ",";
+        }
+      }
+      out << endl;
+    }
+
+    out.close();
+  } else {
+    cerr << "Ошибка при открытии файла: " << fileName << endl;
   }
 }
 

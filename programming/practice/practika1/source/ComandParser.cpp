@@ -14,8 +14,6 @@ void SQLParser::parse(const string& query) {
     handleSelect(stream);
   } else if (command == "DELETE") {
     handleDelete(stream);
-  } else if (command == "WHERE") {
-    handleWhere(stream);
   } else {
     throw runtime_error("Неизвестная команда: " + command);
   }
@@ -50,53 +48,125 @@ void SQLParser::handleInsert(istringstream& stream) {
 }
 
 // Обработка команды SELECT
-void SQLParser::handleSelect(istringstream& stream) {}
+void SQLParser::handleSelect(istringstream& stream) {
+  string selectClause, fromClause, fullQuery, whereClause;
 
-// Обработка команды DELETE
-void SQLParser::handleDelete(istringstream& stream) {
-  string fromClause, tableName, condition;
+  // Считываем "SELECT"
+  stream >> selectClause;
 
-  // fromClause просто что бы считать from и забыть его
-  stream >> fromClause >> tableName;  // Ожидаем "FROM" после "DELETE"
+  // Считываем всё содержимое потока после слова "SELECT" целиком
+  getline(stream, fullQuery);
 
-  tableName.erase(0, tableName.find_first_not_of(" \t\n\r\f\v"));
-  tableName.erase(tableName.find_last_not_of(" \t\n\r\f\v") + 1);
+  size_t fromPos = fullQuery.find("FROM");
 
-  // Читаем условие
-  string whereClause;
-  getline(stream, whereClause);  // Считываем оставшуюся часть строки
-
-  // Убираем пробелы в начале и конце строки
-  whereClause.erase(0, whereClause.find_first_not_of(" \t\n\r\f\v"));
-  whereClause.erase(whereClause.find_last_not_of(" \t\n\r\f\v") + 1);
-
-  // Проверяем, начинается ли условие с "WHERE"
-  if (whereClause.substr(0, 5) == "WHERE") {
-    condition = whereClause.substr(5);  // Убираем "WHERE"
+  if (fromPos == string::npos) {
+    throw runtime_error("Ошибка: не найдено ключевое слово FROM");
   }
 
-  condition.erase(0, condition.find_first_not_of(" \t\n\r\f\v"));
-  condition.erase(condition.find_last_not_of(" \t\n\r\f\v") + 1);
+  // Извлекаем список колонок до "FROM"
+  string columnsPart = fullQuery.substr(0, fromPos);
 
-  // Обработка условий с использованием AND и OR
-  Array<Array<string>> parsedConditions = parseConditions(condition);
+  // Удаляем лишние пробелы в списке колонок
+  columnsPart.erase(0, columnsPart.find_first_not_of(" \t\n\r\f\v"));
+  columnsPart.erase(columnsPart.find_last_not_of(" \t\n\r\f\v") + 1);
 
-  // Применяем условия к удалению строк из таблицы
-  db.applyDeleteConditions(tableName, parsedConditions);
+  // Разбираем колонки по запятой
+  istringstream columnStream(columnsPart);
+  Array<string> columns;
+  string column;
+
+  while (getline(columnStream, column, ',')) {
+    column.erase(0, column.find_first_not_of(" \t\n\r\f\v"));
+    column.erase(column.find_last_not_of(" \t\n\r\f\v") + 1);
+    columns.push_back(column);
+  }
+
+  // Теперь обрабатываем таблицы и условия
+  size_t wherePos = fullQuery.find("WHERE", fromPos);
+
+  // Извлекаем часть с таблицами после "FROM"
+  string tablesPart;
+  if (wherePos != string::npos) {
+    tablesPart = fullQuery.substr(fromPos + 4, wherePos - (fromPos + 4));
+  } else {
+    tablesPart = fullQuery.substr(fromPos + 4);  // Всё, что после "FROM"
+  }
+
+  // Удаляем лишние пробелы в списке таблиц
+  tablesPart.erase(0, tablesPart.find_first_not_of(" \t\n\r\f\v"));
+  tablesPart.erase(tablesPart.find_last_not_of(" \t\n\r\f\v") + 1);
+
+  // Разбираем таблицы
+  istringstream tableStream(tablesPart);
+  Array<string> tables;
+  string tableName;
+
+  while (tableStream >> tableName) {
+    tables.push_back(tableName);
+  }
+
+  if (wherePos != string::npos) {
+    // Есть секция WHERE — обрабатываем условия
+    whereClause = fullQuery.substr(wherePos + 5);
+    whereClause.erase(0, whereClause.find_first_not_of(" \t\n\r\f\v"));
+    whereClause.erase(whereClause.find_last_not_of(" \t\n\r\f\v") + 1);
+
+    Array<Array<string>> parsedConditions = parseConditions(whereClause);
+
+    // Применение условий WHERE
+    db.applyWhereConditions(tables, columns, parsedConditions);
+  } else {
+    // Нет секции WHERE — просто обработка без условий
+    // db.applySelect(tables, columns);
+  }
 }
 
-// Обработка команды WHERE
-void SQLParser::handleWhere(istringstream& stream) {
-  string condition;
-  getline(stream, condition);
+void SQLParser::handleDelete(istringstream& stream) {
+  string fromClause, tableNamesPart, whereClause;
 
-  condition.erase(0, condition.find_first_not_of(" \t\n\r\f\v"));
-  condition.erase(condition.find_last_not_of(" \t\n\r\f\v") + 1);
+  // Считываем "FROM"
+  stream >> fromClause;
 
-  // Обработка условий с использованием AND и OR
-  Array<Array<string>> parsedConditions = parseConditions(condition);
+  // Считываем всё оставшееся после "FROM", включая возможные пробелы
+  getline(stream, tableNamesPart);
 
-  db.applyWhereConditions(parsedConditions);
+  // Ищем позицию "WHERE"
+  size_t wherePos = tableNamesPart.find("WHERE");
+
+  if (wherePos != string::npos) {
+    // Получаем часть до "WHERE" — это имена таблиц
+    string tablesPart = tableNamesPart.substr(0, wherePos);
+
+    // Убираем лишние пробелы
+    tablesPart.erase(0, tablesPart.find_first_not_of(" \t\n\r\f\v"));
+    tablesPart.erase(tablesPart.find_last_not_of(" \t\n\r\f\v") + 1);
+
+    // Создаем поток для обработки таблиц и удаляем запятые
+    istringstream tableStream(tablesPart);
+    Array<string> tables;
+    string tableName;
+
+    // Разделение по запятой
+    while (getline(tableStream, tableName, ',')) {
+      // Удаляем пробелы у каждого имени таблицы
+      tableName.erase(0, tableName.find_first_not_of(" \t\n\r\f\v"));
+      tableName.erase(tableName.find_last_not_of(" \t\n\r\f\v") + 1);
+      tables.push_back(tableName);
+    }
+
+    // Получаем условия после "WHERE"
+    whereClause = tableNamesPart.substr(wherePos + 5);
+    whereClause.erase(0, whereClause.find_first_not_of(" \t\n\r\f\v"));
+    whereClause.erase(whereClause.find_last_not_of(" \t\n\r\f\v") + 1);
+
+    // Разбор условий
+    Array<Array<string>> parsedConditions = parseConditions(whereClause);
+
+    // Применение условий удаления к каждой таблице
+    db.applyDeleteConditions(tables, parsedConditions);
+  } else {
+    std::cerr << "Ошибка: не найдено ключевое слово WHERE\n";
+  }
 }
 
 Array<Array<string>> SQLParser::parseConditions(string& query) {
