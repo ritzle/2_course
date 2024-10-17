@@ -44,10 +44,10 @@ void DBMS::handle(const string& request) {
       case 'M':
         handleArray(fileName, query);
         break;
-      case 'L':
+      case 'D':
         handleDoobleList(fileName, query);
         break;
-      case 'D':
+      case 'L':
         handleList(fileName, query);
         break;
       case 'Q':
@@ -60,6 +60,7 @@ void DBMS::handle(const string& request) {
         handleTree(fileName, query);
 
       default:
+        cout << "нет обращение к структуре";
         break;
     }
   }
@@ -137,21 +138,21 @@ void DBMS::handleDoobleList(const string& fileName, const string& query) {
 
   iss >> command;  // Считываем команду
 
-  if (command == "PUSH_BACK") {
+  if (command == "PUSHBACK") {
     iss >> value;  // Получаем значение
     list.push_back(value);  // Добавляем значение в конец списка
     list.writeToFile(fileName);  // Записываем обратно в файл
     cout << "Добавлено в список: " << value << "\n";
-  } else if (command == "PUSH_FRONT") {
+  } else if (command == "PUSHFRONT") {
     iss >> value;  // Получаем значение
     list.push_front(value);  // Добавляем значение в начало списка
     list.writeToFile(fileName);  // Записываем обратно в файл
     cout << "Добавлено в начало списка: " << value << "\n";
-  } else if (command == "POP_FRONT") {
+  } else if (command == "POPFRONT") {
     list.pop_front();            // Удаляем первый элемент
     list.writeToFile(fileName);  // Записываем обратно в файл
     cout << "Удален первый элемент списка.\n";
-  } else if (command == "POP_BACK") {
+  } else if (command == "POPBACK") {
     list.pop_back();  // Удаляем последний элемент
     list.writeToFile(fileName);  // Записываем обратно в файл
     cout << "Удален последний элемент списка.\n";
