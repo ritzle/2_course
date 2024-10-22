@@ -35,6 +35,13 @@ class Table {
   void readLockFile();  // Читает файл блокировки
   void readPKSequenceFile();  // Читает файл последовательности pk_sequence
   int counterAllLine();
+
+  // Метод для получения массива значений определенной колонки
+  Array<string> getColumnValues(const string& columnName);
+
+ private:
+  // Метод для поиска индекса колонки по имени
+  int findColumnIndex(const CSV& csv, const string& columnName) const;
 };
 
 #include "../source/Table.cpp"

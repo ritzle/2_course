@@ -245,7 +245,63 @@ void DB::insertIntoTable(string TableName, Array<string> arrValues) {
   updatePkSeqence(currentTable);
 }
 
-// TODO в этих местах добавить считывание таблиц
+void DB::applySelect(const Array<string>& tableNames,
+                     const Array<string>& tableColumns) {
+  // Проверка наличия таблиц и колонок
+  if (tableNames.getSize() == 0 || tableColumns.getSize() == 0) {
+    cerr << "Ошибка: отсутствуют данные" << endl;
+    return;
+  }
+
+  // Считываем таблицы
+  Array<Table> involvedTables;
+  for (const string& tableName : tableNames) {
+    try {
+      Table table = searchTable(tableName);
+      if (table.csv.getSize() == 0) {
+        cerr << "Ошибка: таблица " << tableName << " пуста." << endl;
+        return;
+      }
+      involvedTables.push_back(table);
+    } catch (const runtime_error& e) {
+      cerr << "Ошибка: не удалось найти таблицу " << tableName << ". "
+           << e.what() << endl;
+      return;
+    }
+  }
+
+  Array<string> crossJoinResult;
+
+  // Проходим по колонкам и заполняем кросс-соединение
+  for (const string& columnString : tableColumns) {
+    size_t dotPos = columnString.find('.');
+    if (dotPos == string::npos) {
+      cerr << "Ошибка: неверный формат имени колонки " << columnString << endl;
+      return;
+    }
+
+    string tableName = columnString.substr(0, dotPos);
+    string columnName = columnString.substr(dotPos + 1);
+
+    // Получаем значения столбца из таблицы
+    Table table = searchTable(tableName);
+    Array<string> columnValues = table.getColumnValues(columnName);
+
+    if (crossJoinResult.getSize() == 0) {
+      crossJoinResult = columnValues;
+    } else {
+      crossJoinResult = crossJoin(crossJoinResult, columnValues);
+    }
+  }
+
+  string name = "SELECT_";
+  for (auto& col : tableColumns) {
+    name += col + "_";
+    cout << col << " ";
+  }
+  rewriteFil(name, tableColumns, crossJoinResult);
+}
+
 void DB::applyWhereConditions(const Array<string>& tableNames,
                               const Array<string>& tableColumns,
                               const Array<Array<string>>& conditional) {
@@ -264,7 +320,8 @@ void DB::applyWhereConditions(const Array<string>& tableNames,
                                cout << endl;
                              });
 
-  string name = "";
+  // FIXME неправильно называет фаил(не считывает 1 имя)
+  string name = "WHERE_";
   for (auto& col : tableColumns) {
     name += col + "_";
     cout << col << " ";
@@ -452,15 +509,15 @@ bool DB::checkAndConditionsAcrossTables(const Array<string>& conditionGroup,
 
         // Проверка наличия строки с данным индексом в правой таблице
         if (currentCSVIndex >= rightTable.csv.getSize()) {
-          cerr << "Ошибка: CSV с номером " << currentCSVIndex
-               << " не найдена в таблице " << rightTableName << endl;
+          // cerr << "Ошибка: CSV с номером " << currentCSVIndex
+          //      << " не найдена в таблице " << rightTableName << endl;
           return false;
         }
 
         // Проверка наличия строки с данным индексом в правой таблице
         if (currentRowIndex >= rightTable.csv[currentCSVIndex].line.getSize()) {
-          cerr << "Ошибка: Строка с индексом " << currentRowIndex
-               << " не найдена в таблице " << rightTableName << endl;
+          // cerr << "Ошибка: Строка с индексом " << currentRowIndex
+          //      << " не найдена в таблице " << rightTableName << endl;
           return false;
         }
 
@@ -531,6 +588,10 @@ void DB::updatePkSeqence(Table& table) {
 
 void DB::updateCSVFile(Table& table) {
   // Путь к файлу
+  if (table.countCSVFile == 0) {
+    table.countCSVFile++;
+  }
+
   string csvFilePath =
       table.pathTable + "/" + to_string(table.countCSVFile) + ".csv";
   ofstream out(csvFilePath);
@@ -593,6 +654,10 @@ void DB::moveLinesBetweenCSVs(Table& table) {
 }
 
 void DB::rewriteAllCSVFiles(Table& table) {
+  if (table.csv.getSize() == 0) {
+    return;
+  }
+
   for (int i = 0; i < table.csv.getSize(); ++i) {
     rewriteFil(table, i);
   }
@@ -669,6 +734,38 @@ void DB::rewriteFil(string& fileName, Array<Array<string>> row) {
   }
 }
 
+void DB::rewriteFil(string& fileName, const Array<string>& columns,
+                    const Array<string>& row) {
+  // Путь к файлу
+  fs::path filePath = fs::path("..") / (fileName + ".csv");
+  ofstream out(filePath);
+
+  if (out.is_open()) {
+    // Записываем имена столбцов в первую строку
+    for (size_t j = 0; j < columns.getSize(); ++j) {
+      out << columns[j];
+      if (j < columns.getSize() - 1) {
+        out << ",";
+      }
+    }
+    out << endl;
+
+    // Записываем данные строки
+    for (size_t j = 0; j < row.getSize(); ++j) {
+      out << row[j];
+      if (j < row.getSize() - 1) {
+        out << ",";
+      }
+      out << endl;
+    }
+
+    out.close();
+    cout << "Данные успешно записаны в файл: " << filePath << endl;
+  } else {
+    cerr << "Ошибка при открытии файла для записи: " << fileName << endl;
+  }
+}
+
 void DB::printInfo() const {
   cout << "Schema Name: " << schemaName << endl;
   cout << "Tuples Limit: " << tuplesLimit << endl;
@@ -697,4 +794,25 @@ void DB::printInfo() const {
     cout << endl;
   }
   cout << endl;
+}
+
+Array<string> DB::crossJoin(Array<string>& first, Array<string>& second) {
+  Array<string> result;  // Результирующий массив строк
+
+  // Проходим по каждому элементу из первого массива
+  for (size_t i = 0; i < first.getSize(); ++i) {
+    const string& firstValue = first[i];
+
+    // Для каждого элемента из первого массива, проходим по элементам второго
+    for (size_t j = 0; j < second.getSize(); ++j) {
+      const string& secondValue = second[j];
+
+      // Создаем строку, соединяя элементы из первого и второго массивов
+      string combinedRow = firstValue + ", " + secondValue;
+
+      result.push_back(combinedRow);  // Добавляем результат в массив строк
+    }
+  }
+
+  return result;  // Возвращаем результат
 }

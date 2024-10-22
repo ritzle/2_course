@@ -31,6 +31,9 @@ class DB {
   // FIXME Инсерт после удалние если удалился csv фаил и последний не заполнен
   // создает новый а не добовляет в старый
   void insertIntoTable(string TableName, Array<string> values);
+
+  void applySelect(const Array<string>& tableNames,
+                   const Array<string>& tableColumns);
   void applyWhereConditions(const Array<string>& tableNames,
                             const Array<string>& tableColumns,
                             const Array<Array<string>>& conditional);
@@ -61,6 +64,8 @@ class DB {
 
   int findColumnIndex(const CSV& csv, const string& columnName);
 
+  Array<string> crossJoin(Array<string>& first, Array<string>& second);
+
   // TODO надо ли все эти функции в класс Table перенести???
   // FIXME не совсем коректное название возможно, подрозумевается запись в
   // фаил
@@ -72,6 +77,9 @@ class DB {
 
   void rewriteAllCSVFiles(Table& table);
   void rewriteFil(Table& table, int numberCsv);  // для rewriteCSVFile
+
+  void rewriteFil(string& fileName, const Array<string>& columns,
+                  const Array<string>& row);
   void rewriteFil(string& fileName,
                   Array<Array<string>> row);  // просто для записи в фаил
 };

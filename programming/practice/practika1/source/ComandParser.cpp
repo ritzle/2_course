@@ -15,7 +15,9 @@ void SQLParser::parse(const string& query) {
   } else if (command == "DELETE") {
     handleDelete(stream);
   } else {
-    throw runtime_error("Неизвестная команда: " + command);
+    // throw runtime_error("Неизвестная команда: " + command);
+    cerr << "Неизвестная команда: " + command;
+    return;
   }
 }
 
@@ -48,15 +50,14 @@ void SQLParser::handleInsert(istringstream& stream) {
 }
 
 // Обработка команды SELECT
+// Обработка команды SELECT
 void SQLParser::handleSelect(istringstream& stream) {
-  string selectClause, fromClause, fullQuery, whereClause;
+  string fullQuery;
 
-  // Считываем "SELECT"
-  stream >> selectClause;
-
-  // Считываем всё содержимое потока после слова "SELECT" целиком
+  // Считываем всё содержимое потока до слова "FROM"
   getline(stream, fullQuery);
 
+  // Ищем позицию "FROM"
   size_t fromPos = fullQuery.find("FROM");
 
   if (fromPos == string::npos) {
@@ -76,9 +77,15 @@ void SQLParser::handleSelect(istringstream& stream) {
   string column;
 
   while (getline(columnStream, column, ',')) {
-    column.erase(0, column.find_first_not_of(" \t\n\r\f\v"));
-    column.erase(column.find_last_not_of(" \t\n\r\f\v") + 1);
-    columns.push_back(column);
+    // Удаляем лишние пробелы
+    column.erase(
+        0, column.find_first_not_of(" \t\n\r\f\v"));  // Удаляем пробелы слева
+    column.erase(column.find_last_not_of(" \t\n\r\f\v") +
+                 1);  // Удаляем пробелы справа
+
+    if (!column.empty()) {  // Проверяем, что колонка не пустая
+      columns.push_back(column);
+    }
   }
 
   // Теперь обрабатываем таблицы и условия
@@ -96,18 +103,26 @@ void SQLParser::handleSelect(istringstream& stream) {
   tablesPart.erase(0, tablesPart.find_first_not_of(" \t\n\r\f\v"));
   tablesPart.erase(tablesPart.find_last_not_of(" \t\n\r\f\v") + 1);
 
-  // Разбираем таблицы
+  // Разбираем таблицы, игнорируя запятые
   istringstream tableStream(tablesPart);
   Array<string> tables;
   string tableName;
 
   while (tableStream >> tableName) {
+    // Удаляем возможные запятые из имен таблиц
+    tableName.erase(remove(tableName.begin(), tableName.end(), ','),
+                    tableName.end());
     tables.push_back(tableName);
+  }
+
+  // Проверяем, были ли получены таблицы
+  if (tables.getSize() == 0) {
+    throw runtime_error("Ошибка: не найдены таблицы для запроса SELECT");
   }
 
   if (wherePos != string::npos) {
     // Есть секция WHERE — обрабатываем условия
-    whereClause = fullQuery.substr(wherePos + 5);
+    string whereClause = fullQuery.substr(wherePos + 5);
     whereClause.erase(0, whereClause.find_first_not_of(" \t\n\r\f\v"));
     whereClause.erase(whereClause.find_last_not_of(" \t\n\r\f\v") + 1);
 
@@ -117,7 +132,7 @@ void SQLParser::handleSelect(istringstream& stream) {
     db.applyWhereConditions(tables, columns, parsedConditions);
   } else {
     // Нет секции WHERE — просто обработка без условий
-    // db.applySelect(tables, columns);
+    db.applySelect(tables, columns);
   }
 }
 

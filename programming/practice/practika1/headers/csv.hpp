@@ -20,6 +20,8 @@ class CSV {
   CSV(const string& name);
 
   int countLine();
+
+  string getColumnValue(const string& columnName, int rowIndex) const;
 };
 
 #include "../source/csv.cpp"

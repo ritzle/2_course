@@ -87,3 +87,47 @@ int Table::counterAllLine() {
   }
   return totalLines;
 }
+
+// Определение всех методов класса Table...
+
+Array<string> Table::getColumnValues(const string& columnName) {
+  Array<string> columnValues;
+
+  // Предполагаем, что первый CSV содержит заголовки колонок
+  if (csv.getSize() == 0) {
+    cerr << "Ошибка: таблица " << tableName << " пуста." << endl;
+    return columnValues;  // Возвращаем пустой массив
+  }
+
+  const CSV& firstCSV = csv[0];
+
+  // Найти индекс колонки по имени
+  int columnIndex = findColumnIndex(firstCSV, columnName);
+  if (columnIndex == -1) {
+    cerr << "Ошибка: колонка " << columnName << " не найдена." << endl;
+    return columnValues;  // Возвращаем пустой массив
+  }
+
+  // Собираем значения колонки из всех CSV
+  for (const CSV& currentCSV : csv) {
+    for (const Array<string>& row : currentCSV.line) {
+      if (row.getSize() > columnIndex) {
+        columnValues.push_back(row[columnIndex]);
+      } else {
+        cerr << "Ошибка: строка содержит меньше колонок, чем ожидается."
+             << endl;
+      }
+    }
+  }
+
+  return columnValues;
+}
+
+int Table::findColumnIndex(const CSV& csv, const string& columnName) const {
+  for (int i = 0; i < csv.columns.getSize(); ++i) {
+    if (csv.columns[i] == columnName) {
+      return i;
+    }
+  }
+  return -1;  // Если колонка не найдена
+}
