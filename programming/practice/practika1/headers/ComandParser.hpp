@@ -1,6 +1,7 @@
 #ifndef SQLPARSER_HPP
 #define SQLPARSER_HPP
 
+#include <algorithm>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -23,8 +24,6 @@ class SQLParser {
   void handleSelect(istringstream& stream);
 
   void handleDelete(istringstream& stream);
-
-  void handleWhere(istringstream& stream);
 
   // парсер услови для whehe
   // возвращает список списков, где вложенный список отвечает за and, а сами

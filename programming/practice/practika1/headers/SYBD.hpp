@@ -30,6 +30,7 @@ class DB {
 
   // FIXME Инсерт после удалние если удалился csv фаил и последний не заполнен
   // создает новый а не добовляет в старый
+
   void insertIntoTable(string TableName, Array<string> values);
 
   void applySelect(const Array<string>& tableNames,
@@ -44,7 +45,14 @@ class DB {
   Table& searchTable(const string& TableName);
   string trim(const string& str);
 
-  void loadExistingSchemaData();
+  void loadExistingSchemaData(Array<string>& tableNames);
+  void loadExistingSchemaData(const Array<string>& tableNames);
+  void loadExistingSchemaData(string& tableName);
+
+  void unloadSchemaData(Array<string>& tableNames);
+  void unloadSchemaData(const Array<string>& tableNames);
+  void unloadSchemaData(string& tableNames);
+
   Array<string> parseCSVLine(const string& line);
 
   bool checkAndConditionsAcrossTables(const Array<string>& conditionGroup,

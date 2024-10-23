@@ -4,7 +4,7 @@
 CSV::CSV() : csvName(""), columns(), line() {}
 
 // Конструктор с параметрами
-CSV::CSV(const string& name, const Array<string>& cols)
+CSV::CSV(const string name, const Array<string> cols)
     : csvName(name), columns(cols), line() {}
 
 CSV::CSV(const string& name) : csvName(name), columns(), line() {}

@@ -74,7 +74,7 @@ size_t Array<T>::getCapacity() const {
   return capacity;
 }
 
-// Очистка вектора
+// Очистка
 template <typename T>
 void Array<T>::clear() {
   delete[] data;

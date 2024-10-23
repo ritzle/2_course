@@ -55,9 +55,10 @@ void DB::readingConfiguration(string PathSchema) {
   string schemaPath = "../" + schemaName;
   if (filesystem::exists(schemaPath)) {
     // Если директория существует, загружаем данные существующей схемы
-    cout << "Схема " << schemaName << " уже существует. Загружаем данные..."
-         << endl;
-    loadExistingSchemaData();
+    cout << "Схема " << schemaName
+         << " уже существует"
+            "";
+    // loadExistingSchemaData();
   } else {
     createDirectoriesAndFiles();
   }
@@ -65,8 +66,13 @@ void DB::readingConfiguration(string PathSchema) {
   file.close();
 }
 
-void DB::loadExistingSchemaData() {
+void DB::loadExistingSchemaData(Array<string>& tableNames) {
   for (auto& table : structure) {
+    // Проверяем, нужно ли загружать данную таблицу
+    if (!tableNames.contains(table.tableName)) {
+      continue;  // Пропускаем таблицы, не указанные в tableNames
+    }
+
     table.pathTable = fs::path("..") / schemaName / table.tableName;
 
     // 1. Считаем количество CSV файлов для таблицы
@@ -117,6 +123,210 @@ void DB::loadExistingSchemaData() {
     cout << "Таблица " << table.tableName
          << " загружена успешно. Количество строк: "
          << to_string(table.counterAllLine()) << endl;
+  }
+}
+
+void DB::loadExistingSchemaData(const Array<string>& tableNames) {
+  for (auto& table : structure) {
+    // Проверяем, нужно ли загружать данную таблицу
+    if (!tableNames.contains(table.tableName)) {
+      continue;  // Пропускаем таблицы, не указанные в tableNames
+    }
+
+    table.pathTable = fs::path("..") / schemaName / table.tableName;
+
+    // 1. Считаем количество CSV файлов для таблицы
+    table.countCSVFiles();
+
+    // 2. Читаем информацию из файла блокировки и pk_sequence
+    table.readLockFile();
+    table.readPKSequenceFile();
+
+    // 3. Инициализируем нужное количество CSV объектов
+    while (table.csv.getSize() < table.countCSVFile) {
+      string nameCSV = to_string(table.csv.getSize() + 1) + ".csv";
+      table.csv.push_back(CSV(nameCSV));
+    }
+
+    // FIXME Костыль
+    table.csv[0].csvName = "1.csv";
+
+    // 4. Загружаем данные из всех CSV файлов
+    for (int i = 1; i <= table.countCSVFile; ++i) {
+      string csvFilePath = fs::path(table.pathTable) / (to_string(i) + ".csv");
+      ifstream csvFile(csvFilePath);
+
+      if (!csvFile.is_open()) {
+        throw runtime_error("Не удалось открыть файл таблицы: " + csvFilePath);
+      }
+
+      string line;
+      bool isFirstLine = true;  // Флаг для отслеживания первой строки
+      while (getline(csvFile, line)) {
+        if (line.empty()) continue;  // Пропускаем пустые строки
+
+        Array<string> row = parseCSVLine(line);
+
+        if (isFirstLine) {
+          // Сохраняем первую строку в columns
+          table.csv[i - 1].columns = row;
+          isFirstLine = false;  // После обработки первой строки
+        } else {
+          // Все остальные строки добавляем в line
+          table.csv[i - 1].line.push_back(row);
+        }
+      }
+
+      csvFile.close();  // Закрываем файл после обработки
+    }
+
+    cout << "Таблица " << table.tableName
+         << " загружена успешно. Количество строк: "
+         << to_string(table.counterAllLine()) << endl;
+  }
+}
+
+void DB::loadExistingSchemaData(string& tableName) {
+  for (auto& table : structure) {
+    // Проверяем, нужно ли загружать данную таблицу
+    if (tableName != table.tableName) {
+      continue;  // Пропускаем таблицы, не указанные в tableNames
+    }
+
+    table.pathTable = fs::path("..") / schemaName / table.tableName;
+
+    // 1. Считаем количество CSV файлов для таблицы
+    table.countCSVFiles();
+
+    // 2. Читаем информацию из файла блокировки и pk_sequence
+    table.readLockFile();
+    table.readPKSequenceFile();
+
+    // 3. Инициализируем нужное количество CSV объектов
+    while (table.csv.getSize() < table.countCSVFile) {
+      string nameCSV = to_string(table.csv.getSize() + 1) + ".csv";
+      table.csv.push_back(CSV(nameCSV));
+    }
+
+    // FIXME Костыль
+    table.csv[0].csvName = "1.csv";
+
+    // 4. Загружаем данные из всех CSV файлов
+    for (int i = 1; i <= table.countCSVFile; ++i) {
+      string csvFilePath = fs::path(table.pathTable) / (to_string(i) + ".csv");
+      ifstream csvFile(csvFilePath);
+
+      if (!csvFile.is_open()) {
+        throw runtime_error("Не удалось открыть файл таблицы: " + csvFilePath);
+      }
+
+      string line;
+      bool isFirstLine = true;  // Флаг для отслеживания первой строки
+      while (getline(csvFile, line)) {
+        if (line.empty()) continue;  // Пропускаем пустые строки
+
+        Array<string> row = parseCSVLine(line);
+
+        if (isFirstLine) {
+          // Сохраняем первую строку в columns
+          table.csv[i - 1].columns = row;
+          isFirstLine = false;  // После обработки первой строки
+        } else {
+          // Все остальные строки добавляем в line
+          table.csv[i - 1].line.push_back(row);
+        }
+      }
+
+      csvFile.close();  // Закрываем файл после обработки
+    }
+
+    cout << "Таблица " << table.tableName
+         << " загружена успешно. Количество строк: "
+         << to_string(table.counterAllLine()) << endl;
+  }
+}
+
+void DB::unloadSchemaData(Array<string>& tableNames) {
+  for (auto& table : structure) {
+    // Проверяем, нужно ли очищать данную таблицу
+    if (!tableNames.contains(table.tableName)) {
+      continue;  // Пропускаем таблицы, не указанные в tableNames
+    }
+
+    // 1. Очистка данных CSV файлов
+    for (auto& csv : table.csv) {
+      csv.columns.clear();  // Очищаем столбцы
+      csv.line.clear();     // Очищаем строки
+    }
+
+    // 2. Очистка информации о файлах
+    table.csv.clear();  // Очищаем массив CSV объектов
+    table.countCSVFile = 0;  // Сбрасываем количество CSV файлов
+    table.pathTable.clear();  // Очищаем путь к таблице
+    table.pk_sequence = 0;  // Сбрасываем значение pk_sequence
+    table.lock = 0;  // Сбрасываем флаг наличия блокировки
+
+    cout << "Таблица " << table.tableName << " успешно выгружена из памяти."
+         << endl;
+  }
+}
+
+void DB::unloadSchemaData(const Array<string>& tableNames) {
+  for (auto& table : structure) {
+    // Проверяем, нужно ли очищать данную таблицу
+    if (!tableNames.contains(table.tableName)) {
+      continue;  // Пропускаем таблицы, не указанные в tableNames
+    }
+
+    // 1. Очистка данных CSV файлов
+    for (auto& csv : table.csv) {
+      csv.columns.clear();  // Очищаем столбцы
+      csv.line.clear();     // Очищаем строки
+    }
+
+    // 2. Очистка информации о файлах
+    table.csv.clear();  // Очищаем массив CSV объектов
+    table.countCSVFile = 0;  // Сбрасываем количество CSV файлов
+    table.pathTable.clear();  // Очищаем путь к таблице
+    table.pk_sequence = 0;  // Сбрасываем значение pk_sequence
+    table.lock = 0;  // Сбрасываем флаг наличия блокировки
+
+    cout << "Таблица " << table.tableName << " успешно выгружена из памяти."
+         << endl;
+  }
+}
+
+void DB::unloadSchemaData(string& tableNames) {
+  for (auto& table : structure) {
+    // Проверяем, нужно ли очищать данную таблицу
+    if (tableNames != table.tableName) {
+      continue;  // Пропускаем таблицы, не указанные в tableNames
+    }
+
+    // 1. Очистка данных CSV файлов
+    for (int i = table.csv.getSize() - 2; i >= 0; --i) {
+      auto& csv = table.csv[i];  // Получаем ссылку на текущий элемент
+
+      // Очищаем столбцы, если они не пустые
+      if (!csv.columns.empty()) {
+        csv.columns.clear();
+      }
+
+      // Проверяем, что line не пустой перед очисткой
+      if (!csv.line.empty()) {
+        csv.line.clear();  // Очищаем строки, если они не пустые
+      }
+    }
+
+    // 2. Очистка информации о файлах
+    table.csv.clear();  // Очищаем массив CSV объектов
+    table.countCSVFile = 0;  // Сбрасываем количество CSV файлов
+    table.pathTable.clear();  // Очищаем путь к таблице
+    table.pk_sequence = 0;  // Сбрасываем значение pk_sequence
+    table.lock = 0;  // Сбрасываем флаг наличия блокировки
+
+    cout << "Таблица " << table.tableName << " успешно выгружена из памяти."
+         << endl;
   }
 }
 
@@ -200,6 +410,8 @@ void DB::createDirectoriesAndFiles() {
 }
 
 void DB::insertIntoTable(string TableName, Array<string> arrValues) {
+  loadExistingSchemaData(TableName);
+
   Table& currentTable = searchTable(TableName);
 
   currentTable.readLockFile();
@@ -243,10 +455,14 @@ void DB::insertIntoTable(string TableName, Array<string> arrValues) {
   currentTable.lock = 0;
   updateLock(currentTable);
   updatePkSeqence(currentTable);
+
+  unloadSchemaData(TableName);
 }
 
 void DB::applySelect(const Array<string>& tableNames,
                      const Array<string>& tableColumns) {
+  loadExistingSchemaData(tableNames);
+
   // Проверка наличия таблиц и колонок
   if (tableNames.getSize() == 0 || tableColumns.getSize() == 0) {
     cerr << "Ошибка: отсутствуют данные" << endl;
@@ -300,11 +516,13 @@ void DB::applySelect(const Array<string>& tableNames,
     cout << col << " ";
   }
   rewriteFil(name, tableColumns, crossJoinResult);
+  unloadSchemaData(tableNames);
 }
 
 void DB::applyWhereConditions(const Array<string>& tableNames,
                               const Array<string>& tableColumns,
                               const Array<Array<string>>& conditional) {
+  loadExistingSchemaData(tableNames);
   if (conditional.getSize() == 0 || conditional[0].getSize() == 0) {
     cerr << "Ошибка: Условие не указано" << endl;
     return;
@@ -327,10 +545,12 @@ void DB::applyWhereConditions(const Array<string>& tableNames,
     cout << col << " ";
   }
   rewriteFil(name, rowFiltration);
+  unloadSchemaData(tableNames);
 }
 
 void DB::applyDeleteConditions(const Array<string>& tableNames,
                                const Array<Array<string>>& conditional) {
+  loadExistingSchemaData(tableNames);
   if (conditional.getSize() == 0 || conditional[0].getSize() == 0) {
     cerr << "Ошибка: Условие не указано" << endl;
     return;
@@ -341,6 +561,7 @@ void DB::applyDeleteConditions(const Array<string>& tableNames,
                              [&](CSV& currentCSV, int indexToDelete) {
                                currentCSV.line.erase(indexToDelete);
                              });
+  unloadSchemaData(tableNames);
 }
 
 void DB::processTableWithConditions(
@@ -654,7 +875,7 @@ void DB::moveLinesBetweenCSVs(Table& table) {
 }
 
 void DB::rewriteAllCSVFiles(Table& table) {
-  if (table.csv.getSize() == 0) {
+  if (table.csv.getSize() == 0 || table.csv[0].line.getSize() == 0) {
     return;
   }
 

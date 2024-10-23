@@ -21,7 +21,6 @@ void SQLParser::parse(const string& query) {
   }
 }
 
-// Обработка команды INSERT
 void SQLParser::handleInsert(istringstream& stream) {
   string into;
   stream >> into;
@@ -40,16 +39,28 @@ void SQLParser::handleInsert(istringstream& stream) {
     throw runtime_error("Ожидалось 'VALUES', но получено: " + values);
   }
 
-  string valuesList;
-  getline(stream, valuesList, ')');
+  char openParen;
+  stream >> openParen;  // Ожидаем '('
 
-  // получаем непосредственно список значений для добавления
+  // Проверяем наличие открывающей скобки
+  if (openParen != '(') {
+    throw runtime_error("Ожидалась открывающая скобка '(', но получено: " +
+                        string(1, openParen));
+  }
+
+  // FIXME нет работает проверки на )
+  string valuesList;
+  if (!getline(stream, valuesList, ')')) {
+    throw runtime_error("Ожидалось ')'");
+  }
+
+  // Разбор списка значений, соблюдая структуру кавычек
   Array<string> parsedValues = parseValues(valuesList);
 
+  // Вставляем значения в таблицу
   db.insertIntoTable(tableName, parsedValues);
 }
 
-// Обработка команды SELECT
 // Обработка команды SELECT
 void SQLParser::handleSelect(istringstream& stream) {
   string fullQuery;
