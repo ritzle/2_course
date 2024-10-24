@@ -183,9 +183,9 @@ void SQLParser::handleSelect(istringstream& stream) {
         for (int k = 0; k < tables.getSize(); ++k) {
           if (tables[k] == tableInCondition) {
             tableFound = true;
+            break;
           } else {
             tableFound = false;
-            break;
           }
         }
 

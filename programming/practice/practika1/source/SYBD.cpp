@@ -490,6 +490,7 @@ void DB::applySelect(const Array<string>& tableNames,
   for (const string& tableName : tableNames) {
     try {
       Table table = searchTable(tableName);
+
       if (table.csv.getSize() == 0) {
         cerr << "Ошибка: таблица " << tableName << " пуста." << endl;
         return;
@@ -652,6 +653,19 @@ void DB::processTableWithConditions(const Array<string>& tableNames,
   for (int t = 0; t < involvedTables.getSize(); ++t) {
     Table& currentTable = involvedTables[t];
 
+    currentTable.readLockFile();
+
+    // Ожидание разблокировки таблицы
+    while (currentTable.lock == 1) {
+      this_thread::sleep_for(chrono::milliseconds(100));
+      cout << "жду разблокировки файла";
+      currentTable.readLockFile();
+    }
+
+    // Блокируем таблицу для работы
+    currentTable.lock = 1;
+    updateLock(currentTable);
+
     if (currentTable.csv.getSize() == 0) {
       throw runtime_error("Таблица " + tableNames[t] + " пуста");
     }
@@ -683,6 +697,8 @@ void DB::processTableWithConditions(const Array<string>& tableNames,
         }
       }
     }
+    currentTable.lock = 0;
+    updateLock(currentTable);
     moveLinesBetweenCSVs(currentTable);
     rewriteAllCSVFiles(currentTable);
   }
