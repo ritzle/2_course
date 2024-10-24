@@ -93,21 +93,6 @@ int main() {
 
     parser.parse(input);
     cout << endl;
-
-    // Для быстрого копирования запросов:
-    // Пример INSERT:
-    // INSERT INTO Таблица1 VALUES ('data1', 'value1')
-
-    // Пример SELECT с WHERE:
-    // SELECT Таблица1.колонка1, Таблица1.колонка2 FROM Таблица1
-    // SELECT Таблица1.колонка4 FROM Таблица1 WHERE Таблица1.колонка4 = Ж AND
-    // Таблица2.колонка1 = 5 OR Таблица1.колонка2 = 5
-
-    // Пример DELETE:
-    // DELETE FROM Таблица1 WHERE Таблица1.колонка1 = data5
-    // Таблица1.колонка1 OR Таблица1.колонка2 = 5
-
-    // DELETE FROM Таблица1 WHERE Таблица1.колонка4 = М
   }
 
   return 0;

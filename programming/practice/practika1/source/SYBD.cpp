@@ -433,7 +433,8 @@ void DB::insertIntoTable(string TableName, Array<string> arrValues) {
   updateLock(currentTable);
 
   ++currentTable.pk_sequence;
-  arrValues.insert_beginning(to_string(currentTable.pk_sequence));
+  arrValues.insert_beginning(
+      to_string(currentTable.pk_sequence));  // уникальное число
 
   // Проверяем, достиг ли лимит строк в текущем CSV файле
   if (currentTable.csv.back().line.getSize() >= tuplesLimit) {
@@ -451,7 +452,17 @@ void DB::insertIntoTable(string TableName, Array<string> arrValues) {
   }
 
   // Добавляем строку в последний CSV
-  currentTable.csv.back().line.push_back(arrValues);
+
+  if (arrValues.getSize() == currentTable.csv[0].columns.getSize()) {
+    currentTable.csv.back().line.push_back(arrValues);
+  } else if (arrValues.getSize() < currentTable.csv[0].columns.getSize()) {
+    while (arrValues.getSize() != currentTable.csv[0].columns.getSize()) {
+      arrValues.push_back("null");
+    }
+    currentTable.csv.back().line.push_back(arrValues);
+  } else {
+    cerr << "---аргументов больше чем колонок----\n";
+  }
 
   // Обновляем только один раз после завершения вставки
   updateCSVFile(currentTable);

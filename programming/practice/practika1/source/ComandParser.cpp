@@ -89,12 +89,10 @@ void SQLParser::handleSelect(istringstream& stream) {
 
   while (getline(columnStream, column, ',')) {
     // Удаляем лишние пробелы
-    column.erase(
-        0, column.find_first_not_of(" \t\n\r\f\v"));  // Удаляем пробелы слева
-    column.erase(column.find_last_not_of(" \t\n\r\f\v") +
-                 1);  // Удаляем пробелы справа
+    column.erase(0, column.find_first_not_of(" \t\n\r\f\v"));  // Пробелы слева
+    column.erase(column.find_last_not_of(" \t\n\r\f\v") + 1);  // Пробелы справа
 
-    if (!column.empty()) {  // Проверяем, что колонка не пустая
+    if (!column.empty()) {
       columns.push_back(column);
     }
   }
@@ -131,13 +129,73 @@ void SQLParser::handleSelect(istringstream& stream) {
     throw runtime_error("Ошибка: не найдены таблицы для запроса SELECT");
   }
 
+  // Проверка, что каждая колонка ссылается на одну из таблиц
+  for (int i = 0; i < columns.getSize(); ++i) {
+    string col = columns[i];
+    size_t dotPos = col.find('.');
+
+    if (dotPos == string::npos) {
+      throw runtime_error("Ошибка: колонка " + col +
+                          " не содержит имя таблицы");
+    }
+
+    string tableInColumn = col.substr(0, dotPos);  // Имя таблицы
+    string columnName = col.substr(dotPos + 1);    // Имя колонки
+
+    bool tableFound = false;
+    for (int j = 0; j < tables.getSize(); ++j) {
+      if (tables[j] == tableInColumn) {
+        tableFound = true;
+        break;
+      }
+    }
+
+    if (!tableFound) {
+      throw runtime_error("Ошибка: таблица " + tableInColumn + " из колонки " +
+                          col + " не указана в списке таблиц");
+    }
+  }
+
   if (wherePos != string::npos) {
     // Есть секция WHERE — обрабатываем условия
     string whereClause = fullQuery.substr(wherePos + 5);
     whereClause.erase(0, whereClause.find_first_not_of(" \t\n\r\f\v"));
     whereClause.erase(whereClause.find_last_not_of(" \t\n\r\f\v") + 1);
 
+    // Разбор условий WHERE
     Array<Array<string>> parsedConditions = parseConditions(whereClause);
+
+    // Проверка, что каждая колонка в условиях относится к указанным таблицам
+    for (int i = 0; i < parsedConditions.getSize(); ++i) {
+      for (int j = 0; j < parsedConditions[i].getSize(); ++j) {
+        string col = parsedConditions[i][j];  // Первая колонка в условии
+        size_t dotPos = col.find('.');
+
+        if (dotPos == string::npos) {
+          throw runtime_error("Ошибка: условие " + col +
+                              " не содержит имя таблицы");
+        }
+
+        string tableInCondition = col.substr(0, dotPos);  // Имя таблицы
+
+        // Проверяем, указана ли эта таблица в секции FROM
+        bool tableFound = false;
+        for (int k = 0; k < tables.getSize(); ++k) {
+          if (tables[k] == tableInCondition) {
+            tableFound = true;
+          } else {
+            tableFound = false;
+            break;
+          }
+        }
+
+        if (!tableFound) {
+          throw runtime_error("Ошибка: таблица " + tableInCondition +
+                              " из условия " + col +
+                              " не указана в списке таблиц");
+        }
+      }
+    }
 
     // Применение условий WHERE
     db.applyWhereConditions(tables, columns, parsedConditions);
@@ -180,6 +238,11 @@ void SQLParser::handleDelete(istringstream& stream) {
       tables.push_back(tableName);
     }
 
+    // Проверяем, что таблицы были получены
+    if (tables.getSize() == 0) {
+      throw runtime_error("Ошибка: не найдены таблицы для запроса DELETE");
+    }
+
     // Получаем условия после "WHERE"
     whereClause = tableNamesPart.substr(wherePos + 5);
     whereClause.erase(0, whereClause.find_first_not_of(" \t\n\r\f\v"));
@@ -187,6 +250,37 @@ void SQLParser::handleDelete(istringstream& stream) {
 
     // Разбор условий
     Array<Array<string>> parsedConditions = parseConditions(whereClause);
+
+    // Проверка, что каждая колонка в условиях ссылается на одну из таблиц
+    for (int i = 0; i < parsedConditions.getSize(); ++i) {
+      Array<string> condition = parsedConditions[i];
+      for (int j = 0; j < condition.getSize(); ++j) {
+        string col = condition[j];
+        size_t dotPos = col.find('.');
+
+        if (dotPos == string::npos) {
+          throw runtime_error("Ошибка: колонка " + col +
+                              " не содержит имя таблицы");
+        }
+
+        string tableInColumn = col.substr(0, dotPos);  // Имя таблицы
+        string columnName = col.substr(dotPos + 1);    // Имя колонки
+
+        bool tableFound = false;
+        for (int t = 0; t < tables.getSize(); ++t) {
+          if (tables[t] == tableInColumn) {
+            tableFound = true;
+            break;
+          }
+        }
+
+        if (!tableFound) {
+          throw runtime_error("Ошибка: таблица " + tableInColumn +
+                              " из условия " + col +
+                              " не указана в списке таблиц");
+        }
+      }
+    }
 
     // Применение условий удаления к каждой таблице
     db.applyDeleteConditions(tables, parsedConditions);
