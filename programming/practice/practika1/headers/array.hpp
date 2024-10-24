@@ -1,44 +1,56 @@
-#ifndef MY_ARR_HPP
-#define MY_ARR_HPP
+#ifndef ARRAY_HPP
+#define ARRAY_HPP
 
+#include <iostream>
 #include <stdexcept>
 
 template <typename T>
 class Array {
  private:
-  T* data;  // Указатель на динамический массив
-  size_t capacity;  // Вместимость контейнера
-  size_t size;  // Текущий размер (количество элементов)
+  struct Node {
+    T data;
+    Node* next;
+    Node* prev;
 
-  void resize(size_t new_capacity);
+    Node(const T& value) : data(value), next(nullptr), prev(nullptr) {}
+  };
+
+  Node* head;  // Указатель на начало списка
+  Node* tail;  // Указатель на конец списка
+  size_t size;  // Текущий размер (количество элементов)
 
  public:
   Array();
+  ~Array();
 
   void push_back(const T& value);  // Добавление элемента в конец
-  void insert_beginning(const T& value);
+  void insert_beginning(const T& value);  // Вставка элемента в начало
   T& operator[](size_t index);  // Оператор доступа по индексу
   const T& operator[](size_t index) const;
   size_t getSize() const;  // Получение текущего размера
-  size_t getCapacity() const;  // Получение вместимости
-  void clear();                // Очистка вектора
-  bool empty();
-  T& back();
-  T& front();
+  void clear();            // Очистка списка
+  bool empty() const;      // Проверка на пустоту
+  T& back();   // Возврат последнего элемента
+  T& front();  // Возврат первого элемента
   void erase(size_t index);  // Удаление элемента по индексу
+  Array<T> copy() const;
 
   bool contains(const T& value) const;  // Проверка на наличие элемента
 
-  void print() const;
+  void print() const;  // Вывод элементов списка
 
   // Итераторы
   class Iterator {
    public:
-    Iterator(T* ptr) : current(ptr) {}
+    Iterator(Node* ptr) : current(ptr) {}
 
-    T& operator*() { return *current; }
+    T& operator*() { return current->data; }
     Iterator& operator++() {
-      ++current;
+      current = current->next;
+      return *this;
+    }
+    Iterator& operator--() {
+      current = current->prev;
       return *this;
     }
     bool operator!=(const Iterator& other) const {
@@ -49,20 +61,24 @@ class Array {
     }
 
    private:
-    T* current;  // Указатель на текущий элемент
+    Node* current;  // Указатель на текущий элемент
   };
 
-  Iterator begin() { return Iterator(data); }  // Начало итератора
-  Iterator end() { return Iterator(data + size); }
+  Iterator begin() { return Iterator(head); }
+  Iterator end() { return Iterator(nullptr); }
 
   // Итераторы для константных объектов
   class ConstIterator {
    public:
-    ConstIterator(const T* ptr) : current(ptr) {}
+    ConstIterator(const Node* ptr) : current(ptr) {}
 
-    const T& operator*() const { return *current; }
+    const T& operator*() const { return current->data; }
     ConstIterator& operator++() {
-      ++current;
+      current = current->next;
+      return *this;
+    }
+    ConstIterator& operator--() {
+      current = current->prev;
       return *this;
     }
     bool operator!=(const ConstIterator& other) const {
@@ -73,11 +89,11 @@ class Array {
     }
 
    private:
-    const T* current;  // Указатель на текущий элемент
+    const Node* current;  // Указатель на текущий элемент
   };
 
-  ConstIterator begin() const { return ConstIterator(data); }
-  ConstIterator end() const { return ConstIterator(data + size); }
+  ConstIterator begin() const { return ConstIterator(head); }
+  ConstIterator end() const { return ConstIterator(nullptr); }
 };
 
 // Реализация функций

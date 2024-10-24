@@ -304,18 +304,23 @@ void DB::unloadSchemaData(string& tableNames) {
     }
 
     // 1. Очистка данных CSV файлов
-    for (int i = table.csv.getSize() - 2; i >= 0; --i) {
-      auto& csv = table.csv[i];  // Получаем ссылку на текущий элемент
+    // for (int i = table.csv.getSize() - 2; i >= 0; --i) {
+    //   auto& csv = table.csv[i];  // Получаем ссылку на текущий элемент
 
-      // Очищаем столбцы, если они не пустые
-      if (!csv.columns.empty()) {
-        csv.columns.clear();
-      }
+    //   // Очищаем столбцы, если они не пустые
+    //   if (!csv.columns.empty()) {
+    //     csv.columns.clear();
+    //   }
 
-      // Проверяем, что line не пустой перед очисткой
-      if (!csv.line.empty()) {
-        csv.line.clear();  // Очищаем строки, если они не пустые
-      }
+    //   // Проверяем, что line не пустой перед очисткой
+    //   if (!csv.line.empty()) {
+    //     csv.line.clear();  // Очищаем строки, если они не пустые
+    //   }
+    // }
+
+    for (auto& csv : table.csv) {
+      csv.columns.clear();  // Очищаем столбцы
+      csv.line.clear();     // Очищаем строки
     }
 
     // 2. Очистка информации о файлах
@@ -440,7 +445,7 @@ void DB::insertIntoTable(string TableName, Array<string> arrValues) {
 
     // Создаем новый CSV файл
     string newCsvName = to_string(currentTable.csv.getSize() + 1) + ".csv";
-    CSV newCsv(newCsvName, currentTable.csv.back().columns);
+    CSV newCsv(newCsvName, currentTable.csv.back().columns.copy());
     currentTable.csv.push_back(newCsv);
     currentTable.countCSVFile++;  // Обновляем количество CSV файлов
   }

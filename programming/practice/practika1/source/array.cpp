@@ -1,65 +1,61 @@
 #include "../headers/array.hpp"
 
-#include <iostream>
-
 // Конструктор по умолчанию
 template <typename T>
-Array<T>::Array() : data(nullptr), capacity(0), size(0) {}
+Array<T>::Array() : head(nullptr), tail(nullptr), size(0) {}
 
-// Изменение размера вектора
 template <typename T>
-void Array<T>::resize(size_t new_capacity) {
-  T* new_data = new T[new_capacity];
-  for (size_t i = 0; i < size; ++i) {
-    new_data[i] = data[i];
-  }
-  delete[] data;
-  data = new_data;
-  capacity = new_capacity;
-}
+Array<T>::~Array() {}
 
 // Добавление элемента в конец
 template <typename T>
 void Array<T>::push_back(const T& value) {
-  if (size == capacity) {
-    resize(capacity == 0 ? 1 : capacity * 2);
+  Node* newNode = new Node(value);
+  if (tail) {
+    tail->next = newNode;
+    newNode->prev = tail;
+    tail = newNode;
+  } else {
+    head = tail = newNode;
   }
-  data[size] = value;
   ++size;
 }
 
-// Вставка элемента в начало массива
+// Вставка элемента в начало
 template <typename T>
 void Array<T>::insert_beginning(const T& value) {
-  if (size == capacity) {
-    resize(capacity == 0 ? 1 : capacity * 2);
+  Node* newNode = new Node(value);
+  if (head) {
+    newNode->next = head;
+    head->prev = newNode;
+    head = newNode;
+  } else {
+    head = tail = newNode;
   }
-
-  for (size_t i = size; i > 0; --i) {
-    data[i] = data[i - 1];
-  }
-
-  data[0] = value;
-
   ++size;
 }
 
 // Оператор доступа по индексу
 template <typename T>
 T& Array<T>::operator[](size_t index) {
-  if (index >= size) {
-    throw std::out_of_range("Индекс выходит за пределы вектора");
+  if (index >= size) throw std::out_of_range("Index out of range");
+
+  Node* current = head;
+  for (size_t i = 0; i < index; ++i) {
+    current = current->next;
   }
-  return data[index];
+  return current->data;
 }
 
-// Константный оператор доступа по индексу
 template <typename T>
 const T& Array<T>::operator[](size_t index) const {
-  if (index >= size) {
-    throw std::out_of_range("Индекс выходит за пределы вектора");
+  if (index >= size) throw std::out_of_range("Index out of range");
+
+  Node* current = head;
+  for (size_t i = 0; i < index; ++i) {
+    current = current->next;
   }
-  return data[index];
+  return current->data;
 }
 
 // Получение текущего размера
@@ -68,71 +64,93 @@ size_t Array<T>::getSize() const {
   return size;
 }
 
-// Получение вместимости
-template <typename T>
-size_t Array<T>::getCapacity() const {
-  return capacity;
-}
-
-// Очистка
+// Очистка списка
 template <typename T>
 void Array<T>::clear() {
-  delete[] data;
-  data = nullptr;
+  while (head) {
+    Node* temp = head;
+    head = head->next;
+    delete temp;
+  }
+  head = tail = nullptr;
   size = 0;
-  capacity = 0;
 }
 
-// Метод для проверки наличия элемента
+// Проверка на пустоту
+template <typename T>
+bool Array<T>::empty() const {
+  return size == 0;
+}
+
+// Возврат последнего элемента
+template <typename T>
+T& Array<T>::back() {
+  if (!tail) throw std::out_of_range("List is empty");
+  return tail->data;
+}
+
+// Возврат первого элемента
+template <typename T>
+T& Array<T>::front() {
+  if (!head) throw std::out_of_range("List is empty");
+  return head->data;
+}
+
+// Удаление элемента по индексу
+template <typename T>
+void Array<T>::erase(size_t index) {
+  if (index >= size) throw std::out_of_range("Index out of range");
+
+  Node* current = head;
+  for (size_t i = 0; i < index; ++i) {
+    current = current->next;
+  }
+
+  if (current->prev)
+    current->prev->next = current->next;
+  else
+    head = current->next;
+
+  if (current->next)
+    current->next->prev = current->prev;
+  else
+    tail = current->prev;
+
+  delete current;
+  --size;
+}
+
+// Проверка на наличие элемента
 template <typename T>
 bool Array<T>::contains(const T& value) const {
-  for (size_t i = 0; i < size; ++i) {
-    if (data[i] == value) {
-      return true;
-    }
+  Node* current = head;
+  while (current) {
+    if (current->data == value) return true;
+    current = current->next;
   }
   return false;
 }
 
+// Вывод элементов списка
 template <typename T>
 void Array<T>::print() const {
-  for (size_t i = 0; i < size; ++i) {
-    std::cout << data[i] << " ";  // Выводим каждый элемент
+  Node* current = head;
+  while (current) {
+    std::cout << current->data << " ";
+    current = current->next;
   }
-  std::cout << std::endl;  // Переход на новую строку после вывода
+  std::cout << std::endl;
 }
 
+// Метод для создания копии списка
 template <typename T>
-bool Array<T>::empty() {
-  return size == 0;
-}
-
-template <typename T>
-T& Array<T>::back() {
-  if (size == 0) {
-    throw std::out_of_range("Array is empty");
+Array<T> Array<T>::copy() const {
+  Array<T> newArray;  // Новый объект Array для копии
+  Node* current = head;
+  while (current) {
+    newArray.push_back(
+        current->data);  // Добавляем каждый элемент в новый список
+    current = current->next;
   }
-  return data[size - 1];  // Assuming data is the underlying array
-}
-
-template <typename T>
-T& Array<T>::front() {
-  if (size == 0) {
-    throw std::out_of_range("Array is empty");
-  }
-  return data[0];  // Assuming data is the underlying array
-}
-
-template <typename T>
-void Array<T>::erase(size_t index) {
-  if (index >= size) {
-    throw std::out_of_range("Index out of range");
-  }
-
-  // Сдвигаем элементы на одну позицию влево
-  for (size_t i = index; i < size - 1; ++i) {
-    data[i] = data[i + 1];
-  }
-
-  --size;  // Уменьшаем размер массива
+  return newArray;
 }
