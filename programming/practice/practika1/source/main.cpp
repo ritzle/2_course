@@ -91,6 +91,8 @@ int main() {
       break;
     }
 
+    // FIXME после удаления файлов не создает занова при добавлении. надо
+    // исправить
     parser.parse(input);
     cout << endl;
   }

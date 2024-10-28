@@ -203,7 +203,7 @@ void DB::loadExistingSchemaData(string& tableName) {
     table.readPKSequenceFile();
 
     // 3. Инициализируем нужное количество CSV объектов
-    while (table.csv.getSize() < table.countCSVFile) {
+    while (table.csv.getSize() <= table.countCSVFile) {
       string nameCSV = to_string(table.csv.getSize() + 1) + ".csv";
       table.csv.push_back(CSV(nameCSV));
     }
@@ -555,7 +555,6 @@ void DB::applyWhereConditions(const Array<string>& tableNames,
                                cout << endl;
                              });
 
-  // FIXME неправильно называет фаил(не считывает 1 имя)
   string name = "WHERE_";
   for (auto& col : tableColumns) {
     name += col + "_";
@@ -908,6 +907,15 @@ void DB::moveLinesBetweenCSVs(Table& table) {
 
 void DB::rewriteAllCSVFiles(Table& table) {
   if (table.csv.getSize() == 0 || table.csv[0].line.getSize() == 0) {
+    table.countCSVFiles();
+
+    for (int i = 0; i <= table.countCSVFile; i++) {
+      fs::path pathCsvFile = fs::path("..") / schemaName / table.tableName /
+                             (to_string(i) + ".csv");
+      remove(pathCsvFile);
+    }
+    table.countCSVFile = 0;
+
     return;
   }
 
