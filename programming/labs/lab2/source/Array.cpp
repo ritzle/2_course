@@ -19,7 +19,7 @@ Array<T>::Array(size_t init_capacity) : size(0), capacity(init_capacity) {
 // Деструктор
 template <typename T>
 Array<T>::~Array() {
-  delete[] arr;
+  // delete[] arr;
 }
 
 // Оператор доступа по индексу

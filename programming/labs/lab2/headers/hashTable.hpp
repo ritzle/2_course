@@ -6,6 +6,8 @@
 #include <stdexcept>
 #include <type_traits>
 
+#include "pair.hpp"
+
 using namespace std;
 
 template <typename K, typename V>
@@ -43,14 +45,12 @@ class HashTable {
   class Iterator {
    private:
     Pair<K, V>* current;
-    size_t capacity;
-    Pair<K, V>* table;
+    Pair<K, V>* end;
 
    public:
-    Iterator(Pair<K, V>* start, size_t cap)
-        : current(start), capacity(cap), table(start) {
+    Iterator(Pair<K, V>* start, Pair<K, V>* end) : current(start), end(end) {
       // Move iterator to the first occupied element
-      while (current < table + cap && !current->occupied) {
+      while (current < end && !current->occupied) {
         ++current;
       }
     }
@@ -58,10 +58,9 @@ class HashTable {
     Pair<K, V>& operator*() { return *current; }
 
     Iterator& operator++() {
-      ++current;
-      while (current < table + capacity && !current->occupied) {
+      do {
         ++current;
-      }
+      } while (current < end && !current->occupied);
       return *this;
     }
 
@@ -70,8 +69,8 @@ class HashTable {
     }
   };
 
-  Iterator begin() { return Iterator(table, capacity); }
-  Iterator end() { return Iterator(table + capacity, capacity); }
+  Iterator begin() { return Iterator(table, table + capacity); }
+  Iterator end() { return Iterator(table + capacity, table + capacity); }
 };
 
 #include "../source/hashTable.cpp"

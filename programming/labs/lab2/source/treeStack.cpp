@@ -1,6 +1,6 @@
-#include "../headers/stack.hpp"
+#include "../headers/treeStack.hpp"
 
-// Реализация стека
+// Реализация методов стека
 template <typename T>
 Stack<T>::~Stack() {
   while (!isEmpty()) {
@@ -10,7 +10,7 @@ Stack<T>::~Stack() {
 
 template <typename T>
 void Stack<T>::push(T value) {
-  Node* newNode = new Node(value);
+  StackNode* newNode = new StackNode(value);
   newNode->next = topNode;
   topNode = newNode;
 }
@@ -18,7 +18,7 @@ void Stack<T>::push(T value) {
 template <typename T>
 void Stack<T>::pop() {
   if (!isEmpty()) {
-    Node* temp = topNode;
+    StackNode* temp = topNode;
     topNode = topNode->next;
     delete temp;
   }
@@ -37,24 +37,23 @@ bool Stack<T>::isEmpty() const {
   return topNode == nullptr;
 }
 
-// Конструктор
+// Конструктор и деструктор бинарного дерева
 template <typename T>
-BinaryTree<T>::BinaryTree() : root(nullptr) {}
+BinaryTreeStack<T>::BinaryTreeStack() : root(nullptr) {}
 
-// Деструктор
 template <typename T>
-BinaryTree<T>::~BinaryTree() {
+BinaryTreeStack<T>::~BinaryTreeStack() {
   clear(root);
 }
 
 // Вставка элемента
 template <typename T>
-void BinaryTree<T>::insert(T value) {
+void BinaryTreeStack<T>::insert(T value) {
   insert(root, value);
 }
 
 template <typename T>
-void BinaryTree<T>::insert(Node*& node, T value) {
+void BinaryTreeStack<T>::insert(Node*& node, T value) {
   if (node == nullptr) {
     node = new Node(value);
   } else if (value < node->data) {
@@ -66,36 +65,21 @@ void BinaryTree<T>::insert(Node*& node, T value) {
 
 // Поиск элемента
 template <typename T>
-bool BinaryTree<T>::search(T value) const {
+bool BinaryTreeStack<T>::search(T value) const {
   return search(root, value);
 }
 
 template <typename T>
-bool BinaryTree<T>::search(Node* node, T value) const {
+bool BinaryTreeStack<T>::search(Node* node, T value) const {
   if (node == nullptr) return false;
   if (node->data == value) return true;
   return value < node->data ? search(node->left, value)
                             : search(node->right, value);
 }
 
-// Обход дерева в симметричном порядке
+// Очистка дерева
 template <typename T>
-void BinaryTree<T>::inorder() const {
-  inorder(root);
-}
-
-template <typename T>
-void BinaryTree<T>::inorder(Node* node) const {
-  if (node) {
-    inorder(node->left);
-    std::cout << node->data << " ";
-    inorder(node->right);
-  }
-}
-
-// Освобождение памяти
-template <typename T>
-void BinaryTree<T>::clear(Node* node) {
+void BinaryTreeStack<T>::clear(Node* node) {
   if (node) {
     clear(node->left);
     clear(node->right);
@@ -103,9 +87,35 @@ void BinaryTree<T>::clear(Node* node) {
   }
 }
 
-// Проверка баланса
+// Итеративный симметричный обход дерева с использованием стека
 template <typename T>
-bool BinaryTree<T>::isBalanced() const {
+void BinaryTreeStack<T>::inorderIterative() const {
+  if (!root) return;
+
+  Stack<Node*> stack;
+  Node* current = root;
+
+  while (current != nullptr || !stack.isEmpty()) {
+    // Идем в самый левый узел
+    while (current != nullptr) {
+      stack.push(current);
+      current = current->left;
+    }
+
+    // Выводим верхний элемент из стека
+    current = stack.top();
+    stack.pop();
+
+    std::cout << current->data << " ";
+
+    // Переходим к правому узлу
+    current = current->right;
+  }
+}
+
+// Проверка баланса дерева
+template <typename T>
+bool BinaryTreeStack<T>::isBalanced() const {
   if (!root) return true;
 
   Stack<std::pair<Node*, int>> stack;
@@ -117,7 +127,6 @@ bool BinaryTree<T>::isBalanced() const {
     stack.pop();
 
     if (!current->left && !current->right) {
-      // Листовой узел
       minHeight = std::min(minHeight, level);
       maxHeight = std::max(maxHeight, level);
     }
