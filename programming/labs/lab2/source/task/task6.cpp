@@ -16,7 +16,7 @@ HashTable<string, int> descendants_count;  // Хранит количество 
 // Функция для подсчета потомков
 int count_descendants(const string& name) {
   // Если потомков еще не считали
-  if (descendants_count[name].valuecd) {  // Проверяем, занята ли ячейка
+  if (descendants_count[name].value) {  // Проверяем, занята ли ячейка
     int count = 0;
 
     // Получаем потомков из хэш-таблицы
