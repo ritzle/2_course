@@ -1,0 +1,36 @@
+Start testing: Nov 26 02:17 +07
+----------------------------------------------------------
+1/1 Testing: ArrayTest
+1/1 Test: ArrayTest
+Command: "/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/ArrayTest_app"
+Directory: /home/vlad/vsCode/2_course/programming/labs/lab3/Test/build
+"ArrayTest" start time: Nov 26 02:17 +07
+Output:
+----------------------------------------------------------
+[==========] Running 2 tests from 2 test suites.
+[----------] Global test environment set-up.
+[----------] 1 test from ArrayTestFixture/0, where TypeParam = int
+[ RUN      ] ArrayTestFixture/0.TestEmplace_back
+i
+[       OK ] ArrayTestFixture/0.TestEmplace_back (0 ms)
+[----------] 1 test from ArrayTestFixture/0 (0 ms total)
+
+[----------] 1 test from ArrayTestFixture/1, where TypeParam = std::basic_string<char,std::char_traits<char>,std::allocator<char> >
+[ RUN      ] ArrayTestFixture/1.TestEmplace_back
+NSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+[       OK ] ArrayTestFixture/1.TestEmplace_back (0 ms)
+[----------] 1 test from ArrayTestFixture/1 (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 2 tests from 2 test suites ran. (0 ms total)
+[  PASSED  ] 2 tests.
+libgcov profiling error:/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/CMakeFiles/ArrayTest_app.dir/ArrayTest.cpp.gcda:overwriting an existing profile data with a different checksum
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"ArrayTest" end time: Nov 26 02:17 +07
+"ArrayTest" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Nov 26 02:17 +07
