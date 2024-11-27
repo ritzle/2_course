@@ -1,0 +1,1 @@
+/usr/bin/c++  -fprofile-arcs -ftest-coverage CMakeFiles/QueueTest_app.dir/QueueTest.cpp.o -o QueueTest_app  lib/libgtest_main.a lib/libgmock_main.a lib/libgmock.a lib/libgtest.a 

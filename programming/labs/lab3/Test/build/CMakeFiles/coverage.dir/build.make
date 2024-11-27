@@ -67,7 +67,15 @@ include CMakeFiles/coverage.dir/compiler_depend.make
 include CMakeFiles/coverage.dir/progress.make
 
 CMakeFiles/coverage: ArrayTest_app
+CMakeFiles/coverage: BinaryTreeTest_app
+CMakeFiles/coverage: DListTest_app
+CMakeFiles/coverage: OListTest_app
+CMakeFiles/coverage: /home/vlad/vsCode/2_course/programming/labs/lab3/Test/QueueTest.cpp
+CMakeFiles/coverage: /home/vlad/vsCode/2_course/programming/labs/lab3/Test/StackTest.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Running tests, collecting coverage, and generating HTML report"
 	/usr/bin/ctest --coverage --output-on-failure
+	lcov --capture --directory . --output-file coverage.info --include '*.cpp'
+	genhtml coverage.info --output-directory out --ignore-errors mismatch
 
 coverage: CMakeFiles/coverage
 coverage: CMakeFiles/coverage.dir/build.make

@@ -75,8 +75,12 @@ set(CMAKE_MAKEFILE_PRODUCTS
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/ArrayTest_app.dir/DependInfo.cmake"
+  "CMakeFiles/BinaryTreeTest_app.dir/DependInfo.cmake"
+  "CMakeFiles/DListTest_app.dir/DependInfo.cmake"
+  "CMakeFiles/OListTest_app.dir/DependInfo.cmake"
+  "CMakeFiles/QueueTest_app.dir/DependInfo.cmake"
+  "CMakeFiles/StackTest_app.dir/DependInfo.cmake"
   "CMakeFiles/coverage.dir/DependInfo.cmake"
-  "CMakeFiles/gen_coverage_report.dir/DependInfo.cmake"
   "googletest_build/googlemock/CMakeFiles/gmock.dir/DependInfo.cmake"
   "googletest_build/googlemock/CMakeFiles/gmock_main.dir/DependInfo.cmake"
   "googletest_build/googletest/CMakeFiles/gtest.dir/DependInfo.cmake"

@@ -1,2 +1,7 @@
-ArrayTest 2 0.00121085
+ArrayTest 17 0.000170375
+BinaryTreeTest 8 0.000353872
+DListTest 7 0.000511479
+OListTest 6 0.000621092
+QueueTest 3 0.000840497
+StackTest 1 0.00281979
 ---

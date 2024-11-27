@@ -1,36 +1,367 @@
-Start testing: Nov 26 02:17 +07
+Start testing: Nov 27 03:08 +07
 ----------------------------------------------------------
-1/1 Testing: ArrayTest
-1/1 Test: ArrayTest
+1/6 Testing: ArrayTest
+1/6 Test: ArrayTest
 Command: "/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/ArrayTest_app"
 Directory: /home/vlad/vsCode/2_course/programming/labs/lab3/Test/build
-"ArrayTest" start time: Nov 26 02:17 +07
+"ArrayTest" start time: Nov 27 03:08 +07
 Output:
 ----------------------------------------------------------
-[==========] Running 2 tests from 2 test suites.
+[==========] Running 22 tests from 2 test suites.
 [----------] Global test environment set-up.
-[----------] 1 test from ArrayTestFixture/0, where TypeParam = int
-[ RUN      ] ArrayTestFixture/0.TestEmplace_back
-i
-[       OK ] ArrayTestFixture/0.TestEmplace_back (0 ms)
-[----------] 1 test from ArrayTestFixture/0 (0 ms total)
+[----------] 11 tests from ArrayTest/0, where TypeParam = int
+[ RUN      ] ArrayTest/0.TestEmplaceBack
+[       OK ] ArrayTest/0.TestEmplaceBack (0 ms)
+[ RUN      ] ArrayTest/0.Insert
+[       OK ] ArrayTest/0.Insert (0 ms)
+[ RUN      ] ArrayTest/0.Erase
+[       OK ] ArrayTest/0.Erase (0 ms)
+[ RUN      ] ArrayTest/0.EraseByValue
+[       OK ] ArrayTest/0.EraseByValue (0 ms)
+[ RUN      ] ArrayTest/0.Replace
+[       OK ] ArrayTest/0.Replace (0 ms)
+[ RUN      ] ArrayTest/0.GetSize
+[       OK ] ArrayTest/0.GetSize (0 ms)
+[ RUN      ] ArrayTest/0.Print
+[       OK ] ArrayTest/0.Print (0 ms)
+[ RUN      ] ArrayTest/0.WriteToFile
+Data successfully written to /home/vlad/vsCode/2_course/programming/labs/lab3/Test/out.txt
+Data successfully loaded from /home/vlad/vsCode/2_course/programming/labs/lab3/Test/out.txt
+[       OK ] ArrayTest/0.WriteToFile (0 ms)
+[ RUN      ] ArrayTest/0.fillFromFile
+Data successfully loaded from /home/vlad/vsCode/2_course/programming/labs/lab3/Test/test.txt
+[       OK ] ArrayTest/0.fillFromFile (0 ms)
+[ RUN      ] ArrayTest/0.resize
+[       OK ] ArrayTest/0.resize (0 ms)
+[ RUN      ] ArrayTest/0.throwTest
+[       OK ] ArrayTest/0.throwTest (0 ms)
+[----------] 11 tests from ArrayTest/0 (0 ms total)
 
-[----------] 1 test from ArrayTestFixture/1, where TypeParam = std::basic_string<char,std::char_traits<char>,std::allocator<char> >
-[ RUN      ] ArrayTestFixture/1.TestEmplace_back
-NSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-[       OK ] ArrayTestFixture/1.TestEmplace_back (0 ms)
-[----------] 1 test from ArrayTestFixture/1 (0 ms total)
+[----------] 11 tests from ArrayTest/1, where TypeParam = std::basic_string<char,std::char_traits<char>,std::allocator<char> >
+[ RUN      ] ArrayTest/1.TestEmplaceBack
+[       OK ] ArrayTest/1.TestEmplaceBack (0 ms)
+[ RUN      ] ArrayTest/1.Insert
+[       OK ] ArrayTest/1.Insert (0 ms)
+[ RUN      ] ArrayTest/1.Erase
+[       OK ] ArrayTest/1.Erase (0 ms)
+[ RUN      ] ArrayTest/1.EraseByValue
+[       OK ] ArrayTest/1.EraseByValue (0 ms)
+[ RUN      ] ArrayTest/1.Replace
+[       OK ] ArrayTest/1.Replace (0 ms)
+[ RUN      ] ArrayTest/1.GetSize
+[       OK ] ArrayTest/1.GetSize (0 ms)
+[ RUN      ] ArrayTest/1.Print
+[       OK ] ArrayTest/1.Print (0 ms)
+[ RUN      ] ArrayTest/1.WriteToFile
+Data successfully written to /home/vlad/vsCode/2_course/programming/labs/lab3/Test/out.txt
+Data successfully loaded from /home/vlad/vsCode/2_course/programming/labs/lab3/Test/out.txt
+[       OK ] ArrayTest/1.WriteToFile (0 ms)
+[ RUN      ] ArrayTest/1.fillFromFile
+Data successfully loaded from /home/vlad/vsCode/2_course/programming/labs/lab3/Test/test.txt
+[       OK ] ArrayTest/1.fillFromFile (0 ms)
+[ RUN      ] ArrayTest/1.resize
+[       OK ] ArrayTest/1.resize (0 ms)
+[ RUN      ] ArrayTest/1.throwTest
+[       OK ] ArrayTest/1.throwTest (0 ms)
+[----------] 11 tests from ArrayTest/1 (0 ms total)
 
 [----------] Global test environment tear-down
-[==========] 2 tests from 2 test suites ran. (0 ms total)
-[  PASSED  ] 2 tests.
-libgcov profiling error:/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/CMakeFiles/ArrayTest_app.dir/ArrayTest.cpp.gcda:overwriting an existing profile data with a different checksum
+[==========] 22 tests from 2 test suites ran. (0 ms total)
+[  PASSED  ] 22 tests.
 <end of output>
 Test time =   0.00 sec
 ----------------------------------------------------------
 Test Passed.
-"ArrayTest" end time: Nov 26 02:17 +07
+"ArrayTest" end time: Nov 27 03:08 +07
 "ArrayTest" time elapsed: 00:00:00
 ----------------------------------------------------------
 
-End testing: Nov 26 02:17 +07
+2/6 Testing: BinaryTreeTest
+2/6 Test: BinaryTreeTest
+Command: "/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/BinaryTreeTest_app"
+Directory: /home/vlad/vsCode/2_course/programming/labs/lab3/Test/build
+"BinaryTreeTest" start time: Nov 27 03:08 +07
+Output:
+----------------------------------------------------------
+[==========] Running 8 tests from 2 test suites.
+[----------] Global test environment set-up.
+[----------] 4 tests from BinaryTreeTest/0, where TypeParam = int
+[ RUN      ] BinaryTreeTest/0.Insert
+[       OK ] BinaryTreeTest/0.Insert (0 ms)
+[ RUN      ] BinaryTreeTest/0.Search
+[       OK ] BinaryTreeTest/0.Search (0 ms)
+[ RUN      ] BinaryTreeTest/0.InorderTraversal
+[       OK ] BinaryTreeTest/0.InorderTraversal (0 ms)
+[ RUN      ] BinaryTreeTest/0.IsBalanced
+[       OK ] BinaryTreeTest/0.IsBalanced (0 ms)
+[----------] 4 tests from BinaryTreeTest/0 (0 ms total)
+
+[----------] 4 tests from BinaryTreeTest/1, where TypeParam = std::basic_string<char,std::char_traits<char>,std::allocator<char> >
+[ RUN      ] BinaryTreeTest/1.Insert
+[       OK ] BinaryTreeTest/1.Insert (0 ms)
+[ RUN      ] BinaryTreeTest/1.Search
+[       OK ] BinaryTreeTest/1.Search (0 ms)
+[ RUN      ] BinaryTreeTest/1.InorderTraversal
+[       OK ] BinaryTreeTest/1.InorderTraversal (0 ms)
+[ RUN      ] BinaryTreeTest/1.IsBalanced
+[       OK ] BinaryTreeTest/1.IsBalanced (0 ms)
+[----------] 4 tests from BinaryTreeTest/1 (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 8 tests from 2 test suites ran. (0 ms total)
+[  PASSED  ] 8 tests.
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"BinaryTreeTest" end time: Nov 27 03:08 +07
+"BinaryTreeTest" time elapsed: 00:00:00
+----------------------------------------------------------
+
+3/6 Testing: DListTest
+3/6 Test: DListTest
+Command: "/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/DListTest_app"
+Directory: /home/vlad/vsCode/2_course/programming/labs/lab3/Test/build
+"DListTest" start time: Nov 27 03:08 +07
+Output:
+----------------------------------------------------------
+[==========] Running 22 tests from 2 test suites.
+[----------] Global test environment set-up.
+[----------] 11 tests from DListTest/0, where TypeParam = int
+[ RUN      ] DListTest/0.PushBack
+[       OK ] DListTest/0.PushBack (0 ms)
+[ RUN      ] DListTest/0.PushFront
+[       OK ] DListTest/0.PushFront (0 ms)
+[ RUN      ] DListTest/0.PopFront
+[       OK ] DListTest/0.PopFront (0 ms)
+[ RUN      ] DListTest/0.PopBack
+[       OK ] DListTest/0.PopBack (0 ms)
+[ RUN      ] DListTest/0.PopValue
+[       OK ] DListTest/0.PopValue (0 ms)
+[ RUN      ] DListTest/0.SearchByValue
+[       OK ] DListTest/0.SearchByValue (0 ms)
+[ RUN      ] DListTest/0.AccessOperator
+[       OK ] DListTest/0.AccessOperator (0 ms)
+[ RUN      ] DListTest/0.Print
+[       OK ] DListTest/0.Print (0 ms)
+[ RUN      ] DListTest/0.FillFromFile
+[       OK ] DListTest/0.FillFromFile (0 ms)
+[ RUN      ] DListTest/0.WriteToFile
+[       OK ] DListTest/0.WriteToFile (0 ms)
+[ RUN      ] DListTest/0.ThrowTest
+[       OK ] DListTest/0.ThrowTest (0 ms)
+[----------] 11 tests from DListTest/0 (0 ms total)
+
+[----------] 11 tests from DListTest/1, where TypeParam = std::basic_string<char,std::char_traits<char>,std::allocator<char> >
+[ RUN      ] DListTest/1.PushBack
+[       OK ] DListTest/1.PushBack (0 ms)
+[ RUN      ] DListTest/1.PushFront
+[       OK ] DListTest/1.PushFront (0 ms)
+[ RUN      ] DListTest/1.PopFront
+[       OK ] DListTest/1.PopFront (0 ms)
+[ RUN      ] DListTest/1.PopBack
+[       OK ] DListTest/1.PopBack (0 ms)
+[ RUN      ] DListTest/1.PopValue
+[       OK ] DListTest/1.PopValue (0 ms)
+[ RUN      ] DListTest/1.SearchByValue
+[       OK ] DListTest/1.SearchByValue (0 ms)
+[ RUN      ] DListTest/1.AccessOperator
+[       OK ] DListTest/1.AccessOperator (0 ms)
+[ RUN      ] DListTest/1.Print
+[       OK ] DListTest/1.Print (0 ms)
+[ RUN      ] DListTest/1.FillFromFile
+[       OK ] DListTest/1.FillFromFile (0 ms)
+[ RUN      ] DListTest/1.WriteToFile
+[       OK ] DListTest/1.WriteToFile (0 ms)
+[ RUN      ] DListTest/1.ThrowTest
+[       OK ] DListTest/1.ThrowTest (0 ms)
+[----------] 11 tests from DListTest/1 (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 22 tests from 2 test suites ran. (0 ms total)
+[  PASSED  ] 22 tests.
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"DListTest" end time: Nov 27 03:08 +07
+"DListTest" time elapsed: 00:00:00
+----------------------------------------------------------
+
+4/6 Testing: OListTest
+4/6 Test: OListTest
+Command: "/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/OListTest_app"
+Directory: /home/vlad/vsCode/2_course/programming/labs/lab3/Test/build
+"OListTest" start time: Nov 27 03:08 +07
+Output:
+----------------------------------------------------------
+[==========] Running 24 tests from 2 test suites.
+[----------] Global test environment set-up.
+[----------] 12 tests from OListTest/0, where TypeParam = int
+[ RUN      ] OListTest/0.TestPushBack
+[       OK ] OListTest/0.TestPushBack (0 ms)
+[ RUN      ] OListTest/0.TestPushFront
+[       OK ] OListTest/0.TestPushFront (0 ms)
+[ RUN      ] OListTest/0.TestPopFront
+[       OK ] OListTest/0.TestPopFront (0 ms)
+[ RUN      ] OListTest/0.TestPopBack
+[       OK ] OListTest/0.TestPopBack (0 ms)
+[ RUN      ] OListTest/0.TestPopValue
+[       OK ] OListTest/0.TestPopValue (0 ms)
+[ RUN      ] OListTest/0.TestSearchByValue
+[       OK ] OListTest/0.TestSearchByValue (0 ms)
+[ RUN      ] OListTest/0.TestOperatorBracket
+[       OK ] OListTest/0.TestOperatorBracket (0 ms)
+[ RUN      ] OListTest/0.TestOperatorBracketOutOfBounds
+[       OK ] OListTest/0.TestOperatorBracketOutOfBounds (0 ms)
+[ RUN      ] OListTest/0.TestFillFromFile
+[       OK ] OListTest/0.TestFillFromFile (0 ms)
+[ RUN      ] OListTest/0.TestWriteToFile
+[       OK ] OListTest/0.TestWriteToFile (0 ms)
+[ RUN      ] OListTest/0.TestPrint
+[       OK ] OListTest/0.TestPrint (0 ms)
+[ RUN      ] OListTest/0.throwTest
+[       OK ] OListTest/0.throwTest (0 ms)
+[----------] 12 tests from OListTest/0 (0 ms total)
+
+[----------] 12 tests from OListTest/1, where TypeParam = std::basic_string<char,std::char_traits<char>,std::allocator<char> >
+[ RUN      ] OListTest/1.TestPushBack
+[       OK ] OListTest/1.TestPushBack (0 ms)
+[ RUN      ] OListTest/1.TestPushFront
+[       OK ] OListTest/1.TestPushFront (0 ms)
+[ RUN      ] OListTest/1.TestPopFront
+[       OK ] OListTest/1.TestPopFront (0 ms)
+[ RUN      ] OListTest/1.TestPopBack
+[       OK ] OListTest/1.TestPopBack (0 ms)
+[ RUN      ] OListTest/1.TestPopValue
+[       OK ] OListTest/1.TestPopValue (0 ms)
+[ RUN      ] OListTest/1.TestSearchByValue
+[       OK ] OListTest/1.TestSearchByValue (0 ms)
+[ RUN      ] OListTest/1.TestOperatorBracket
+[       OK ] OListTest/1.TestOperatorBracket (0 ms)
+[ RUN      ] OListTest/1.TestOperatorBracketOutOfBounds
+[       OK ] OListTest/1.TestOperatorBracketOutOfBounds (0 ms)
+[ RUN      ] OListTest/1.TestFillFromFile
+[       OK ] OListTest/1.TestFillFromFile (0 ms)
+[ RUN      ] OListTest/1.TestWriteToFile
+[       OK ] OListTest/1.TestWriteToFile (0 ms)
+[ RUN      ] OListTest/1.TestPrint
+[       OK ] OListTest/1.TestPrint (0 ms)
+[ RUN      ] OListTest/1.throwTest
+[       OK ] OListTest/1.throwTest (0 ms)
+[----------] 12 tests from OListTest/1 (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 24 tests from 2 test suites ran. (0 ms total)
+[  PASSED  ] 24 tests.
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"OListTest" end time: Nov 27 03:08 +07
+"OListTest" time elapsed: 00:00:00
+----------------------------------------------------------
+
+5/6 Testing: QueueTest
+5/6 Test: QueueTest
+Command: "/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/QueueTest_app"
+Directory: /home/vlad/vsCode/2_course/programming/labs/lab3/Test/build
+"QueueTest" start time: Nov 27 03:08 +07
+Output:
+----------------------------------------------------------
+Running main() from /home/vlad/vsCode/2_course/programming/labs/lab3/lib/googletest/googletest/src/gtest_main.cc
+[==========] Running 12 tests from 2 test suites.
+[----------] Global test environment set-up.
+[----------] 6 tests from QueueTest/0, where TypeParam = int
+[ RUN      ] QueueTest/0.TestPush
+[       OK ] QueueTest/0.TestPush (0 ms)
+[ RUN      ] QueueTest/0.TestPop
+[       OK ] QueueTest/0.TestPop (0 ms)
+[ RUN      ] QueueTest/0.TestPrint
+[       OK ] QueueTest/0.TestPrint (0 ms)
+[ RUN      ] QueueTest/0.TestFillFromFile
+[       OK ] QueueTest/0.TestFillFromFile (0 ms)
+[ RUN      ] QueueTest/0.TestWriteToFileWithType
+[       OK ] QueueTest/0.TestWriteToFileWithType (0 ms)
+[ RUN      ] QueueTest/0.TestGetSize
+[       OK ] QueueTest/0.TestGetSize (0 ms)
+[----------] 6 tests from QueueTest/0 (0 ms total)
+
+[----------] 6 tests from QueueTest/1, where TypeParam = std::basic_string<char,std::char_traits<char>,std::allocator<char> >
+[ RUN      ] QueueTest/1.TestPush
+[       OK ] QueueTest/1.TestPush (0 ms)
+[ RUN      ] QueueTest/1.TestPop
+[       OK ] QueueTest/1.TestPop (0 ms)
+[ RUN      ] QueueTest/1.TestPrint
+[       OK ] QueueTest/1.TestPrint (0 ms)
+[ RUN      ] QueueTest/1.TestFillFromFile
+[       OK ] QueueTest/1.TestFillFromFile (0 ms)
+[ RUN      ] QueueTest/1.TestWriteToFileWithType
+[       OK ] QueueTest/1.TestWriteToFileWithType (0 ms)
+[ RUN      ] QueueTest/1.TestGetSize
+[       OK ] QueueTest/1.TestGetSize (0 ms)
+[----------] 6 tests from QueueTest/1 (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 12 tests from 2 test suites ran. (0 ms total)
+[  PASSED  ] 12 tests.
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"QueueTest" end time: Nov 27 03:08 +07
+"QueueTest" time elapsed: 00:00:00
+----------------------------------------------------------
+
+6/6 Testing: StackTest
+6/6 Test: StackTest
+Command: "/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/StackTest_app"
+Directory: /home/vlad/vsCode/2_course/programming/labs/lab3/Test/build
+"StackTest" start time: Nov 27 03:08 +07
+Output:
+----------------------------------------------------------
+Running main() from /home/vlad/vsCode/2_course/programming/labs/lab3/lib/googletest/googletest/src/gtest_main.cc
+[==========] Running 12 tests from 2 test suites.
+[----------] Global test environment set-up.
+[----------] 6 tests from StackTest/0, where TypeParam = int
+[ RUN      ] StackTest/0.TestPush
+[       OK ] StackTest/0.TestPush (0 ms)
+[ RUN      ] StackTest/0.TestPop
+[       OK ] StackTest/0.TestPop (0 ms)
+[ RUN      ] StackTest/0.TestPrint
+[       OK ] StackTest/0.TestPrint (0 ms)
+[ RUN      ] StackTest/0.TestFillFromFile
+[       OK ] StackTest/0.TestFillFromFile (0 ms)
+[ RUN      ] StackTest/0.TestWriteToFileWithType
+[       OK ] StackTest/0.TestWriteToFileWithType (0 ms)
+[ RUN      ] StackTest/0.TestGetSize
+[       OK ] StackTest/0.TestGetSize (0 ms)
+[----------] 6 tests from StackTest/0 (0 ms total)
+
+[----------] 6 tests from StackTest/1, where TypeParam = std::basic_string<char,std::char_traits<char>,std::allocator<char> >
+[ RUN      ] StackTest/1.TestPush
+[       OK ] StackTest/1.TestPush (0 ms)
+[ RUN      ] StackTest/1.TestPop
+[       OK ] StackTest/1.TestPop (0 ms)
+[ RUN      ] StackTest/1.TestPrint
+[       OK ] StackTest/1.TestPrint (0 ms)
+[ RUN      ] StackTest/1.TestFillFromFile
+[       OK ] StackTest/1.TestFillFromFile (0 ms)
+[ RUN      ] StackTest/1.TestWriteToFileWithType
+[       OK ] StackTest/1.TestWriteToFileWithType (0 ms)
+[ RUN      ] StackTest/1.TestGetSize
+[       OK ] StackTest/1.TestGetSize (0 ms)
+[----------] 6 tests from StackTest/1 (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 12 tests from 2 test suites ran. (0 ms total)
+[  PASSED  ] 12 tests.
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"StackTest" end time: Nov 27 03:08 +07
+"StackTest" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Nov 27 03:08 +07

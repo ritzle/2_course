@@ -1,0 +1,1 @@
+/usr/bin/c++  -fprofile-arcs -ftest-coverage CMakeFiles/BinaryTreeTest_app.dir/BinaryTreeTest.cpp.o -o BinaryTreeTest_app  lib/libgtest_main.a lib/libgmock_main.a lib/libgmock.a lib/libgtest.a 

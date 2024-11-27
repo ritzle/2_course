@@ -185,6 +185,71 @@ ArrayTest_app/fast:
 .PHONY : ArrayTest_app/fast
 
 #=============================================================================
+# Target rules for targets named BinaryTreeTest_app
+
+# Build rule for target.
+BinaryTreeTest_app: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 BinaryTreeTest_app
+.PHONY : BinaryTreeTest_app
+
+# fast build rule for target.
+BinaryTreeTest_app/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/BinaryTreeTest_app.dir/build.make CMakeFiles/BinaryTreeTest_app.dir/build
+.PHONY : BinaryTreeTest_app/fast
+
+#=============================================================================
+# Target rules for targets named DListTest_app
+
+# Build rule for target.
+DListTest_app: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 DListTest_app
+.PHONY : DListTest_app
+
+# fast build rule for target.
+DListTest_app/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DListTest_app.dir/build.make CMakeFiles/DListTest_app.dir/build
+.PHONY : DListTest_app/fast
+
+#=============================================================================
+# Target rules for targets named OListTest_app
+
+# Build rule for target.
+OListTest_app: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 OListTest_app
+.PHONY : OListTest_app
+
+# fast build rule for target.
+OListTest_app/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/OListTest_app.dir/build.make CMakeFiles/OListTest_app.dir/build
+.PHONY : OListTest_app/fast
+
+#=============================================================================
+# Target rules for targets named QueueTest_app
+
+# Build rule for target.
+QueueTest_app: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 QueueTest_app
+.PHONY : QueueTest_app
+
+# fast build rule for target.
+QueueTest_app/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/QueueTest_app.dir/build.make CMakeFiles/QueueTest_app.dir/build
+.PHONY : QueueTest_app/fast
+
+#=============================================================================
+# Target rules for targets named StackTest_app
+
+# Build rule for target.
+StackTest_app: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 StackTest_app
+.PHONY : StackTest_app
+
+# fast build rule for target.
+StackTest_app/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/StackTest_app.dir/build.make CMakeFiles/StackTest_app.dir/build
+.PHONY : StackTest_app/fast
+
+#=============================================================================
 # Target rules for targets named coverage
 
 # Build rule for target.
@@ -196,19 +261,6 @@ coverage: cmake_check_build_system
 coverage/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/coverage.dir/build.make CMakeFiles/coverage.dir/build
 .PHONY : coverage/fast
-
-#=============================================================================
-# Target rules for targets named gen_coverage_report
-
-# Build rule for target.
-gen_coverage_report: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 gen_coverage_report
-.PHONY : gen_coverage_report
-
-# fast build rule for target.
-gen_coverage_report/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/gen_coverage_report.dir/build.make CMakeFiles/gen_coverage_report.dir/build
-.PHONY : gen_coverage_report/fast
 
 #=============================================================================
 # Target rules for targets named gmock
@@ -286,6 +338,126 @@ ArrayTest.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/ArrayTest_app.dir/build.make CMakeFiles/ArrayTest_app.dir/ArrayTest.cpp.s
 .PHONY : ArrayTest.cpp.s
 
+BinaryTreeTest.o: BinaryTreeTest.cpp.o
+.PHONY : BinaryTreeTest.o
+
+# target to build an object file
+BinaryTreeTest.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/BinaryTreeTest_app.dir/build.make CMakeFiles/BinaryTreeTest_app.dir/BinaryTreeTest.cpp.o
+.PHONY : BinaryTreeTest.cpp.o
+
+BinaryTreeTest.i: BinaryTreeTest.cpp.i
+.PHONY : BinaryTreeTest.i
+
+# target to preprocess a source file
+BinaryTreeTest.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/BinaryTreeTest_app.dir/build.make CMakeFiles/BinaryTreeTest_app.dir/BinaryTreeTest.cpp.i
+.PHONY : BinaryTreeTest.cpp.i
+
+BinaryTreeTest.s: BinaryTreeTest.cpp.s
+.PHONY : BinaryTreeTest.s
+
+# target to generate assembly for a file
+BinaryTreeTest.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/BinaryTreeTest_app.dir/build.make CMakeFiles/BinaryTreeTest_app.dir/BinaryTreeTest.cpp.s
+.PHONY : BinaryTreeTest.cpp.s
+
+DListTest.o: DListTest.cpp.o
+.PHONY : DListTest.o
+
+# target to build an object file
+DListTest.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DListTest_app.dir/build.make CMakeFiles/DListTest_app.dir/DListTest.cpp.o
+.PHONY : DListTest.cpp.o
+
+DListTest.i: DListTest.cpp.i
+.PHONY : DListTest.i
+
+# target to preprocess a source file
+DListTest.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DListTest_app.dir/build.make CMakeFiles/DListTest_app.dir/DListTest.cpp.i
+.PHONY : DListTest.cpp.i
+
+DListTest.s: DListTest.cpp.s
+.PHONY : DListTest.s
+
+# target to generate assembly for a file
+DListTest.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DListTest_app.dir/build.make CMakeFiles/DListTest_app.dir/DListTest.cpp.s
+.PHONY : DListTest.cpp.s
+
+OListTest.o: OListTest.cpp.o
+.PHONY : OListTest.o
+
+# target to build an object file
+OListTest.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/OListTest_app.dir/build.make CMakeFiles/OListTest_app.dir/OListTest.cpp.o
+.PHONY : OListTest.cpp.o
+
+OListTest.i: OListTest.cpp.i
+.PHONY : OListTest.i
+
+# target to preprocess a source file
+OListTest.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/OListTest_app.dir/build.make CMakeFiles/OListTest_app.dir/OListTest.cpp.i
+.PHONY : OListTest.cpp.i
+
+OListTest.s: OListTest.cpp.s
+.PHONY : OListTest.s
+
+# target to generate assembly for a file
+OListTest.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/OListTest_app.dir/build.make CMakeFiles/OListTest_app.dir/OListTest.cpp.s
+.PHONY : OListTest.cpp.s
+
+QueueTest.o: QueueTest.cpp.o
+.PHONY : QueueTest.o
+
+# target to build an object file
+QueueTest.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/QueueTest_app.dir/build.make CMakeFiles/QueueTest_app.dir/QueueTest.cpp.o
+.PHONY : QueueTest.cpp.o
+
+QueueTest.i: QueueTest.cpp.i
+.PHONY : QueueTest.i
+
+# target to preprocess a source file
+QueueTest.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/QueueTest_app.dir/build.make CMakeFiles/QueueTest_app.dir/QueueTest.cpp.i
+.PHONY : QueueTest.cpp.i
+
+QueueTest.s: QueueTest.cpp.s
+.PHONY : QueueTest.s
+
+# target to generate assembly for a file
+QueueTest.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/QueueTest_app.dir/build.make CMakeFiles/QueueTest_app.dir/QueueTest.cpp.s
+.PHONY : QueueTest.cpp.s
+
+StackTest.o: StackTest.cpp.o
+.PHONY : StackTest.o
+
+# target to build an object file
+StackTest.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/StackTest_app.dir/build.make CMakeFiles/StackTest_app.dir/StackTest.cpp.o
+.PHONY : StackTest.cpp.o
+
+StackTest.i: StackTest.cpp.i
+.PHONY : StackTest.i
+
+# target to preprocess a source file
+StackTest.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/StackTest_app.dir/build.make CMakeFiles/StackTest_app.dir/StackTest.cpp.i
+.PHONY : StackTest.cpp.i
+
+StackTest.s: StackTest.cpp.s
+.PHONY : StackTest.s
+
+# target to generate assembly for a file
+StackTest.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/StackTest_app.dir/build.make CMakeFiles/StackTest_app.dir/StackTest.cpp.s
+.PHONY : StackTest.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -300,8 +472,12 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... test"
 	@echo "... coverage"
-	@echo "... gen_coverage_report"
 	@echo "... ArrayTest_app"
+	@echo "... BinaryTreeTest_app"
+	@echo "... DListTest_app"
+	@echo "... OListTest_app"
+	@echo "... QueueTest_app"
+	@echo "... StackTest_app"
 	@echo "... gmock"
 	@echo "... gmock_main"
 	@echo "... gtest"
@@ -309,6 +485,21 @@ help:
 	@echo "... ArrayTest.o"
 	@echo "... ArrayTest.i"
 	@echo "... ArrayTest.s"
+	@echo "... BinaryTreeTest.o"
+	@echo "... BinaryTreeTest.i"
+	@echo "... BinaryTreeTest.s"
+	@echo "... DListTest.o"
+	@echo "... DListTest.i"
+	@echo "... DListTest.s"
+	@echo "... OListTest.o"
+	@echo "... OListTest.i"
+	@echo "... OListTest.s"
+	@echo "... QueueTest.o"
+	@echo "... QueueTest.i"
+	@echo "... QueueTest.s"
+	@echo "... StackTest.o"
+	@echo "... StackTest.i"
+	@echo "... StackTest.s"
 .PHONY : help
 
 
