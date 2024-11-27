@@ -133,6 +133,59 @@ TYPED_TEST(BinaryTreeTest, IsBalanced) {
 //   }
 // }
 
+// // Тест на сериализацию и десериализацию
+// TYPED_TEST(BinaryTreeTest, SerializeDeserialize) {
+//   const std::string filename =
+//       "/home/vlad/vsCode/2_course/programming/labs/lab3/Test/tree_test.bin";
+
+//   // Сначала вставляем элементы в дерево
+//   if constexpr (is_same_v<TypeParam, int>) {
+//     this->tree.insert(50);
+//     this->tree.insert(30);
+//     this->tree.insert(70);
+//     this->tree.insert(20);
+//     this->tree.insert(40);
+//     this->tree.insert(60);
+//     this->tree.insert(80);
+//   } else if constexpr (is_same_v<TypeParam, string>) {
+//     this->tree.insert("dog");
+//     this->tree.insert("cat");
+//     this->tree.insert("elephant");
+//   }
+
+//   // Сериализация дерева в файл
+//   EXPECT_NO_THROW(this->tree.serialize(filename));
+
+//   // Создаем новый объект дерева для десериализации
+//   BinaryTree<TypeParam> newTree;
+
+//   // Десериализация дерева из файла
+//   EXPECT_NO_THROW(newTree.deserialize(filename));
+
+//   // Проверяем, что элементы дерева восстановлены
+//   if constexpr (is_same_v<TypeParam, int>) {
+//     // Проверяем, что элементы присутствуют в восстановленном дереве
+//     EXPECT_TRUE(newTree.search(50));
+//     EXPECT_TRUE(newTree.search(30));
+//     EXPECT_TRUE(newTree.search(70));
+//     EXPECT_TRUE(newTree.search(20));
+//     EXPECT_TRUE(newTree.search(40));
+//     EXPECT_TRUE(newTree.search(60));
+//     EXPECT_TRUE(newTree.search(80));
+
+//     // Проверяем, что отсутствуют несуществующие элементы
+//     EXPECT_FALSE(newTree.search(100));
+//   } else if constexpr (is_same_v<TypeParam, string>) {
+//     // Проверяем, что строки присутствуют в восстановленном дереве
+//     EXPECT_TRUE(newTree.search("dog"));
+//     EXPECT_TRUE(newTree.search("cat"));
+//     EXPECT_TRUE(newTree.search("elephant"));
+
+//     // Проверяем, что отсутствуют несуществующие строки
+//     EXPECT_FALSE(newTree.search("lion"));
+//   }
+// }
+
 int main(int argc, char **argv) {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

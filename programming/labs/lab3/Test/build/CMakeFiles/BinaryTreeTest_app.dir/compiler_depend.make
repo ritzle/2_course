@@ -80,6 +80,7 @@ CMakeFiles/BinaryTreeTest_app.dir/BinaryTreeTest.cpp.o: /home/vlad/vsCode/2_cour
   /usr/include/c++/13/bits/exception.h \
   /usr/include/c++/13/bits/exception_defines.h \
   /usr/include/c++/13/bits/exception_ptr.h \
+  /usr/include/c++/13/bits/fstream.tcc \
   /usr/include/c++/13/bits/functexcept.h \
   /usr/include/c++/13/bits/functional_hash.h \
   /usr/include/c++/13/bits/hash_bytes.h \
@@ -178,6 +179,7 @@ CMakeFiles/BinaryTreeTest_app.dir/BinaryTreeTest.cpp.o: /home/vlad/vsCode/2_cour
   /usr/include/c++/13/ext/numeric_traits.h \
   /usr/include/c++/13/ext/string_conversions.h \
   /usr/include/c++/13/ext/type_traits.h \
+  /usr/include/c++/13/fstream \
   /usr/include/c++/13/functional \
   /usr/include/c++/13/initializer_list \
   /usr/include/c++/13/ios \
@@ -369,8 +371,10 @@ CMakeFiles/BinaryTreeTest_app.dir/BinaryTreeTest.cpp.o: /home/vlad/vsCode/2_cour
   /usr/include/x86_64-linux-gnu/bits/wordsize.h \
   /usr/include/x86_64-linux-gnu/bits/xopen_lim.h \
   /usr/include/x86_64-linux-gnu/c++/13/bits/atomic_word.h \
+  /usr/include/x86_64-linux-gnu/c++/13/bits/basic_file.h \
   /usr/include/x86_64-linux-gnu/c++/13/bits/c++allocator.h \
   /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
+  /usr/include/x86_64-linux-gnu/c++/13/bits/c++io.h \
   /usr/include/x86_64-linux-gnu/c++/13/bits/c++locale.h \
   /usr/include/x86_64-linux-gnu/c++/13/bits/cpu_defines.h \
   /usr/include/x86_64-linux-gnu/c++/13/bits/ctype_base.h \
@@ -432,6 +436,8 @@ CMakeFiles/BinaryTreeTest_app.dir/BinaryTreeTest.cpp.o: /home/vlad/vsCode/2_cour
 /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h:
 
 /usr/include/x86_64-linux-gnu/c++/13/bits/c++allocator.h:
+
+/usr/include/x86_64-linux-gnu/c++/13/bits/basic_file.h:
 
 /usr/include/x86_64-linux-gnu/bits/xopen_lim.h:
 
@@ -573,6 +579,10 @@ CMakeFiles/BinaryTreeTest_app.dir/BinaryTreeTest.cpp.o: /home/vlad/vsCode/2_cour
 
 /usr/include/x86_64-linux-gnu/asm/types.h:
 
+/usr/include/x86_64-linux-gnu/bits/cpu-set.h:
+
+/usr/include/x86_64-linux-gnu/asm/posix_types_64.h:
+
 /usr/include/x86_64-linux-gnu/bits/types/struct_sched_param.h:
 
 /usr/include/asm-generic/errno.h:
@@ -597,13 +607,15 @@ CMakeFiles/BinaryTreeTest_app.dir/BinaryTreeTest.cpp.o: /home/vlad/vsCode/2_cour
 
 /usr/include/c++/13/bits/sstream.tcc:
 
+/usr/include/x86_64-linux-gnu/asm/posix_types.h:
+
+/usr/include/c++/13/cwctype:
+
 /usr/include/c++/13/bits/erase_if.h:
 
 /usr/include/x86_64-linux-gnu/bits/floatn-common.h:
 
 /usr/include/c++/13/bits/requires_hosted.h:
-
-/usr/include/c++/13/bits/refwrap.h:
 
 /usr/include/c++/13/bits/std_mutex.h:
 
@@ -659,6 +671,10 @@ CMakeFiles/BinaryTreeTest_app.dir/BinaryTreeTest.cpp.o: /home/vlad/vsCode/2_cour
 
 /usr/include/c++/13/bits/node_handle.h:
 
+/usr/include/c++/13/bits/refwrap.h:
+
+/usr/include/c++/13/bits/fstream.tcc:
+
 /usr/include/x86_64-linux-gnu/bits/floatn.h:
 
 /home/vlad/vsCode/2_course/programming/labs/lab3/lib/googletest/googletest/include/gtest/internal/custom/gtest-port.h:
@@ -696,6 +712,8 @@ CMakeFiles/BinaryTreeTest_app.dir/BinaryTreeTest.cpp.o: /home/vlad/vsCode/2_cour
 /usr/include/c++/13/bits/exception.h:
 
 /usr/include/c++/13/bits/cxxabi_init_exception.h:
+
+/usr/include/x86_64-linux-gnu/c++/13/bits/c++io.h:
 
 /usr/include/c++/13/typeinfo:
 
@@ -843,10 +861,6 @@ CMakeFiles/BinaryTreeTest_app.dir/BinaryTreeTest.cpp.o: /home/vlad/vsCode/2_cour
 
 /home/vlad/vsCode/2_course/programming/labs/lab3/lib/googletest/googlemock/include/gmock/gmock-more-actions.h:
 
-/usr/include/c++/13/cwctype:
-
-/usr/include/x86_64-linux-gnu/asm/posix_types.h:
-
 /home/vlad/vsCode/2_course/programming/labs/lab3/lib/googletest/googlemock/include/gmock/internal/custom/gmock-matchers.h:
 
 /home/vlad/vsCode/2_course/programming/labs/lab3/lib/googletest/googletest/include/gtest/gtest-assertion-result.h:
@@ -874,16 +888,6 @@ CMakeFiles/BinaryTreeTest_app.dir/BinaryTreeTest.cpp.o: /home/vlad/vsCode/2_cour
 /usr/include/libintl.h:
 
 /usr/include/c++/13/atomic:
-
-/usr/include/x86_64-linux-gnu/bits/types/sigval_t.h:
-
-/usr/include/c++/13/bits/stl_map.h:
-
-/usr/include/c++/13/bits/new_allocator.h:
-
-/usr/include/c++/13/bits/stl_uninitialized.h:
-
-/usr/include/c++/13/locale:
 
 /home/vlad/vsCode/2_course/programming/labs/lab3/lib/googletest/googlemock/include/gmock/gmock-more-matchers.h:
 
@@ -929,10 +933,6 @@ CMakeFiles/BinaryTreeTest_app.dir/BinaryTreeTest.cpp.o: /home/vlad/vsCode/2_cour
 
 /usr/include/asm-generic/errno-base.h:
 
-/usr/include/x86_64-linux-gnu/bits/cpu-set.h:
-
-/usr/include/x86_64-linux-gnu/asm/posix_types_64.h:
-
 /usr/include/c++/13/algorithm:
 
 /usr/include/c++/13/array:
@@ -948,6 +948,8 @@ CMakeFiles/BinaryTreeTest_app.dir/BinaryTreeTest.cpp.o: /home/vlad/vsCode/2_cour
 /usr/include/c++/13/bits/stl_pair.h:
 
 /usr/include/c++/13/cstdio:
+
+/usr/include/c++/13/fstream:
 
 /usr/include/assert.h:
 
@@ -966,6 +968,16 @@ CMakeFiles/BinaryTreeTest_app.dir/BinaryTreeTest.cpp.o: /home/vlad/vsCode/2_cour
 /usr/include/c++/13/bits/allocated_ptr.h:
 
 /usr/include/c++/13/clocale:
+
+/usr/include/x86_64-linux-gnu/bits/types/sigval_t.h:
+
+/usr/include/c++/13/bits/stl_map.h:
+
+/usr/include/c++/13/bits/new_allocator.h:
+
+/usr/include/c++/13/bits/stl_uninitialized.h:
+
+/usr/include/c++/13/locale:
 
 /usr/include/c++/13/bits/stl_raw_storage_iter.h:
 

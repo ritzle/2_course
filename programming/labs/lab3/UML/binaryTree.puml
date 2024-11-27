@@ -1,0 +1,34 @@
+@startuml
+
+class BinaryTree {
+    - root : Node*
+    
+    + BinaryTree()
+    + ~BinaryTree()
+    + insert(value : T) : void
+    + search(value : T) : bool
+    + inorder() : void
+    + isBalanced() : bool
+    + serialize(filename : string) : void
+    + deserialize(filename : string) : void
+    - insert(node : Node*, value : T) : void
+    - search(node : Node*, value : T) : bool
+    - inorder(node : Node*) : void
+    - clear(node : Node*) : void
+    - height(node : Node*) : int
+    - isBalanced(node : Node*) : bool
+    - serializeHelper(ofs : ofstream, node : Node*) : void
+    - deserializeHelper(ifs : ifstream) : Node*
+}
+
+class Node {
+    - data : T
+    - left : Node*
+    - right : Node*
+    
+    + Node(value : T)
+}
+
+BinaryTree "1" *-- "1..*" Node : contains
+
+@enduml

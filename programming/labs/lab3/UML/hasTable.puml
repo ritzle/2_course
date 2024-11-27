@@ -1,0 +1,44 @@
+@startuml
+
+class HashTable {
+    - table : Pair*
+    - size : size_t
+    - capacity : size_t
+
+    + HashTable()
+    + ~HashTable()
+    + insert(key : string, value : string) : void
+    + delete_by_index(indexInput : size_t) : void
+    + getSize() : size_t
+    + operator[](key : string) : Pair&
+    + operator[](index : size_t) : Pair&
+    - resize(new_capacity : size_t) : void
+    - getHashIndex(key : string) : size_t
+    - hashString(str : string) : size_t
+    - convertToString(key : string) : string
+
+    + begin() : Iterator
+    + end() : Iterator
+}
+
+class Pair {
+    - key : string
+    - value : string
+    - occupied : bool
+
+    + Pair()
+}
+
+class Iterator {
+    - current : Pair*
+    - end : Pair*
+    + Iterator(start : Pair*, end : Pair*)
+    + operator*() : Pair&
+    + operator++() : Iterator&
+    + operator!=(other : Iterator) : bool
+}
+
+HashTable "1" *-- "*" Pair : contains
+HashTable "1" *-- "*" Iterator : has
+
+@enduml

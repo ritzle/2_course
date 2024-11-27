@@ -237,6 +237,43 @@ TYPED_TEST(ArrayTest, throwTest) {
   }
 }
 
+TYPED_TEST(ArrayTest, serializeDeserialize) {
+  const std::string filename =
+      "/home/vlad/vsCode/2_course/programming/labs/lab3/Test/"
+      "serialize_test.bin";
+
+  // Инициализация массива
+  if constexpr (std::is_same_v<TypeParam, int>) {
+    for (int i = 0; i < 5; ++i) {
+      this->arr.emplace_back(i + 1);  // Добавляем элементы 1, 2, 3, 4, 5
+    }
+  } else if constexpr (std::is_same_v<TypeParam, std::string>) {
+    for (int i = 0; i < 5; ++i) {
+      this->arr.emplace_back(
+          std::to_string(i + 1));  // Добавляем строки "1", "2", ...
+    }
+  }
+
+  EXPECT_EQ(this->arr.getSize(), 5);
+
+  // Сериализация
+  EXPECT_NO_THROW(this->arr.serialize(filename));
+
+  Array<TypeParam> newArr;
+
+  // Десериализация
+  EXPECT_NO_THROW(newArr.deserialize(filename));
+
+  EXPECT_EQ(newArr.getSize(), this->arr.getSize());
+
+  // Проверяем, что элементы восстановленного массива совпадают
+  for (size_t i = 0; i < newArr.getSize(); ++i) {
+    cout << newArr[i] << "---" << this->arr[i];
+    cout << endl;
+    EXPECT_EQ(newArr[i], this->arr[i]);
+  }
+}
+
 int main(int argc, char **argv) {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

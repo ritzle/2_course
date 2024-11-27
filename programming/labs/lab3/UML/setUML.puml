@@ -1,0 +1,22 @@
+@startuml
+
+class Set {
+    - arr : T*
+    - size : size_t
+    - capacity : size_t
+
+    + Set(init_capacity : size_t)
+    + Set()
+    + ~Set()
+    + operator[](index : size_t) : T&
+    + emplace_back(element : T) : void
+    + erase(indexInput : size_t) : void
+    + eraseByValue(value : T) : void
+    + replace(indexInput : size_t, element : T) : void
+    + getSize() : int
+    + print() : void
+    + contains(value : T) : bool
+    - resize(new_capacity : size_t) : void
+}
+
+@enduml

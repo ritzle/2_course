@@ -1,15 +1,15 @@
-Start testing: Nov 27 09:50 +07
+Start testing: Nov 27 12:40 +07
 ----------------------------------------------------------
 1/7 Testing: ArrayTest
 1/7 Test: ArrayTest
 Command: "/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/ArrayTest_app"
 Directory: /home/vlad/vsCode/2_course/programming/labs/lab3/Test/build
-"ArrayTest" start time: Nov 27 09:50 +07
+"ArrayTest" start time: Nov 27 12:40 +07
 Output:
 ----------------------------------------------------------
-[==========] Running 22 tests from 2 test suites.
+[==========] Running 24 tests from 2 test suites.
 [----------] Global test environment set-up.
-[----------] 11 tests from ArrayTest/0, where TypeParam = int
+[----------] 12 tests from ArrayTest/0, where TypeParam = int
 [ RUN      ] ArrayTest/0.TestEmplaceBack
 [       OK ] ArrayTest/0.TestEmplaceBack (0 ms)
 [ RUN      ] ArrayTest/0.Insert
@@ -35,9 +35,11 @@ Data successfully loaded from /home/vlad/vsCode/2_course/programming/labs/lab3/T
 [       OK ] ArrayTest/0.resize (0 ms)
 [ RUN      ] ArrayTest/0.throwTest
 [       OK ] ArrayTest/0.throwTest (0 ms)
-[----------] 11 tests from ArrayTest/0 (0 ms total)
+[ RUN      ] ArrayTest/0.serializeDeserialize
+[       OK ] ArrayTest/0.serializeDeserialize (0 ms)
+[----------] 12 tests from ArrayTest/0 (0 ms total)
 
-[----------] 11 tests from ArrayTest/1, where TypeParam = std::basic_string<char,std::char_traits<char>,std::allocator<char> >
+[----------] 12 tests from ArrayTest/1, where TypeParam = std::basic_string<char,std::char_traits<char>,std::allocator<char> >
 [ RUN      ] ArrayTest/1.TestEmplaceBack
 [       OK ] ArrayTest/1.TestEmplaceBack (0 ms)
 [ RUN      ] ArrayTest/1.Insert
@@ -55,7 +57,7 @@ Data successfully loaded from /home/vlad/vsCode/2_course/programming/labs/lab3/T
 [ RUN      ] ArrayTest/1.WriteToFile
 Data successfully written to /home/vlad/vsCode/2_course/programming/labs/lab3/Test/out.txt
 Data successfully loaded from /home/vlad/vsCode/2_course/programming/labs/lab3/Test/out.txt
-[       OK ] ArrayTest/1.WriteToFile (0 ms)
+[       OK ] ArrayTest/1.WriteToFile (7 ms)
 [ RUN      ] ArrayTest/1.fillFromFile
 Data successfully loaded from /home/vlad/vsCode/2_course/programming/labs/lab3/Test/test.txt
 [       OK ] ArrayTest/1.fillFromFile (0 ms)
@@ -63,16 +65,18 @@ Data successfully loaded from /home/vlad/vsCode/2_course/programming/labs/lab3/T
 [       OK ] ArrayTest/1.resize (0 ms)
 [ RUN      ] ArrayTest/1.throwTest
 [       OK ] ArrayTest/1.throwTest (0 ms)
-[----------] 11 tests from ArrayTest/1 (0 ms total)
+[ RUN      ] ArrayTest/1.serializeDeserialize
+[       OK ] ArrayTest/1.serializeDeserialize (0 ms)
+[----------] 12 tests from ArrayTest/1 (7 ms total)
 
 [----------] Global test environment tear-down
-[==========] 22 tests from 2 test suites ran. (0 ms total)
-[  PASSED  ] 22 tests.
+[==========] 24 tests from 2 test suites ran. (8 ms total)
+[  PASSED  ] 24 tests.
 <end of output>
-Test time =   0.00 sec
+Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"ArrayTest" end time: Nov 27 09:50 +07
+"ArrayTest" end time: Nov 27 12:40 +07
 "ArrayTest" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -80,7 +84,7 @@ Test Passed.
 2/7 Test: BinaryTreeTest
 Command: "/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/BinaryTreeTest_app"
 Directory: /home/vlad/vsCode/2_course/programming/labs/lab3/Test/build
-"BinaryTreeTest" start time: Nov 27 09:50 +07
+"BinaryTreeTest" start time: Nov 27 12:40 +07
 Output:
 ----------------------------------------------------------
 [==========] Running 8 tests from 2 test suites.
@@ -110,11 +114,12 @@ Output:
 [----------] Global test environment tear-down
 [==========] 8 tests from 2 test suites ran. (0 ms total)
 [  PASSED  ] 8 tests.
+libgcov profiling error:/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/CMakeFiles/BinaryTreeTest_app.dir/BinaryTreeTest.cpp.gcda:overwriting an existing profile data with a different checksum
 <end of output>
 Test time =   0.00 sec
 ----------------------------------------------------------
 Test Passed.
-"BinaryTreeTest" end time: Nov 27 09:50 +07
+"BinaryTreeTest" end time: Nov 27 12:40 +07
 "BinaryTreeTest" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -122,7 +127,7 @@ Test Passed.
 3/7 Test: DListTest
 Command: "/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/DListTest_app"
 Directory: /home/vlad/vsCode/2_course/programming/labs/lab3/Test/build
-"DListTest" start time: Nov 27 09:50 +07
+"DListTest" start time: Nov 27 12:40 +07
 Output:
 ----------------------------------------------------------
 [==========] Running 22 tests from 2 test suites.
@@ -184,7 +189,7 @@ Output:
 Test time =   0.00 sec
 ----------------------------------------------------------
 Test Passed.
-"DListTest" end time: Nov 27 09:50 +07
+"DListTest" end time: Nov 27 12:40 +07
 "DListTest" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -192,7 +197,7 @@ Test Passed.
 4/7 Test: OListTest
 Command: "/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/OListTest_app"
 Directory: /home/vlad/vsCode/2_course/programming/labs/lab3/Test/build
-"OListTest" start time: Nov 27 09:50 +07
+"OListTest" start time: Nov 27 12:40 +07
 Output:
 ----------------------------------------------------------
 [==========] Running 24 tests from 2 test suites.
@@ -252,13 +257,13 @@ Output:
 [----------] 12 tests from OListTest/1 (0 ms total)
 
 [----------] Global test environment tear-down
-[==========] 24 tests from 2 test suites ran. (0 ms total)
+[==========] 24 tests from 2 test suites ran. (1 ms total)
 [  PASSED  ] 24 tests.
 <end of output>
 Test time =   0.00 sec
 ----------------------------------------------------------
 Test Passed.
-"OListTest" end time: Nov 27 09:50 +07
+"OListTest" end time: Nov 27 12:40 +07
 "OListTest" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -266,7 +271,7 @@ Test Passed.
 5/7 Test: QueueTest
 Command: "/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/QueueTest_app"
 Directory: /home/vlad/vsCode/2_course/programming/labs/lab3/Test/build
-"QueueTest" start time: Nov 27 09:50 +07
+"QueueTest" start time: Nov 27 12:40 +07
 Output:
 ----------------------------------------------------------
 Running main() from /home/vlad/vsCode/2_course/programming/labs/lab3/lib/googletest/googletest/src/gtest_main.cc
@@ -309,7 +314,7 @@ Running main() from /home/vlad/vsCode/2_course/programming/labs/lab3/lib/googlet
 Test time =   0.00 sec
 ----------------------------------------------------------
 Test Passed.
-"QueueTest" end time: Nov 27 09:50 +07
+"QueueTest" end time: Nov 27 12:40 +07
 "QueueTest" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -317,7 +322,7 @@ Test Passed.
 6/7 Test: StackTest
 Command: "/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/StackTest_app"
 Directory: /home/vlad/vsCode/2_course/programming/labs/lab3/Test/build
-"StackTest" start time: Nov 27 09:50 +07
+"StackTest" start time: Nov 27 12:40 +07
 Output:
 ----------------------------------------------------------
 Running main() from /home/vlad/vsCode/2_course/programming/labs/lab3/lib/googletest/googletest/src/gtest_main.cc
@@ -360,7 +365,7 @@ Running main() from /home/vlad/vsCode/2_course/programming/labs/lab3/lib/googlet
 Test time =   0.00 sec
 ----------------------------------------------------------
 Test Passed.
-"StackTest" end time: Nov 27 09:50 +07
+"StackTest" end time: Nov 27 12:40 +07
 "StackTest" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -368,7 +373,7 @@ Test Passed.
 7/7 Test: SetTest
 Command: "/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/SetTest_app"
 Directory: /home/vlad/vsCode/2_course/programming/labs/lab3/Test/build
-"SetTest" start time: Nov 27 09:50 +07
+"SetTest" start time: Nov 27 12:40 +07
 Output:
 ----------------------------------------------------------
 [==========] Running 16 tests from 2 test suites.
@@ -418,8 +423,8 @@ Output:
 Test time =   0.00 sec
 ----------------------------------------------------------
 Test Passed.
-"SetTest" end time: Nov 27 09:50 +07
+"SetTest" end time: Nov 27 12:40 +07
 "SetTest" time elapsed: 00:00:00
 ----------------------------------------------------------
 
-End testing: Nov 27 09:50 +07
+End testing: Nov 27 12:40 +07

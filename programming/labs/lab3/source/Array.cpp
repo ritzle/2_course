@@ -156,3 +156,38 @@ void Array<T>::eraseByValue(const T& value) {
   }
   std::cerr << "Значение '" << value << "' не найдено в массиве.\n";
 }
+
+template <typename T>
+void Array<T>::serialize(const string& filename) {
+  ofstream ofs(filename, ios::binary);
+  if (!ofs.is_open()) {
+    throw runtime_error("Failed to open file for writing");
+  }
+
+  ofs.write(reinterpret_cast<const char*>(&size),
+            sizeof(size));  // Записываем размер
+  ofs.write(reinterpret_cast<const char*>(&capacity),
+            sizeof(capacity));  // Записываем вместимость
+
+  // Записываем элементы массива
+  ofs.write(reinterpret_cast<const char*>(arr), sizeof(T) * size);
+  ofs.close();
+}
+
+template <typename T>
+void Array<T>::deserialize(const string& filename) {
+  ifstream ifs(filename, ios::binary);
+  if (!ifs.is_open()) {
+    throw runtime_error("Cannot open file for reading");
+  }
+
+  ifs.read(reinterpret_cast<char*>(&size), sizeof(size));  // Читаем размер
+  ifs.read(reinterpret_cast<char*>(&capacity),
+           sizeof(capacity));  // Читаем вместимость
+
+  delete[] arr;           // Удаляем текущий массив
+  arr = new T[capacity];  // Создаем новый массив с прочитанной вместимостью
+
+  ifs.read(reinterpret_cast<char*>(arr), sizeof(T) * size);  // Читаем элементы
+  ifs.close();
+}

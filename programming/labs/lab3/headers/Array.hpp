@@ -3,8 +3,11 @@
 
 #include <fstream>
 #include <iostream>
+#include <limits>
 #include <stdexcept>
 #include <string>
+
+using namespace std;
 
 template <typename T>
 class Array {
@@ -21,8 +24,12 @@ class Array {
   void replace(size_t indexInput, T element);
   int getSize() const;
   void print() const;
+
   void writeToFile(const std::string& filename) const;
   void fillFromFile(const std::string& filename);
+
+  void deserialize(const string& filename);
+  void serialize(const string& filename);
 
   // Итератор
   class Iterator {

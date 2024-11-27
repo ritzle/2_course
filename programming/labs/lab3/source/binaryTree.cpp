@@ -90,3 +90,60 @@ template <typename T>
 bool BinaryTree<T>::isBalanced() const {
   return isBalanced(root);
 }
+
+#include <fstream>
+#include <stdexcept>
+
+template <typename T>
+void BinaryTree<T>::serialize(const std::string& filename) const {
+  std::ofstream ofs(filename, std::ios::binary);
+  if (!ofs.is_open()) {
+    throw std::runtime_error("Failed to open file for writing");
+  }
+
+  serializeHelper(ofs, root);
+  ofs.close();
+}
+
+template <typename T>
+void BinaryTree<T>::serializeHelper(std::ofstream& ofs, Node* node) const {
+  if (!node) {
+    // Записываем "нулевой" узел для обозначения конца поддерева (или пустого
+    // узла)
+    ofs.write(reinterpret_cast<const char*>(&node), sizeof(Node*));
+  } else {
+    // Записываем текущий узел
+    ofs.write(reinterpret_cast<const char*>(&node->data), sizeof(T));
+    serializeHelper(ofs, node->left);
+    serializeHelper(ofs, node->right);
+  }
+}
+
+template <typename T>
+void BinaryTree<T>::deserialize(const std::string& filename) {
+  std::ifstream ifs(filename, std::ios::binary);
+  if (!ifs.is_open()) {
+    throw std::runtime_error("Failed to open file for reading");
+  }
+
+  root = deserializeHelper(ifs);
+  ifs.close();
+}
+
+template <typename T>
+typename BinaryTree<T>::Node* BinaryTree<T>::deserializeHelper(
+    std::ifstream& ifs) {
+  T value;
+  ifs.read(reinterpret_cast<char*>(&value), sizeof(T));
+
+  // Если узел пустой, возвращаем nullptr
+  if (ifs.eof()) {
+    return nullptr;
+  }
+
+  Node* node = new Node(value);
+  node->left = deserializeHelper(ifs);
+  node->right = deserializeHelper(ifs);
+
+  return node;
+}

@@ -1,0 +1,38 @@
+@startuml
+
+class Array {
+    - arr : T*
+    - size : size_t
+    - capacity : size_t
+
+    + Array(init_capacity : size_t)
+    + Array()
+    + ~Array()
+    + operator[](index : size_t) : T&
+    + emplace_back(element : T)
+    + insert(indexInput : size_t, element : T)
+    + erase(indexInput : size_t)
+    + eraseByValue(value : T)
+    + replace(indexInput : size_t, element : T)
+    + getSize() : int
+    + print() : void
+    + writeToFile(filename : string) : void
+    + fillFromFile(filename : string) : void
+    + deserialize(filename : string) : void
+    + serialize(filename : string) : void
+    + begin() : Iterator
+    + end() : Iterator
+    - resize(new_capacity : size_t) : void
+}
+
+class Iterator {
+    - current : T*
+    + Iterator(ptr : T*)
+    + operator*() : T&
+    + operator++() : Iterator&
+    + operator!=(other : Iterator) : bool
+}
+
+Array --> Iterator
+
+@enduml

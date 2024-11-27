@@ -1,0 +1,31 @@
+@startuml
+
+class OList {
+    - head : Node*
+    - size : int
+
+    + OList()
+    + ~OList()
+    + GetSize() : int
+    + push_back(data : T) : void
+    + push_front(data : T) : void
+    + pop_front() : void
+    + pop_back() : void
+    + pop_value(searchData : T) : void
+    + search_by_value(searchData : T) : void
+    + operator[](index : size_t) : T&
+    + print() : void
+    + fillFromFile(filename : string) : void
+    + writeToFile(filename : string) : void
+}
+
+class Node {
+    - pNext : Node*
+    - data : T
+
+    + Node(data : T, pNext : Node*)
+}
+
+OList "1" *-- "1..*" Node : contains
+
+@enduml

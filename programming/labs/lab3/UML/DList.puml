@@ -1,0 +1,33 @@
+@startuml
+
+class DList {
+    - head : Node*
+    - tail : Node*
+    - size : int
+
+    + DList()
+    + ~DList()
+    + GetSize() : int
+    + push_back(data : T) : void
+    + push_front(data : T) : void
+    + pop_front() : void
+    + pop_back() : void
+    + pop_value(searchData : T) : void
+    + search_by_value(searchData : T) : void
+    + operator[](index : size_t) : T&
+    + print() : void
+    + fillFromFile(filename : string) : void
+    + writeToFile(filename : string) : void
+}
+
+class Node {
+    - pNext : Node*
+    - pPrev : Node*
+    - data : T
+
+    + Node(data : T = T(), pNext : Node* = nullptr, pPrev : Node* = nullptr)
+}
+
+DList "1" *-- "1..*" Node : contains
+
+@enduml

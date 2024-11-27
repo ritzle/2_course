@@ -154,7 +154,7 @@ CMakeFiles/ArrayTest_app.dir/ArrayTest.cpp.o: \
  /usr/include/c++/13/fstream /usr/include/c++/13/bits/codecvt.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/basic_file.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++io.h \
- /usr/include/c++/13/bits/fstream.tcc \
+ /usr/include/c++/13/bits/fstream.tcc /usr/include/c++/13/limits \
  /home/vlad/vsCode/2_course/programming/labs/lab3/Test/../headers/../source/Array.cpp \
  /home/vlad/vsCode/2_course/programming/labs/lab3/Test/../headers/../source/../headers/Array.hpp \
  /home/vlad/vsCode/2_course/programming/labs/lab3/Test/../lib/googletest/googlemock/include/gmock/gmock.h \
@@ -203,7 +203,7 @@ CMakeFiles/ArrayTest_app.dir/ArrayTest.cpp.o: \
  /home/vlad/vsCode/2_course/programming/labs/lab3/lib/googletest/googlemock/include/gmock/internal/custom/gmock-port.h \
  /home/vlad/vsCode/2_course/programming/labs/lab3/lib/googletest/googletest/include/gtest/internal/gtest-port.h \
  /usr/include/c++/13/ciso646 /usr/include/string.h /usr/include/strings.h \
- /usr/include/c++/13/limits /usr/include/c++/13/locale \
+ /usr/include/c++/13/locale \
  /usr/include/c++/13/bits/locale_facets_nonio.h /usr/include/c++/13/ctime \
  /usr/include/x86_64-linux-gnu/c++/13/bits/time_members.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/messages_members.h \

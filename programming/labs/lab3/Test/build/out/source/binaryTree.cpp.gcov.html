@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2024-11-27 09:50:45</td>
+            <td class="headerValue">2024-11-27 12:40:39</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryHi">100.0&nbsp;%</td>
@@ -64,94 +64,151 @@
 <span id="L2"><span class="lineNum">       2</span>              : </span>
 <span id="L3"><span class="lineNum">       3</span>              : // Конструктор</span>
 <span id="L4"><span class="lineNum">       4</span>              : template &lt;typename T&gt;</span>
-<span id="L5"><span class="lineNum">       5</span> <span class="tlaGNC tlaBgGNC">         112 : BinaryTree&lt;T&gt;::BinaryTree() : root(nullptr) {}</span></span>
+<span id="L5"><span class="lineNum">       5</span> <span class="tlaGNC tlaBgGNC">           8 : BinaryTree&lt;T&gt;::BinaryTree() : root(nullptr) {}</span></span>
 <span id="L6"><span class="lineNum">       6</span>              : </span>
 <span id="L7"><span class="lineNum">       7</span>              : // Деструктор</span>
 <span id="L8"><span class="lineNum">       8</span>              : template &lt;typename T&gt;</span>
-<span id="L9"><span class="lineNum">       9</span> <span class="tlaGNC">         112 : BinaryTree&lt;T&gt;::~BinaryTree() {</span></span>
-<span id="L10"><span class="lineNum">      10</span> <span class="tlaGNC">         112 :   clear(root);</span></span>
-<span id="L11"><span class="lineNum">      11</span> <span class="tlaGNC">         112 : }</span></span>
+<span id="L9"><span class="lineNum">       9</span> <span class="tlaGNC">           8 : BinaryTree&lt;T&gt;::~BinaryTree() {</span></span>
+<span id="L10"><span class="lineNum">      10</span> <span class="tlaGNC">           8 :   clear(root);</span></span>
+<span id="L11"><span class="lineNum">      11</span> <span class="tlaGNC">           8 : }</span></span>
 <span id="L12"><span class="lineNum">      12</span>              : </span>
 <span id="L13"><span class="lineNum">      13</span>              : // Вставка элемента</span>
 <span id="L14"><span class="lineNum">      14</span>              : template &lt;typename T&gt;</span>
-<span id="L15"><span class="lineNum">      15</span> <span class="tlaGNC">         406 : void BinaryTree&lt;T&gt;::insert(T value) {</span></span>
-<span id="L16"><span class="lineNum">      16</span> <span class="tlaGNC">         406 :   insert(root, value);</span></span>
-<span id="L17"><span class="lineNum">      17</span> <span class="tlaGNC">         406 : }</span></span>
+<span id="L15"><span class="lineNum">      15</span> <span class="tlaGNC">          29 : void BinaryTree&lt;T&gt;::insert(T value) {</span></span>
+<span id="L16"><span class="lineNum">      16</span> <span class="tlaGNC">          29 :   insert(root, value);</span></span>
+<span id="L17"><span class="lineNum">      17</span> <span class="tlaGNC">          29 : }</span></span>
 <span id="L18"><span class="lineNum">      18</span>              : </span>
 <span id="L19"><span class="lineNum">      19</span>              : template &lt;typename T&gt;</span>
-<span id="L20"><span class="lineNum">      20</span> <span class="tlaGNC">         826 : void BinaryTree&lt;T&gt;::insert(Node*&amp; node, T value) {</span></span>
-<span id="L21"><span class="lineNum">      21</span> <span class="tlaGNC">         826 :   if (!node) {</span></span>
-<span id="L22"><span class="lineNum">      22</span> <span class="tlaGNC">         406 :     node = new Node(value);</span></span>
-<span id="L23"><span class="lineNum">      23</span> <span class="tlaGNC">         420 :   } else if (value &lt; node-&gt;data) {</span></span>
-<span id="L24"><span class="lineNum">      24</span> <span class="tlaGNC">         210 :     insert(node-&gt;left, value);</span></span>
+<span id="L20"><span class="lineNum">      20</span> <span class="tlaGNC">          59 : void BinaryTree&lt;T&gt;::insert(Node*&amp; node, T value) {</span></span>
+<span id="L21"><span class="lineNum">      21</span> <span class="tlaGNC">          59 :   if (!node) {</span></span>
+<span id="L22"><span class="lineNum">      22</span> <span class="tlaGNC">          29 :     node = new Node(value);</span></span>
+<span id="L23"><span class="lineNum">      23</span> <span class="tlaGNC">          30 :   } else if (value &lt; node-&gt;data) {</span></span>
+<span id="L24"><span class="lineNum">      24</span> <span class="tlaGNC">          15 :     insert(node-&gt;left, value);</span></span>
 <span id="L25"><span class="lineNum">      25</span>              :   } else {</span>
-<span id="L26"><span class="lineNum">      26</span> <span class="tlaGNC">         210 :     insert(node-&gt;right, value);</span></span>
+<span id="L26"><span class="lineNum">      26</span> <span class="tlaGNC">          15 :     insert(node-&gt;right, value);</span></span>
 <span id="L27"><span class="lineNum">      27</span>              :   }</span>
-<span id="L28"><span class="lineNum">      28</span> <span class="tlaGNC">         826 : }</span></span>
+<span id="L28"><span class="lineNum">      28</span> <span class="tlaGNC">          59 : }</span></span>
 <span id="L29"><span class="lineNum">      29</span>              : </span>
 <span id="L30"><span class="lineNum">      30</span>              : // Поиск элемента</span>
 <span id="L31"><span class="lineNum">      31</span>              : template &lt;typename T&gt;</span>
-<span id="L32"><span class="lineNum">      32</span> <span class="tlaGNC">         140 : bool BinaryTree&lt;T&gt;::search(T value) const {</span></span>
-<span id="L33"><span class="lineNum">      33</span> <span class="tlaGNC">         140 :   return search(root, value);</span></span>
+<span id="L32"><span class="lineNum">      32</span> <span class="tlaGNC">          10 : bool BinaryTree&lt;T&gt;::search(T value) const {</span></span>
+<span id="L33"><span class="lineNum">      33</span> <span class="tlaGNC">          10 :   return search(root, value);</span></span>
 <span id="L34"><span class="lineNum">      34</span>              : }</span>
 <span id="L35"><span class="lineNum">      35</span>              : </span>
 <span id="L36"><span class="lineNum">      36</span>              : template &lt;typename T&gt;</span>
-<span id="L37"><span class="lineNum">      37</span> <span class="tlaGNC">         294 : bool BinaryTree&lt;T&gt;::search(Node* node, T value) const {</span></span>
-<span id="L38"><span class="lineNum">      38</span> <span class="tlaGNC">         294 :   if (!node) return false;</span></span>
-<span id="L39"><span class="lineNum">      39</span> <span class="tlaGNC">         238 :   if (node-&gt;data == value) return true;</span></span>
-<span id="L40"><span class="lineNum">      40</span> <span class="tlaGNC">         154 :   if (value &lt; node-&gt;data) return search(node-&gt;left, value);</span></span>
-<span id="L41"><span class="lineNum">      41</span> <span class="tlaGNC">         154 :   return search(node-&gt;right, value);</span></span>
+<span id="L37"><span class="lineNum">      37</span> <span class="tlaGNC">          21 : bool BinaryTree&lt;T&gt;::search(Node* node, T value) const {</span></span>
+<span id="L38"><span class="lineNum">      38</span> <span class="tlaGNC">          21 :   if (!node) return false;</span></span>
+<span id="L39"><span class="lineNum">      39</span> <span class="tlaGNC">          17 :   if (node-&gt;data == value) return true;</span></span>
+<span id="L40"><span class="lineNum">      40</span> <span class="tlaGNC">          11 :   if (value &lt; node-&gt;data) return search(node-&gt;left, value);</span></span>
+<span id="L41"><span class="lineNum">      41</span> <span class="tlaGNC">          11 :   return search(node-&gt;right, value);</span></span>
 <span id="L42"><span class="lineNum">      42</span>              : }</span>
 <span id="L43"><span class="lineNum">      43</span>              : </span>
 <span id="L44"><span class="lineNum">      44</span>              : // Обход в симметричном порядке</span>
 <span id="L45"><span class="lineNum">      45</span>              : template &lt;typename T&gt;</span>
-<span id="L46"><span class="lineNum">      46</span> <span class="tlaGNC">          28 : void BinaryTree&lt;T&gt;::inorder() const {</span></span>
-<span id="L47"><span class="lineNum">      47</span> <span class="tlaGNC">          28 :   inorder(root);</span></span>
-<span id="L48"><span class="lineNum">      48</span> <span class="tlaGNC">          28 : }</span></span>
+<span id="L46"><span class="lineNum">      46</span> <span class="tlaGNC">           2 : void BinaryTree&lt;T&gt;::inorder() const {</span></span>
+<span id="L47"><span class="lineNum">      47</span> <span class="tlaGNC">           2 :   inorder(root);</span></span>
+<span id="L48"><span class="lineNum">      48</span> <span class="tlaGNC">           2 : }</span></span>
 <span id="L49"><span class="lineNum">      49</span>              : </span>
 <span id="L50"><span class="lineNum">      50</span>              : template &lt;typename T&gt;</span>
-<span id="L51"><span class="lineNum">      51</span> <span class="tlaGNC">         308 : void BinaryTree&lt;T&gt;::inorder(Node* node) const {</span></span>
-<span id="L52"><span class="lineNum">      52</span> <span class="tlaGNC">         308 :   if (node) {</span></span>
-<span id="L53"><span class="lineNum">      53</span> <span class="tlaGNC">         140 :     inorder(node-&gt;left);</span></span>
-<span id="L54"><span class="lineNum">      54</span> <span class="tlaGNC">         140 :     std::cout &lt;&lt; node-&gt;data &lt;&lt; &quot; &quot;;</span></span>
-<span id="L55"><span class="lineNum">      55</span> <span class="tlaGNC">         140 :     inorder(node-&gt;right);</span></span>
+<span id="L51"><span class="lineNum">      51</span> <span class="tlaGNC">          22 : void BinaryTree&lt;T&gt;::inorder(Node* node) const {</span></span>
+<span id="L52"><span class="lineNum">      52</span> <span class="tlaGNC">          22 :   if (node) {</span></span>
+<span id="L53"><span class="lineNum">      53</span> <span class="tlaGNC">          10 :     inorder(node-&gt;left);</span></span>
+<span id="L54"><span class="lineNum">      54</span> <span class="tlaGNC">          10 :     std::cout &lt;&lt; node-&gt;data &lt;&lt; &quot; &quot;;</span></span>
+<span id="L55"><span class="lineNum">      55</span> <span class="tlaGNC">          10 :     inorder(node-&gt;right);</span></span>
 <span id="L56"><span class="lineNum">      56</span>              :   }</span>
-<span id="L57"><span class="lineNum">      57</span> <span class="tlaGNC">         308 : }</span></span>
+<span id="L57"><span class="lineNum">      57</span> <span class="tlaGNC">          22 : }</span></span>
 <span id="L58"><span class="lineNum">      58</span>              : </span>
 <span id="L59"><span class="lineNum">      59</span>              : // Очистка памяти</span>
 <span id="L60"><span class="lineNum">      60</span>              : template &lt;typename T&gt;</span>
-<span id="L61"><span class="lineNum">      61</span> <span class="tlaGNC">         924 : void BinaryTree&lt;T&gt;::clear(Node* node) {</span></span>
-<span id="L62"><span class="lineNum">      62</span> <span class="tlaGNC">         924 :   if (node) {</span></span>
-<span id="L63"><span class="lineNum">      63</span> <span class="tlaGNC">         406 :     clear(node-&gt;left);</span></span>
-<span id="L64"><span class="lineNum">      64</span> <span class="tlaGNC">         406 :     clear(node-&gt;right);</span></span>
-<span id="L65"><span class="lineNum">      65</span> <span class="tlaGNC">         406 :     delete node;</span></span>
+<span id="L61"><span class="lineNum">      61</span> <span class="tlaGNC">          66 : void BinaryTree&lt;T&gt;::clear(Node* node) {</span></span>
+<span id="L62"><span class="lineNum">      62</span> <span class="tlaGNC">          66 :   if (node) {</span></span>
+<span id="L63"><span class="lineNum">      63</span> <span class="tlaGNC">          29 :     clear(node-&gt;left);</span></span>
+<span id="L64"><span class="lineNum">      64</span> <span class="tlaGNC">          29 :     clear(node-&gt;right);</span></span>
+<span id="L65"><span class="lineNum">      65</span> <span class="tlaGNC">          29 :     delete node;</span></span>
 <span id="L66"><span class="lineNum">      66</span>              :   }</span>
-<span id="L67"><span class="lineNum">      67</span> <span class="tlaGNC">         924 : }</span></span>
+<span id="L67"><span class="lineNum">      67</span> <span class="tlaGNC">          66 : }</span></span>
 <span id="L68"><span class="lineNum">      68</span>              : </span>
 <span id="L69"><span class="lineNum">      69</span>              : // Вычисление высоты узла</span>
 <span id="L70"><span class="lineNum">      70</span>              : template &lt;typename T&gt;</span>
-<span id="L71"><span class="lineNum">      71</span> <span class="tlaGNC">         364 : int BinaryTree&lt;T&gt;::height(Node* node) const {</span></span>
-<span id="L72"><span class="lineNum">      72</span> <span class="tlaGNC">         364 :   if (!node) return 0;</span></span>
-<span id="L73"><span class="lineNum">      73</span> <span class="tlaGNC">          98 :   return std::max(height(node-&gt;left), height(node-&gt;right)) + 1;</span></span>
+<span id="L71"><span class="lineNum">      71</span> <span class="tlaGNC">          26 : int BinaryTree&lt;T&gt;::height(Node* node) const {</span></span>
+<span id="L72"><span class="lineNum">      72</span> <span class="tlaGNC">          26 :   if (!node) return 0;</span></span>
+<span id="L73"><span class="lineNum">      73</span> <span class="tlaGNC">           7 :   return std::max(height(node-&gt;left), height(node-&gt;right)) + 1;</span></span>
 <span id="L74"><span class="lineNum">      74</span>              : }</span>
 <span id="L75"><span class="lineNum">      75</span>              : </span>
 <span id="L76"><span class="lineNum">      76</span>              : // Проверка баланса узла</span>
 <span id="L77"><span class="lineNum">      77</span>              : template &lt;typename T&gt;</span>
-<span id="L78"><span class="lineNum">      78</span> <span class="tlaGNC">         182 : bool BinaryTree&lt;T&gt;::isBalanced(Node* node) const {</span></span>
-<span id="L79"><span class="lineNum">      79</span> <span class="tlaGNC">         182 :   if (!node) return true;</span></span>
+<span id="L78"><span class="lineNum">      78</span> <span class="tlaGNC">          13 : bool BinaryTree&lt;T&gt;::isBalanced(Node* node) const {</span></span>
+<span id="L79"><span class="lineNum">      79</span> <span class="tlaGNC">          13 :   if (!node) return true;</span></span>
 <span id="L80"><span class="lineNum">      80</span>              : </span>
-<span id="L81"><span class="lineNum">      81</span> <span class="tlaGNC">          84 :   int leftHeight = height(node-&gt;left);</span></span>
-<span id="L82"><span class="lineNum">      82</span> <span class="tlaGNC">          84 :   int rightHeight = height(node-&gt;right);</span></span>
+<span id="L81"><span class="lineNum">      81</span> <span class="tlaGNC">           6 :   int leftHeight = height(node-&gt;left);</span></span>
+<span id="L82"><span class="lineNum">      82</span> <span class="tlaGNC">           6 :   int rightHeight = height(node-&gt;right);</span></span>
 <span id="L83"><span class="lineNum">      83</span>              : </span>
-<span id="L84"><span class="lineNum">      84</span> <span class="tlaGNC">         154 :   return (std::abs(leftHeight - rightHeight) &lt;= 1) &amp;&amp; isBalanced(node-&gt;left) &amp;&amp;</span></span>
-<span id="L85"><span class="lineNum">      85</span> <span class="tlaGNC">         154 :          isBalanced(node-&gt;right);</span></span>
+<span id="L84"><span class="lineNum">      84</span> <span class="tlaGNC">          11 :   return (std::abs(leftHeight - rightHeight) &lt;= 1) &amp;&amp; isBalanced(node-&gt;left) &amp;&amp;</span></span>
+<span id="L85"><span class="lineNum">      85</span> <span class="tlaGNC">          11 :          isBalanced(node-&gt;right);</span></span>
 <span id="L86"><span class="lineNum">      86</span>              : }</span>
 <span id="L87"><span class="lineNum">      87</span>              : </span>
 <span id="L88"><span class="lineNum">      88</span>              : // Проверка баланса дерева</span>
 <span id="L89"><span class="lineNum">      89</span>              : template &lt;typename T&gt;</span>
-<span id="L90"><span class="lineNum">      90</span> <span class="tlaGNC">          42 : bool BinaryTree&lt;T&gt;::isBalanced() const {</span></span>
-<span id="L91"><span class="lineNum">      91</span> <span class="tlaGNC">          42 :   return isBalanced(root);</span></span>
+<span id="L90"><span class="lineNum">      90</span> <span class="tlaGNC">           3 : bool BinaryTree&lt;T&gt;::isBalanced() const {</span></span>
+<span id="L91"><span class="lineNum">      91</span> <span class="tlaGNC">           3 :   return isBalanced(root);</span></span>
 <span id="L92"><span class="lineNum">      92</span>              : }</span>
+<span id="L93"><span class="lineNum">      93</span>              : </span>
+<span id="L94"><span class="lineNum">      94</span>              : #include &lt;fstream&gt;</span>
+<span id="L95"><span class="lineNum">      95</span>              : #include &lt;stdexcept&gt;</span>
+<span id="L96"><span class="lineNum">      96</span>              : </span>
+<span id="L97"><span class="lineNum">      97</span>              : template &lt;typename T&gt;</span>
+<span id="L98"><span class="lineNum">      98</span>              : void BinaryTree&lt;T&gt;::serialize(const std::string&amp; filename) const {</span>
+<span id="L99"><span class="lineNum">      99</span>              :   std::ofstream ofs(filename, std::ios::binary);</span>
+<span id="L100"><span class="lineNum">     100</span>              :   if (!ofs.is_open()) {</span>
+<span id="L101"><span class="lineNum">     101</span>              :     throw std::runtime_error(&quot;Failed to open file for writing&quot;);</span>
+<span id="L102"><span class="lineNum">     102</span>              :   }</span>
+<span id="L103"><span class="lineNum">     103</span>              : </span>
+<span id="L104"><span class="lineNum">     104</span>              :   serializeHelper(ofs, root);</span>
+<span id="L105"><span class="lineNum">     105</span>              :   ofs.close();</span>
+<span id="L106"><span class="lineNum">     106</span>              : }</span>
+<span id="L107"><span class="lineNum">     107</span>              : </span>
+<span id="L108"><span class="lineNum">     108</span>              : template &lt;typename T&gt;</span>
+<span id="L109"><span class="lineNum">     109</span>              : void BinaryTree&lt;T&gt;::serializeHelper(std::ofstream&amp; ofs, Node* node) const {</span>
+<span id="L110"><span class="lineNum">     110</span>              :   if (!node) {</span>
+<span id="L111"><span class="lineNum">     111</span>              :     // Записываем &quot;нулевой&quot; узел для обозначения конца поддерева (или пустого</span>
+<span id="L112"><span class="lineNum">     112</span>              :     // узла)</span>
+<span id="L113"><span class="lineNum">     113</span>              :     ofs.write(reinterpret_cast&lt;const char*&gt;(&amp;node), sizeof(Node*));</span>
+<span id="L114"><span class="lineNum">     114</span>              :   } else {</span>
+<span id="L115"><span class="lineNum">     115</span>              :     // Записываем текущий узел</span>
+<span id="L116"><span class="lineNum">     116</span>              :     ofs.write(reinterpret_cast&lt;const char*&gt;(&amp;node-&gt;data), sizeof(T));</span>
+<span id="L117"><span class="lineNum">     117</span>              :     serializeHelper(ofs, node-&gt;left);</span>
+<span id="L118"><span class="lineNum">     118</span>              :     serializeHelper(ofs, node-&gt;right);</span>
+<span id="L119"><span class="lineNum">     119</span>              :   }</span>
+<span id="L120"><span class="lineNum">     120</span>              : }</span>
+<span id="L121"><span class="lineNum">     121</span>              : </span>
+<span id="L122"><span class="lineNum">     122</span>              : template &lt;typename T&gt;</span>
+<span id="L123"><span class="lineNum">     123</span>              : void BinaryTree&lt;T&gt;::deserialize(const std::string&amp; filename) {</span>
+<span id="L124"><span class="lineNum">     124</span>              :   std::ifstream ifs(filename, std::ios::binary);</span>
+<span id="L125"><span class="lineNum">     125</span>              :   if (!ifs.is_open()) {</span>
+<span id="L126"><span class="lineNum">     126</span>              :     throw std::runtime_error(&quot;Failed to open file for reading&quot;);</span>
+<span id="L127"><span class="lineNum">     127</span>              :   }</span>
+<span id="L128"><span class="lineNum">     128</span>              : </span>
+<span id="L129"><span class="lineNum">     129</span>              :   root = deserializeHelper(ifs);</span>
+<span id="L130"><span class="lineNum">     130</span>              :   ifs.close();</span>
+<span id="L131"><span class="lineNum">     131</span>              : }</span>
+<span id="L132"><span class="lineNum">     132</span>              : </span>
+<span id="L133"><span class="lineNum">     133</span>              : template &lt;typename T&gt;</span>
+<span id="L134"><span class="lineNum">     134</span>              : typename BinaryTree&lt;T&gt;::Node* BinaryTree&lt;T&gt;::deserializeHelper(</span>
+<span id="L135"><span class="lineNum">     135</span>              :     std::ifstream&amp; ifs) {</span>
+<span id="L136"><span class="lineNum">     136</span>              :   T value;</span>
+<span id="L137"><span class="lineNum">     137</span>              :   ifs.read(reinterpret_cast&lt;char*&gt;(&amp;value), sizeof(T));</span>
+<span id="L138"><span class="lineNum">     138</span>              : </span>
+<span id="L139"><span class="lineNum">     139</span>              :   // Если узел пустой, возвращаем nullptr</span>
+<span id="L140"><span class="lineNum">     140</span>              :   if (ifs.eof()) {</span>
+<span id="L141"><span class="lineNum">     141</span>              :     return nullptr;</span>
+<span id="L142"><span class="lineNum">     142</span>              :   }</span>
+<span id="L143"><span class="lineNum">     143</span>              : </span>
+<span id="L144"><span class="lineNum">     144</span>              :   Node* node = new Node(value);</span>
+<span id="L145"><span class="lineNum">     145</span>              :   node-&gt;left = deserializeHelper(ifs);</span>
+<span id="L146"><span class="lineNum">     146</span>              :   node-&gt;right = deserializeHelper(ifs);</span>
+<span id="L147"><span class="lineNum">     147</span>              : </span>
+<span id="L148"><span class="lineNum">     148</span>              :   return node;</span>
+<span id="L149"><span class="lineNum">     149</span>              : }</span>
         </pre>
               </td>
             </tr>

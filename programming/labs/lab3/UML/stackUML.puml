@@ -1,0 +1,26 @@
+@startuml
+
+class Stack {
+    - head : Node*
+    - size : int
+
+    + Stack()
+    + ~Stack()
+    + GetSize() : int
+    + push(data : T) : void
+    + pop() : void
+    + print() : void
+    + fillFromFile(filename : string) : void
+    + writeToFile(filename : string) : void
+
+    class Node {
+        - pNext : Node*
+        - data : T
+
+        + Node(data : T, pNext : Node*)
+    }
+
+    Stack "1" *-- "*" Node : contains
+}
+
+@enduml

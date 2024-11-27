@@ -327,5 +327,9 @@ CMakeFiles/BinaryTreeTest_app.dir/BinaryTreeTest.cpp.o: \
  /home/vlad/vsCode/2_course/programming/labs/lab3/lib/googletest/googlemock/include/gmock/gmock-more-matchers.h \
  /home/vlad/vsCode/2_course/programming/labs/lab3/lib/googletest/googlemock/include/gmock/gmock-nice-strict.h \
  /home/vlad/vsCode/2_course/programming/labs/lab3/Test/../headers/binaryTree.hpp \
+ /usr/include/c++/13/fstream \
+ /usr/include/x86_64-linux-gnu/c++/13/bits/basic_file.h \
+ /usr/include/x86_64-linux-gnu/c++/13/bits/c++io.h \
+ /usr/include/c++/13/bits/fstream.tcc \
  /home/vlad/vsCode/2_course/programming/labs/lab3/Test/../headers/../source/binaryTree.cpp \
  /home/vlad/vsCode/2_course/programming/labs/lab3/Test/../headers/../source/../headers/binaryTree.hpp
