@@ -250,6 +250,19 @@ StackTest_app/fast:
 .PHONY : StackTest_app/fast
 
 #=============================================================================
+# Target rules for targets named SetTest_app
+
+# Build rule for target.
+SetTest_app: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 SetTest_app
+.PHONY : SetTest_app
+
+# fast build rule for target.
+SetTest_app/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SetTest_app.dir/build.make CMakeFiles/SetTest_app.dir/build
+.PHONY : SetTest_app/fast
+
+#=============================================================================
 # Target rules for targets named coverage
 
 # Build rule for target.
@@ -434,6 +447,30 @@ QueueTest.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/QueueTest_app.dir/build.make CMakeFiles/QueueTest_app.dir/QueueTest.cpp.s
 .PHONY : QueueTest.cpp.s
 
+SetTest.o: SetTest.cpp.o
+.PHONY : SetTest.o
+
+# target to build an object file
+SetTest.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SetTest_app.dir/build.make CMakeFiles/SetTest_app.dir/SetTest.cpp.o
+.PHONY : SetTest.cpp.o
+
+SetTest.i: SetTest.cpp.i
+.PHONY : SetTest.i
+
+# target to preprocess a source file
+SetTest.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SetTest_app.dir/build.make CMakeFiles/SetTest_app.dir/SetTest.cpp.i
+.PHONY : SetTest.cpp.i
+
+SetTest.s: SetTest.cpp.s
+.PHONY : SetTest.s
+
+# target to generate assembly for a file
+SetTest.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SetTest_app.dir/build.make CMakeFiles/SetTest_app.dir/SetTest.cpp.s
+.PHONY : SetTest.cpp.s
+
 StackTest.o: StackTest.cpp.o
 .PHONY : StackTest.o
 
@@ -477,6 +514,7 @@ help:
 	@echo "... DListTest_app"
 	@echo "... OListTest_app"
 	@echo "... QueueTest_app"
+	@echo "... SetTest_app"
 	@echo "... StackTest_app"
 	@echo "... gmock"
 	@echo "... gmock_main"
@@ -497,6 +535,9 @@ help:
 	@echo "... QueueTest.o"
 	@echo "... QueueTest.i"
 	@echo "... QueueTest.s"
+	@echo "... SetTest.o"
+	@echo "... SetTest.i"
+	@echo "... SetTest.s"
 	@echo "... StackTest.o"
 	@echo "... StackTest.i"
 	@echo "... StackTest.s"

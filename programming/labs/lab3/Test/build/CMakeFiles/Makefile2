@@ -69,6 +69,7 @@ all: CMakeFiles/DListTest_app.dir/all
 all: CMakeFiles/OListTest_app.dir/all
 all: CMakeFiles/QueueTest_app.dir/all
 all: CMakeFiles/StackTest_app.dir/all
+all: CMakeFiles/SetTest_app.dir/all
 all: googletest_build/all
 .PHONY : all
 
@@ -83,6 +84,7 @@ clean: CMakeFiles/DListTest_app.dir/clean
 clean: CMakeFiles/OListTest_app.dir/clean
 clean: CMakeFiles/QueueTest_app.dir/clean
 clean: CMakeFiles/StackTest_app.dir/clean
+clean: CMakeFiles/SetTest_app.dir/clean
 clean: CMakeFiles/coverage.dir/clean
 clean: googletest_build/clean
 .PHONY : clean
@@ -293,7 +295,7 @@ CMakeFiles/StackTest_app.dir/all: googletest_build/googletest/CMakeFiles/gtest.d
 CMakeFiles/StackTest_app.dir/all: googletest_build/googletest/CMakeFiles/gtest_main.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/StackTest_app.dir/build.make CMakeFiles/StackTest_app.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/StackTest_app.dir/build.make CMakeFiles/StackTest_app.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/CMakeFiles --progress-num=11,12 "Built target StackTest_app"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/CMakeFiles --progress-num=13,14 "Built target StackTest_app"
 .PHONY : CMakeFiles/StackTest_app.dir/all
 
 # Build rule for subdir invocation for target.
@@ -313,6 +315,35 @@ CMakeFiles/StackTest_app.dir/clean:
 .PHONY : CMakeFiles/StackTest_app.dir/clean
 
 #=============================================================================
+# Target rules for target CMakeFiles/SetTest_app.dir
+
+# All Build rule for target.
+CMakeFiles/SetTest_app.dir/all: googletest_build/googlemock/CMakeFiles/gmock.dir/all
+CMakeFiles/SetTest_app.dir/all: googletest_build/googlemock/CMakeFiles/gmock_main.dir/all
+CMakeFiles/SetTest_app.dir/all: googletest_build/googletest/CMakeFiles/gtest.dir/all
+CMakeFiles/SetTest_app.dir/all: googletest_build/googletest/CMakeFiles/gtest_main.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SetTest_app.dir/build.make CMakeFiles/SetTest_app.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SetTest_app.dir/build.make CMakeFiles/SetTest_app.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/CMakeFiles --progress-num=11,12 "Built target SetTest_app"
+.PHONY : CMakeFiles/SetTest_app.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/SetTest_app.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/CMakeFiles 10
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/SetTest_app.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/CMakeFiles 0
+.PHONY : CMakeFiles/SetTest_app.dir/rule
+
+# Convenience name for target.
+SetTest_app: CMakeFiles/SetTest_app.dir/rule
+.PHONY : SetTest_app
+
+# clean rule for target.
+CMakeFiles/SetTest_app.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SetTest_app.dir/build.make CMakeFiles/SetTest_app.dir/clean
+.PHONY : CMakeFiles/SetTest_app.dir/clean
+
+#=============================================================================
 # Target rules for target CMakeFiles/coverage.dir
 
 # All Build rule for target.
@@ -320,14 +351,17 @@ CMakeFiles/coverage.dir/all: CMakeFiles/ArrayTest_app.dir/all
 CMakeFiles/coverage.dir/all: CMakeFiles/BinaryTreeTest_app.dir/all
 CMakeFiles/coverage.dir/all: CMakeFiles/DListTest_app.dir/all
 CMakeFiles/coverage.dir/all: CMakeFiles/OListTest_app.dir/all
+CMakeFiles/coverage.dir/all: CMakeFiles/QueueTest_app.dir/all
+CMakeFiles/coverage.dir/all: CMakeFiles/StackTest_app.dir/all
+CMakeFiles/coverage.dir/all: CMakeFiles/SetTest_app.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/coverage.dir/build.make CMakeFiles/coverage.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/coverage.dir/build.make CMakeFiles/coverage.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/CMakeFiles --progress-num=13 "Built target coverage"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/CMakeFiles --progress-num=15 "Built target coverage"
 .PHONY : CMakeFiles/coverage.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/coverage.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/CMakeFiles 17
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/CMakeFiles 23
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/coverage.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/CMakeFiles 0
 .PHONY : CMakeFiles/coverage.dir/rule
@@ -348,7 +382,7 @@ CMakeFiles/coverage.dir/clean:
 googletest_build/googlemock/CMakeFiles/gmock.dir/all: googletest_build/googletest/CMakeFiles/gtest.dir/all
 	$(MAKE) $(MAKESILENT) -f googletest_build/googlemock/CMakeFiles/gmock.dir/build.make googletest_build/googlemock/CMakeFiles/gmock.dir/depend
 	$(MAKE) $(MAKESILENT) -f googletest_build/googlemock/CMakeFiles/gmock.dir/build.make googletest_build/googlemock/CMakeFiles/gmock.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/CMakeFiles --progress-num=14,15 "Built target gmock"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/CMakeFiles --progress-num=16,17 "Built target gmock"
 .PHONY : googletest_build/googlemock/CMakeFiles/gmock.dir/all
 
 # Build rule for subdir invocation for target.
@@ -375,7 +409,7 @@ googletest_build/googlemock/CMakeFiles/gmock_main.dir/all: googletest_build/goog
 googletest_build/googlemock/CMakeFiles/gmock_main.dir/all: googletest_build/googletest/CMakeFiles/gtest.dir/all
 	$(MAKE) $(MAKESILENT) -f googletest_build/googlemock/CMakeFiles/gmock_main.dir/build.make googletest_build/googlemock/CMakeFiles/gmock_main.dir/depend
 	$(MAKE) $(MAKESILENT) -f googletest_build/googlemock/CMakeFiles/gmock_main.dir/build.make googletest_build/googlemock/CMakeFiles/gmock_main.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/CMakeFiles --progress-num=16,17 "Built target gmock_main"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/CMakeFiles --progress-num=18,19 "Built target gmock_main"
 .PHONY : googletest_build/googlemock/CMakeFiles/gmock_main.dir/all
 
 # Build rule for subdir invocation for target.
@@ -401,7 +435,7 @@ googletest_build/googlemock/CMakeFiles/gmock_main.dir/clean:
 googletest_build/googletest/CMakeFiles/gtest.dir/all:
 	$(MAKE) $(MAKESILENT) -f googletest_build/googletest/CMakeFiles/gtest.dir/build.make googletest_build/googletest/CMakeFiles/gtest.dir/depend
 	$(MAKE) $(MAKESILENT) -f googletest_build/googletest/CMakeFiles/gtest.dir/build.make googletest_build/googletest/CMakeFiles/gtest.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/CMakeFiles --progress-num=18,19 "Built target gtest"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/CMakeFiles --progress-num=20,21 "Built target gtest"
 .PHONY : googletest_build/googletest/CMakeFiles/gtest.dir/all
 
 # Build rule for subdir invocation for target.
@@ -427,7 +461,7 @@ googletest_build/googletest/CMakeFiles/gtest.dir/clean:
 googletest_build/googletest/CMakeFiles/gtest_main.dir/all: googletest_build/googletest/CMakeFiles/gtest.dir/all
 	$(MAKE) $(MAKESILENT) -f googletest_build/googletest/CMakeFiles/gtest_main.dir/build.make googletest_build/googletest/CMakeFiles/gtest_main.dir/depend
 	$(MAKE) $(MAKESILENT) -f googletest_build/googletest/CMakeFiles/gtest_main.dir/build.make googletest_build/googletest/CMakeFiles/gtest_main.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/CMakeFiles --progress-num=20,21 "Built target gtest_main"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/CMakeFiles --progress-num=22,23 "Built target gtest_main"
 .PHONY : googletest_build/googletest/CMakeFiles/gtest_main.dir/all
 
 # Build rule for subdir invocation for target.

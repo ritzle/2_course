@@ -80,6 +80,7 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/OListTest_app.dir/DependInfo.cmake"
   "CMakeFiles/QueueTest_app.dir/DependInfo.cmake"
   "CMakeFiles/StackTest_app.dir/DependInfo.cmake"
+  "CMakeFiles/SetTest_app.dir/DependInfo.cmake"
   "CMakeFiles/coverage.dir/DependInfo.cmake"
   "googletest_build/googlemock/CMakeFiles/gmock.dir/DependInfo.cmake"
   "googletest_build/googlemock/CMakeFiles/gmock_main.dir/DependInfo.cmake"

@@ -1,0 +1,1 @@
+/usr/bin/c++  -fprofile-arcs -ftest-coverage CMakeFiles/SetTest_app.dir/SetTest.cpp.o -o SetTest_app  lib/libgtest_main.a lib/libgmock_main.a lib/libgmock.a lib/libgtest.a 

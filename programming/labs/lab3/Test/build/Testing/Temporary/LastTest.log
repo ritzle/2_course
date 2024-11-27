@@ -1,10 +1,10 @@
-Start testing: Nov 27 03:08 +07
+Start testing: Nov 27 09:50 +07
 ----------------------------------------------------------
-1/6 Testing: ArrayTest
-1/6 Test: ArrayTest
+1/7 Testing: ArrayTest
+1/7 Test: ArrayTest
 Command: "/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/ArrayTest_app"
 Directory: /home/vlad/vsCode/2_course/programming/labs/lab3/Test/build
-"ArrayTest" start time: Nov 27 03:08 +07
+"ArrayTest" start time: Nov 27 09:50 +07
 Output:
 ----------------------------------------------------------
 [==========] Running 22 tests from 2 test suites.
@@ -72,15 +72,15 @@ Data successfully loaded from /home/vlad/vsCode/2_course/programming/labs/lab3/T
 Test time =   0.00 sec
 ----------------------------------------------------------
 Test Passed.
-"ArrayTest" end time: Nov 27 03:08 +07
+"ArrayTest" end time: Nov 27 09:50 +07
 "ArrayTest" time elapsed: 00:00:00
 ----------------------------------------------------------
 
-2/6 Testing: BinaryTreeTest
-2/6 Test: BinaryTreeTest
+2/7 Testing: BinaryTreeTest
+2/7 Test: BinaryTreeTest
 Command: "/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/BinaryTreeTest_app"
 Directory: /home/vlad/vsCode/2_course/programming/labs/lab3/Test/build
-"BinaryTreeTest" start time: Nov 27 03:08 +07
+"BinaryTreeTest" start time: Nov 27 09:50 +07
 Output:
 ----------------------------------------------------------
 [==========] Running 8 tests from 2 test suites.
@@ -114,15 +114,15 @@ Output:
 Test time =   0.00 sec
 ----------------------------------------------------------
 Test Passed.
-"BinaryTreeTest" end time: Nov 27 03:08 +07
+"BinaryTreeTest" end time: Nov 27 09:50 +07
 "BinaryTreeTest" time elapsed: 00:00:00
 ----------------------------------------------------------
 
-3/6 Testing: DListTest
-3/6 Test: DListTest
+3/7 Testing: DListTest
+3/7 Test: DListTest
 Command: "/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/DListTest_app"
 Directory: /home/vlad/vsCode/2_course/programming/labs/lab3/Test/build
-"DListTest" start time: Nov 27 03:08 +07
+"DListTest" start time: Nov 27 09:50 +07
 Output:
 ----------------------------------------------------------
 [==========] Running 22 tests from 2 test suites.
@@ -184,15 +184,15 @@ Output:
 Test time =   0.00 sec
 ----------------------------------------------------------
 Test Passed.
-"DListTest" end time: Nov 27 03:08 +07
+"DListTest" end time: Nov 27 09:50 +07
 "DListTest" time elapsed: 00:00:00
 ----------------------------------------------------------
 
-4/6 Testing: OListTest
-4/6 Test: OListTest
+4/7 Testing: OListTest
+4/7 Test: OListTest
 Command: "/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/OListTest_app"
 Directory: /home/vlad/vsCode/2_course/programming/labs/lab3/Test/build
-"OListTest" start time: Nov 27 03:08 +07
+"OListTest" start time: Nov 27 09:50 +07
 Output:
 ----------------------------------------------------------
 [==========] Running 24 tests from 2 test suites.
@@ -258,15 +258,15 @@ Output:
 Test time =   0.00 sec
 ----------------------------------------------------------
 Test Passed.
-"OListTest" end time: Nov 27 03:08 +07
+"OListTest" end time: Nov 27 09:50 +07
 "OListTest" time elapsed: 00:00:00
 ----------------------------------------------------------
 
-5/6 Testing: QueueTest
-5/6 Test: QueueTest
+5/7 Testing: QueueTest
+5/7 Test: QueueTest
 Command: "/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/QueueTest_app"
 Directory: /home/vlad/vsCode/2_course/programming/labs/lab3/Test/build
-"QueueTest" start time: Nov 27 03:08 +07
+"QueueTest" start time: Nov 27 09:50 +07
 Output:
 ----------------------------------------------------------
 Running main() from /home/vlad/vsCode/2_course/programming/labs/lab3/lib/googletest/googletest/src/gtest_main.cc
@@ -309,15 +309,15 @@ Running main() from /home/vlad/vsCode/2_course/programming/labs/lab3/lib/googlet
 Test time =   0.00 sec
 ----------------------------------------------------------
 Test Passed.
-"QueueTest" end time: Nov 27 03:08 +07
+"QueueTest" end time: Nov 27 09:50 +07
 "QueueTest" time elapsed: 00:00:00
 ----------------------------------------------------------
 
-6/6 Testing: StackTest
-6/6 Test: StackTest
+6/7 Testing: StackTest
+6/7 Test: StackTest
 Command: "/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/StackTest_app"
 Directory: /home/vlad/vsCode/2_course/programming/labs/lab3/Test/build
-"StackTest" start time: Nov 27 03:08 +07
+"StackTest" start time: Nov 27 09:50 +07
 Output:
 ----------------------------------------------------------
 Running main() from /home/vlad/vsCode/2_course/programming/labs/lab3/lib/googletest/googletest/src/gtest_main.cc
@@ -360,8 +360,66 @@ Running main() from /home/vlad/vsCode/2_course/programming/labs/lab3/lib/googlet
 Test time =   0.00 sec
 ----------------------------------------------------------
 Test Passed.
-"StackTest" end time: Nov 27 03:08 +07
+"StackTest" end time: Nov 27 09:50 +07
 "StackTest" time elapsed: 00:00:00
 ----------------------------------------------------------
 
-End testing: Nov 27 03:08 +07
+7/7 Testing: SetTest
+7/7 Test: SetTest
+Command: "/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/SetTest_app"
+Directory: /home/vlad/vsCode/2_course/programming/labs/lab3/Test/build
+"SetTest" start time: Nov 27 09:50 +07
+Output:
+----------------------------------------------------------
+[==========] Running 16 tests from 2 test suites.
+[----------] Global test environment set-up.
+[----------] 8 tests from SetTest/0, where TypeParam = int
+[ RUN      ] SetTest/0.TestEmplaceBack
+[       OK ] SetTest/0.TestEmplaceBack (0 ms)
+[ RUN      ] SetTest/0.TestErase
+[       OK ] SetTest/0.TestErase (0 ms)
+[ RUN      ] SetTest/0.TestEraseByValue
+[       OK ] SetTest/0.TestEraseByValue (0 ms)
+[ RUN      ] SetTest/0.TestReplace
+[       OK ] SetTest/0.TestReplace (0 ms)
+[ RUN      ] SetTest/0.TestGetSize
+[       OK ] SetTest/0.TestGetSize (0 ms)
+[ RUN      ] SetTest/0.TestContains
+[       OK ] SetTest/0.TestContains (0 ms)
+[ RUN      ] SetTest/0.TestResize
+[       OK ] SetTest/0.TestResize (0 ms)
+[ RUN      ] SetTest/0.TestExceptions
+[       OK ] SetTest/0.TestExceptions (0 ms)
+[----------] 8 tests from SetTest/0 (0 ms total)
+
+[----------] 8 tests from SetTest/1, where TypeParam = std::basic_string<char,std::char_traits<char>,std::allocator<char> >
+[ RUN      ] SetTest/1.TestEmplaceBack
+[       OK ] SetTest/1.TestEmplaceBack (0 ms)
+[ RUN      ] SetTest/1.TestErase
+[       OK ] SetTest/1.TestErase (0 ms)
+[ RUN      ] SetTest/1.TestEraseByValue
+[       OK ] SetTest/1.TestEraseByValue (0 ms)
+[ RUN      ] SetTest/1.TestReplace
+[       OK ] SetTest/1.TestReplace (0 ms)
+[ RUN      ] SetTest/1.TestGetSize
+[       OK ] SetTest/1.TestGetSize (0 ms)
+[ RUN      ] SetTest/1.TestContains
+[       OK ] SetTest/1.TestContains (0 ms)
+[ RUN      ] SetTest/1.TestResize
+[       OK ] SetTest/1.TestResize (0 ms)
+[ RUN      ] SetTest/1.TestExceptions
+[       OK ] SetTest/1.TestExceptions (0 ms)
+[----------] 8 tests from SetTest/1 (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 16 tests from 2 test suites ran. (0 ms total)
+[  PASSED  ] 16 tests.
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"SetTest" end time: Nov 27 09:50 +07
+"SetTest" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Nov 27 09:50 +07

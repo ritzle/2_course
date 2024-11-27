@@ -18,7 +18,6 @@ add_executable(ArrayTest_app ArrayTest.cpp)
 target_link_libraries(ArrayTest_app gtest_main gmock_main)
 add_test(NAME ArrayTest COMMAND ArrayTest_app)
 
-
 add_executable(BinaryTreeTest_app BinaryTreeTest.cpp)
 target_link_libraries(BinaryTreeTest_app gtest_main gmock_main)
 add_test(NAME BinaryTreeTest COMMAND BinaryTreeTest_app)
@@ -39,6 +38,10 @@ add_executable(StackTest_app StackTest.cpp)
 target_link_libraries(StackTest_app gtest_main gmock_main)
 add_test(NAME StackTest COMMAND StackTest_app)
 
+add_executable(SetTest_app SetTest.cpp)
+target_link_libraries(SetTest_app gtest_main gmock_main)
+add_test(NAME SetTest COMMAND SetTest_app)
+
 # Настроим сбор данных покрытия
 add_custom_target(
     coverage
@@ -46,5 +49,5 @@ add_custom_target(
     COMMAND lcov --capture --directory . --output-file coverage.info --include '*.cpp'
     COMMAND genhtml coverage.info --output-directory out --ignore-errors mismatch
     COMMENT "Running tests, collecting coverage, and generating HTML report"
-    DEPENDS ArrayTest_app BinaryTreeTest_app DListTest_app OListTest_app QueueTest StackTest
+    DEPENDS ArrayTest_app BinaryTreeTest_app DListTest_app OListTest_app QueueTest_app StackTest_app SetTest_app
 )

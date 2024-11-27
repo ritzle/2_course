@@ -4,6 +4,7 @@
 /home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/CMakeFiles/OListTest_app.dir
 /home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/CMakeFiles/QueueTest_app.dir
 /home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/CMakeFiles/StackTest_app.dir
+/home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/CMakeFiles/SetTest_app.dir
 /home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/CMakeFiles/coverage.dir
 /home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/CMakeFiles/test.dir
 /home/vlad/vsCode/2_course/programming/labs/lab3/Test/build/CMakeFiles/edit_cache.dir
