@@ -8,7 +8,7 @@
 
 using namespace std;
 
-#define BOMB_COUNT 20  // Количество бомб
+bool gameOver = false;
 
 enum class TextureType {
   Bomb,
@@ -22,7 +22,8 @@ enum class TextureType {
   Eight,
   Covered,
   Flag,
-  Empty
+  Empty,
+  BombExplotion
 };
 
 class TextureManager {
@@ -59,6 +60,9 @@ class TextureManager {
     loadTexture(
         TextureType::Empty,
         "/home/vlad/vsCode/2_course/programming/labs/lab5/image/openLayer.png");
+    loadTexture(TextureType::BombExplotion,
+                "/home/vlad/vsCode/2_course/programming/labs/lab5/image/"
+                "bombExplosion.png");
   }
 
   static const sf::Texture& getTexture(TextureType type) {
@@ -85,7 +89,8 @@ class Cell {
   Cell() : isCovered(true), isFlagged(false) {}
   virtual ~Cell() = default;
 
-  virtual void draw(sf::RenderWindow& window, int x, int y, int cellSize) = 0;
+  virtual void draw(sf::RenderWindow& window, int x, int y, int cellSize,
+                    int yOffset) = 0;
   virtual bool isBomb() const = 0;
   virtual int getValue() const = 0;
 
@@ -97,16 +102,23 @@ class Cell {
 
 class BombCell : public Cell {
  public:
-  void draw(sf::RenderWindow& window, int x, int y, int cellSize) override {
+  bool explosion = false;
+
+  void draw(sf::RenderWindow& window, int x, int y, int cellSize,
+            int yOffset) override {
     sf::RectangleShape cell(sf::Vector2f(cellSize - 1, cellSize - 1));
-    cell.setPosition(x * cellSize, y * cellSize);
+    cell.setPosition(x * cellSize, y * cellSize + yOffset);
+    cell.setOutlineThickness(1);
+    cell.setOutlineColor(sf::Color::Black);
 
     if (isCovered) {
       cell.setTexture(hasFlag()
                           ? &TextureManager::getTexture(TextureType::Flag)
                           : &TextureManager::getTexture(TextureType::Covered));
-    } else {
+    } else if (explosion == 0) {
       cell.setTexture(&TextureManager::getTexture(TextureType::Bomb));
+    } else {
+      cell.setTexture(&TextureManager::getTexture(TextureType::BombExplotion));
     }
 
     window.draw(cell);
@@ -123,17 +135,19 @@ class NumberCell : public Cell {
  public:
   explicit NumberCell(int value) : value(value) {}
 
-  void draw(sf::RenderWindow& window, int x, int y, int cellSize) override {
+  void draw(sf::RenderWindow& window, int x, int y, int cellSize,
+            int yOffset) override {
     sf::RectangleShape cell(sf::Vector2f(cellSize - 1, cellSize - 1));
-    cell.setPosition(x * cellSize, y * cellSize);
+    cell.setPosition(x * cellSize, y * cellSize + yOffset);
+    cell.setOutlineThickness(1);
+    cell.setOutlineColor(sf::Color::Black);
 
     if (isCovered) {
       cell.setTexture(hasFlag()
                           ? &TextureManager::getTexture(TextureType::Flag)
                           : &TextureManager::getTexture(TextureType::Covered));
     } else if (value == 0) {
-      cell.setTexture(&TextureManager::getTexture(
-          static_cast<TextureType>(TextureType::Empty)));
+      cell.setTexture(&TextureManager::getTexture(TextureType::Empty));
     } else if (value > 0 && value <= 8) {
       cell.setTexture(&TextureManager::getTexture(
           static_cast<TextureType>(static_cast<int>(TextureType::One) + value -
@@ -160,22 +174,10 @@ class CellFactory {
 
 map<TextureType, sf::Texture> TextureManager::textures;
 
-int main() {
-  const int n = 10;         // Размер поля
-  const int cellSize = 50;  // Размер клетки
-  const int windowSize = n * cellSize;
-
-  TextureManager::loadTextures();
-
-  sf::RenderWindow window(sf::VideoMode(windowSize, windowSize), "Minesweeper");
-
-  srand(static_cast<unsigned>(time(0)));
-
-  vector<vector<shared_ptr<Cell>>> field(n, vector<shared_ptr<Cell>>(n));
-
-  // Ставим бомбы
+// Функция для установки бомб
+void placeBombs(vector<vector<shared_ptr<Cell>>>& field, int n, int bombCount) {
   int bombsPlaced = 0;
-  while (bombsPlaced < BOMB_COUNT) {
+  while (bombsPlaced < bombCount) {
     int x = rand() % n;
     int y = rand() % n;
 
@@ -184,8 +186,10 @@ int main() {
       bombsPlaced++;
     }
   }
+}
 
-  // Заполняем оставшиеся клетки числами
+// Функция для подсчета соседних бомб и установки числовых ячеек
+void populateNumbers(vector<vector<shared_ptr<Cell>>>& field, int n) {
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
       if (!field[i][j]) {
@@ -207,8 +211,44 @@ int main() {
       }
     }
   }
+}
 
-  // Главный цикл
+sf::RectangleShape createButton(int width, int height, int x, int y,
+                                sf::Color color) {
+  sf::RectangleShape button(sf::Vector2f(width, height));
+  button.setPosition(x, y);
+  button.setFillColor(color);
+  button.setOutlineThickness(2);
+  button.setOutlineColor(sf::Color::Black);
+  return button;
+}
+
+void restartGame(vector<vector<shared_ptr<Cell>>>& field, int n,
+                 int countBobm) {
+  field.clear();
+  field.resize(n, vector<shared_ptr<Cell>>(n));
+
+  placeBombs(field, n, countBobm);
+  populateNumbers(field, n);
+  gameOver = false;
+}
+
+void revealAllBombs(vector<vector<shared_ptr<Cell>>>& field, int n) {
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < n; ++j) {
+      if (field[i][j]->isBomb()) {
+        field[i][j]->uncover();  // Открываем все бомбы
+      }
+    }
+  }
+}
+
+void gameLoop(sf::RenderWindow& window, vector<vector<shared_ptr<Cell>>>& field,
+              int n, int cellSize, int yOffset, int countBobm) {
+  // Создаём кнопку
+  sf::RectangleShape button = createButton(
+      cellSize * 2, 50, cellSize * n / 2 - cellSize, 5, sf::Color::Yellow);
+
   while (window.isOpen()) {
     sf::Event event;
     while (window.pollEvent(event)) {
@@ -217,13 +257,40 @@ int main() {
       }
 
       if (event.type == sf::Event::MouseButtonPressed) {
-        int x = event.mouseButton.x / cellSize;
-        int y = event.mouseButton.y / cellSize;
+        int mouseX = event.mouseButton.x;
+        int mouseY = event.mouseButton.y;
+
+        // Проверяем нажатие на кнопку
+        if (button.getGlobalBounds().contains(mouseX, mouseY)) {
+          cout << "Button clicked!" << endl;
+          restartGame(field, n, countBobm);
+          continue;
+        }
+
+        if (gameOver) {
+          continue;
+        }
+
+        // Проверяем нажатие на игровое поле
+        int x = mouseX / cellSize;
+        int y = (mouseY - yOffset) / cellSize;  // костыль со смещением
 
         if (x >= 0 && x < n && y >= 0 && y < n) {
           if (event.mouseButton.button == sf::Mouse::Left) {
-            field[y][x]->uncover();
+            // Проверяем, не стоит ли флаг на клетке
+            if (field[y][x]->hasFlag()) {
+              continue;
+            } else {
+              if (field[y][x]->isBomb()) {
+                static_cast<BombCell*>(field[y][x].get())->explosion = true;
+                revealAllBombs(field, n);
+                gameOver = true;
+              } else {
+                field[y][x]->uncover();  // Открыть клетку, если флага нет
+              }
+            }
           } else if (event.mouseButton.button == sf::Mouse::Right) {
+            // Переключение флага на клетке
             field[y][x]->toggleFlag();
           }
         }
@@ -232,14 +299,77 @@ int main() {
 
     window.clear(sf::Color::White);
 
+    window.draw(button);
+
     for (int i = 0; i < n; ++i) {
       for (int j = 0; j < n; ++j) {
-        field[i][j]->draw(window, j, i, cellSize);
+        field[i][j]->draw(window, j, i, cellSize, yOffset);
       }
     }
 
     window.display();
   }
+}
+
+#include <SFML/Graphics.hpp>
+#include <cstdlib>
+#include <ctime>
+#include <iostream>
+#include <map>
+#include <memory>
+#include <vector>
+
+using namespace std;
+
+#define BOMB_COUNT 20
+
+// Прочие объявления (классы и функции) из предыдущего кода...
+
+int main(int argc, char* argv[]) {
+  int n = 10;          // Размер поля по умолчанию
+  int bombCount = 10;  // Количество бомб по умолчанию
+
+  // Проверка, переданы ли параметры командной строки
+  if (argc == 3) {
+    try {
+      // Преобразуем строки в числа
+      n = stoi(argv[1]);
+      bombCount = stoi(argv[2]);
+
+      // Проверка на корректность значений
+      if (n <= 0 || bombCount <= 0 || bombCount >= n * n) {
+        throw invalid_argument("Некорректные параметры!");
+      }
+    } catch (const exception& e) {
+      cerr << "Ошибка: " << e.what() << endl;
+      cerr << "Используются значения по умолчанию: поле 10x10, бомб 10."
+           << endl;
+    }
+  } else if (argc != 1) {
+    cerr
+        << "Неверное количество параметров. Используются значения по умолчанию."
+        << endl;
+  }
+
+  const int cellSize = 50;  // Размер клетки
+  int yOffset = 60;  // Смещение игрового поля вниз
+
+  const int windowWidth = n * cellSize;
+  const int windowHeight = n * cellSize + yOffset;
+
+  TextureManager::loadTextures();
+
+  sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight),
+                          "Minesweeper");
+
+  srand(static_cast<unsigned>(time(0)));
+
+  vector<vector<shared_ptr<Cell>>> field(n, vector<shared_ptr<Cell>>(n));
+
+  placeBombs(field, n, bombCount);
+
+  populateNumbers(field, n);
+  gameLoop(window, field, n, cellSize, yOffset, bombCount);
 
   return 0;
 }
