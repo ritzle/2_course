@@ -23,7 +23,9 @@ enum class TextureType {
   Covered,
   Flag,
   Empty,
-  BombExplotion
+  BombExplotion,
+  Smile,
+  SmileRip
 };
 
 class TextureManager {
@@ -63,6 +65,12 @@ class TextureManager {
     loadTexture(TextureType::BombExplotion,
                 "/home/vlad/vsCode/2_course/programming/labs/lab5/image/"
                 "bombExplosion.png");
+    loadTexture(TextureType::Smile,
+                "/home/vlad/vsCode/2_course/programming/labs/lab5/image/"
+                "smile.png");
+    loadTexture(TextureType::SmileRip,
+                "/home/vlad/vsCode/2_course/programming/labs/lab5/image/"
+                "smile_rip.png");
   }
 
   static const sf::Texture& getTexture(TextureType type) {
@@ -213,11 +221,23 @@ void populateNumbers(vector<vector<shared_ptr<Cell>>>& field, int n) {
   }
 }
 
+// FIXME надо как-то по другому оргонизовать создание кнопока
 sf::RectangleShape createButton(int width, int height, int x, int y,
                                 sf::Color color) {
   sf::RectangleShape button(sf::Vector2f(width, height));
   button.setPosition(x, y);
   button.setFillColor(color);
+  button.setOutlineThickness(2);
+  button.setOutlineColor(sf::Color::Black);
+  return button;
+}
+
+sf::RectangleShape createButton(int width, int height, int x, int y) {
+  sf::RectangleShape button(sf::Vector2f(width, height));
+  button.setPosition(x, y);
+  button.setTexture(gameOver == 0
+                        ? &TextureManager::getTexture(TextureType::Smile)
+                        : &TextureManager::getTexture(TextureType::SmileRip));
   button.setOutlineThickness(2);
   button.setOutlineColor(sf::Color::Black);
   return button;
@@ -243,11 +263,42 @@ void revealAllBombs(vector<vector<shared_ptr<Cell>>>& field, int n) {
   }
 }
 
+void openAdjacentCells(vector<vector<shared_ptr<Cell>>>& field, int i, int j,
+                       int n) {
+  // Пропускаем ячейки вне поля, открытые или с флагами
+  if (i < 0 || i >= n || j < 0 || j >= n || !field[i][j]->isCellCovered() ||
+      field[i][j]->hasFlag())
+    return;
+
+  // Открываем текущую ячейку
+  field[i][j]->uncover();
+
+  // Проверяем, является ли ячейка с числом
+  auto numberCell = dynamic_cast<NumberCell*>(field[i][j].get());
+  if (numberCell) {
+    // Если число больше 0, рекурсия не нужна
+    if (numberCell->getValue() > 0) return;
+  }
+
+  // Если число == 0, открываем соседние клетки рекурсивно
+  for (int dy = -1; dy <= 1; ++dy) {
+    for (int dx = -1; dx <= 1; ++dx) {
+      // Пропускаем центральную ячейку
+      if (dx == 0 && dy == 0) continue;
+
+      int nx = j + dx;  // Новая координата X
+      int ny = i + dy;  // Новая координата Y
+
+      openAdjacentCells(field, ny, nx, n);
+    }
+  }
+}
+
 void gameLoop(sf::RenderWindow& window, vector<vector<shared_ptr<Cell>>>& field,
               int n, int cellSize, int yOffset, int countBobm) {
   // Создаём кнопку
-  sf::RectangleShape button = createButton(
-      cellSize * 2, 50, cellSize * n / 2 - cellSize, 5, sf::Color::Yellow);
+  sf::RectangleShape button =
+      createButton(cellSize * 2, 50, cellSize * n / 2 - cellSize, 5);
 
   while (window.isOpen()) {
     sf::Event event;
@@ -262,8 +313,9 @@ void gameLoop(sf::RenderWindow& window, vector<vector<shared_ptr<Cell>>>& field,
 
         // Проверяем нажатие на кнопку
         if (button.getGlobalBounds().contains(mouseX, mouseY)) {
-          cout << "Button clicked!" << endl;
+          // cout << "Button clicked!" << endl;
           restartGame(field, n, countBobm);
+          button.setTexture(&TextureManager::getTexture(TextureType::Smile));
           continue;
         }
 
@@ -285,8 +337,10 @@ void gameLoop(sf::RenderWindow& window, vector<vector<shared_ptr<Cell>>>& field,
                 static_cast<BombCell*>(field[y][x].get())->explosion = true;
                 revealAllBombs(field, n);
                 gameOver = true;
+                button.setTexture(
+                    &TextureManager::getTexture(TextureType::SmileRip));
               } else {
-                field[y][x]->uncover();  // Открыть клетку, если флага нет
+                openAdjacentCells(field, y, x, n);
               }
             }
           } else if (event.mouseButton.button == sf::Mouse::Right) {
@@ -311,25 +365,12 @@ void gameLoop(sf::RenderWindow& window, vector<vector<shared_ptr<Cell>>>& field,
   }
 }
 
-#include <SFML/Graphics.hpp>
-#include <cstdlib>
-#include <ctime>
-#include <iostream>
-#include <map>
-#include <memory>
-#include <vector>
-
-using namespace std;
-
 #define BOMB_COUNT 20
 
-// Прочие объявления (классы и функции) из предыдущего кода...
-
 int main(int argc, char* argv[]) {
-  int n = 10;          // Размер поля по умолчанию
-  int bombCount = 10;  // Количество бомб по умолчанию
+  int n = 10;
+  int bombCount = 10;
 
-  // Проверка, переданы ли параметры командной строки
   if (argc == 3) {
     try {
       // Преобразуем строки в числа
