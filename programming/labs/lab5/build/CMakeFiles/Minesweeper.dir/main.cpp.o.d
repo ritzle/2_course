@@ -234,8 +234,8 @@ CMakeFiles/Minesweeper.dir/main.cpp.o: \
  /usr/include/SFML/Graphics/Glsl.hpp /usr/include/SFML/Graphics/Glsl.inl \
  /usr/include/SFML/Graphics/Sprite.hpp \
  /usr/include/SFML/Graphics/Text.hpp \
- /usr/include/SFML/Graphics/VertexBuffer.hpp /usr/include/c++/13/iostream \
- /usr/include/c++/13/istream /usr/include/c++/13/bits/istream.tcc \
+ /usr/include/SFML/Graphics/VertexBuffer.hpp \
+ /home/vlad/vsCode/2_course/programming/labs/lab5/headers/gameManager.h \
  /usr/include/c++/13/memory \
  /usr/include/c++/13/bits/stl_raw_storage_iter.h \
  /usr/include/c++/13/bits/align.h /usr/include/c++/13/bits/unique_ptr.h \
@@ -247,4 +247,13 @@ CMakeFiles/Minesweeper.dir/main.cpp.o: \
  /usr/include/c++/13/bits/atomic_base.h \
  /usr/include/c++/13/bits/atomic_lockfree_defines.h \
  /usr/include/c++/13/backward/auto_ptr.h \
- /usr/include/c++/13/pstl/glue_memory_defs.h
+ /usr/include/c++/13/pstl/glue_memory_defs.h \
+ /home/vlad/vsCode/2_course/programming/labs/lab5/headers/Cell.h \
+ /home/vlad/vsCode/2_course/programming/labs/lab5/headers/TextureManager.h \
+ /usr/include/c++/13/iostream /usr/include/c++/13/istream \
+ /usr/include/c++/13/bits/istream.tcc \
+ /home/vlad/vsCode/2_course/programming/labs/lab5/headers/../source/Cell.cpp \
+ /home/vlad/vsCode/2_course/programming/labs/lab5/headers/../source/../headers/Cell.h \
+ /home/vlad/vsCode/2_course/programming/labs/lab5/headers/../source/gameManager.cpp \
+ /home/vlad/vsCode/2_course/programming/labs/lab5/headers/../source/../headers/gameManager.h \
+ /usr/include/c++/13/sstream /usr/include/c++/13/bits/sstream.tcc

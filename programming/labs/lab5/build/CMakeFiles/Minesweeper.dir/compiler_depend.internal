@@ -3,6 +3,13 @@
 
 CMakeFiles/Minesweeper.dir/main.cpp.o
  /home/vlad/vsCode/2_course/programming/labs/lab5/main.cpp
+ /home/vlad/vsCode/2_course/programming/labs/lab5/headers/Cell.h
+ /home/vlad/vsCode/2_course/programming/labs/lab5/headers/gameManager.h
+ /home/vlad/vsCode/2_course/programming/labs/lab5/source/Cell.cpp
+ /home/vlad/vsCode/2_course/programming/labs/lab5/source/gameManager.cpp
+ /home/vlad/vsCode/2_course/programming/labs/lab5/headers/Cell.h
+ /home/vlad/vsCode/2_course/programming/labs/lab5/headers/TextureManager.h
+ /home/vlad/vsCode/2_course/programming/labs/lab5/headers/gameManager.h
  /usr/include/SFML/Config.hpp
  /usr/include/SFML/Graphics.hpp
  /usr/include/SFML/Graphics/BlendMode.hpp
@@ -139,6 +146,7 @@ CMakeFiles/Minesweeper.dir/main.cpp.o
  /usr/include/c++/13/bits/shared_ptr.h
  /usr/include/c++/13/bits/shared_ptr_atomic.h
  /usr/include/c++/13/bits/shared_ptr_base.h
+ /usr/include/c++/13/bits/sstream.tcc
  /usr/include/c++/13/bits/std_abs.h
  /usr/include/c++/13/bits/stl_algo.h
  /usr/include/c++/13/bits/stl_algobase.h
@@ -202,6 +210,7 @@ CMakeFiles/Minesweeper.dir/main.cpp.o
  /usr/include/c++/13/pstl/glue_algorithm_defs.h
  /usr/include/c++/13/pstl/glue_memory_defs.h
  /usr/include/c++/13/pstl/pstl_config.h
+ /usr/include/c++/13/sstream
  /usr/include/c++/13/stdexcept
  /usr/include/c++/13/streambuf
  /usr/include/c++/13/string
