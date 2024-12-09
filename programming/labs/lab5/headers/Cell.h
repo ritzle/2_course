@@ -2,8 +2,10 @@
 #define CELL_H
 
 #include <SFML/Graphics.hpp>
+#include <memory>
 
 #include "TextureManager.h"
+using namespace std;
 
 class Cell {
  protected:
@@ -64,4 +66,4 @@ class CellFactory {
 
 #include "../source/Cell.cpp"
 
-#endif  // CELL_H
+#endif
