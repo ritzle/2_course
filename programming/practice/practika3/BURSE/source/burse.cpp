@@ -1,4 +1,4 @@
-#include "../../headers/BURSE/burse.hpp"
+#include "../headers/BURSE/burse.hpp"
 
 Burse::Burse() {
   db.readingConfiguration(

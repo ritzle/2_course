@@ -37,5 +37,5 @@ class Burse {
   }
 };
 
-#include "../../source/BURSE/burse.cpp"
+#include "../../source/burse.cpp"
 #endif
