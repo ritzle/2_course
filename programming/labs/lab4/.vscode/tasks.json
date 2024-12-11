@@ -1,0 +1,31 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build",
+      "type": "shell",
+      "command": "g++", // Или "clang++" для macOS
+      "args": [
+        "-std=c++20",
+        "-g", // Включает отладочную информацию
+        "${file}", // Текущий открытый файл
+        "-o",
+        "${fileDirname}/your_program_name" // Имя выходного файла
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": ["$gcc"],
+      "detail": "Generated task by Debugger."
+    },
+    {
+      "label": "clean",
+      "type": "shell",
+      "command": "rm", // Для Windows используйте "del"
+      "args": ["${fileDirname}/your_program_name"],
+      "group": "clean",
+      "problemMatcher": []
+    }
+  ]
+}
