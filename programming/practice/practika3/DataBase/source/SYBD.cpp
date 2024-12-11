@@ -4,6 +4,8 @@
 #include <fstream>
 #include <stdexcept>
 
+#include "../lib/json.hpp"
+
 using json = nlohmann::json;
 using namespace std;
 
@@ -1073,4 +1075,10 @@ Array<string> DB::crossJoin(Array<string>& first, Array<string>& second) {
   }
 
   return result;  // Возвращаем результат
+}
+
+//------------------------------------------------------Биржа
+
+void DB::updateConfigurationBurse(string configData) {
+  cout << configData << endl;
 }

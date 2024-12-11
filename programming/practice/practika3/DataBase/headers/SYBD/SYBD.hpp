@@ -42,6 +42,9 @@ class DB {
   void applyDeleteConditions(const Array<string>& tableNames,
                              const Array<Array<string>>& conditions);
 
+  // команды для БИРЖЫ
+  void updateConfigurationBurse(string configData);
+
  private:
   Table& searchTable(const string& TableName);
   string trim(const string& str);
@@ -75,9 +78,6 @@ class DB {
 
   Array<string> crossJoin(Array<string>& first, Array<string>& second);
 
-  // TODO надо ли все эти функции в класс Table перенести???
-  // FIXME не совсем коректное название возможно, подрозумевается запись в
-  // фаил
   void updatePkSeqence(Table& table);
   void updateCSVFile(Table& table);  // только для вставки
   void updateLock(Table& table);
