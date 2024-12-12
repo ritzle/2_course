@@ -1,6 +1,13 @@
 {
   "files.associations": {
     "stdexcept": "cpp",
-    "ostream": "cpp"
+    "ostream": "cpp",
+    "*.ipp": "cpp",
+    "array": "cpp",
+    "string_view": "cpp",
+    "initializer_list": "cpp",
+    "ranges": "cpp",
+    "span": "cpp",
+    "valarray": "cpp"
   }
 }

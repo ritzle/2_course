@@ -134,10 +134,11 @@ void server_loop(const std::string& address, unsigned short port,
 }
 
 int main() {
-  std::string address = "127.0.0.1";  // Локальный адрес Биржи
-  unsigned short port = 8080;         // Порт Биржи
-  std::string db_ip = "127.0.0.1";    // IP-адрес сервера БД
-  int db_port = 7437;                 // Порт сервера БД
+  std::string address =
+      "0.0.0.0";  // Локальный адрес Биржи --- когда нули слушает все
+  unsigned short port = 8080;       // Порт Биржи
+  std::string db_ip = "127.0.0.1";  // IP-адрес сервера БД
+  int db_port = 7437;               // Порт сервера БД
 
   server_loop(address, port, db_ip, db_port);  // Запуск серверного цикла
 

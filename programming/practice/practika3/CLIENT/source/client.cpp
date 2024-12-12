@@ -80,7 +80,7 @@ class HttpClient {
 int main() {
   try {
     asio::io_context ioc;
-    HttpClient client(ioc, "127.0.0.1", "8080");
+    HttpClient client(ioc, "10.241.86.76", "8080");
 
     std::string line, request_type, request_target, body;
 
