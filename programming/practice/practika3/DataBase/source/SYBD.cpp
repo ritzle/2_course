@@ -1079,6 +1079,52 @@ Array<string> DB::crossJoin(Array<string>& first, Array<string>& second) {
 
 //------------------------------------------------------Биржа
 
+// FIME доделать добавление лотов
 void DB::updateConfigurationBurse(string configData) {
-  cout << configData << endl;
+  string TableName = "lot";
+  loadExistingSchemaData(TableName);
+  Table& currentTable = searchTable(TableName);
+
+  if (currentTable.csv.back().line.back().empty()) {
+    cout << "пусто";
+    std::stringstream ss;
+    ss << configData;
+
+    string nameLot;
+    int i = 0;
+
+    Array<string> values;
+    while (ss >> nameLot) {
+      values.push_back(to_string(i + 1));
+      values.push_back(nameLot);
+      insertIntoTable("lot", values);
+      values.clear();
+    }
+  } else {
+    cout << "таблица lot не пустая, обновлять конфегурацию не буду" << endl;
+    return;
+  }
 }
+
+// void Burse::loadingConfiguration() {
+//   // lot
+//   Array<string> values;
+//   for (int i = 0; i < lots.getSize(); i++) {
+//     string nameLot = lots[i];
+//     values.push_back(to_string(i + 1));
+//     values.push_back(nameLot);
+//     db.insertIntoTable("lot", values);
+//     values.clear();
+//   }
+//   // pair
+//   int coutPair = 1;
+//   for (int i = 1; i <= lots.getSize(); ++i) {
+//     for (int j = 1; j <= lots.getSize(); ++j) {
+//       values.push_back(to_string(coutPair++));
+//       values.push_back(to_string(i));
+//       values.push_back(to_string(j));
+//       db.insertIntoTable("pair", values);
+//       values.clear();
+//     }
+//   }
+// }

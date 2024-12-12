@@ -154,3 +154,19 @@ Array<T> Array<T>::copy() const {
   }
   return newArray;
 }
+
+template <typename T>
+std::string Array<T>::to_stringJson() const {
+  std::stringstream ss;
+
+  Node* current = head;
+  while (current) {
+    ss << current->data;
+    current = current->next;
+    if (current) {
+      ss << " ";
+    }
+  }
+
+  return ss.str();  // Возвращаем строку в формате JSON
+}

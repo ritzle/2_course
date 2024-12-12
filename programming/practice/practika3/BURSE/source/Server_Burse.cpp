@@ -15,11 +15,13 @@ namespace http = beast::http;
 namespace net = boost::asio;
 using tcp = boost::asio::ip::tcp;
 
-BurseJsonParser parser;
+Burse burse;
+
+BurseJsonParser parser(burse);
 
 // Функция для отправки запроса к серверу БД
 std::string send_request_to_db(const std::string& db_ip, int db_port,
-                               const std::string& query) {
+                               const http::request<http::string_body>& query) {
   try {
     // Создаем IO контекст и сокет для соединения с сервером БД
     net::io_context ioc;
@@ -37,7 +39,7 @@ std::string send_request_to_db(const std::string& db_ip, int db_port,
     boost::asio::write(socket, boost::asio::buffer(request));
 
     // Получаем ответ от БД
-    char buffer[1024];
+    char buffer[2048];
     size_t length = socket.read_some(boost::asio::buffer(buffer));
 
     // Преобразуем ответ в строку и возвращаем
@@ -72,12 +74,13 @@ void handle_request(tcp::socket& socket, const std::string& db_ip,
 
       // Формируем HTTP-ответ
       http::response<http::string_body> res{http::status::ok, req.version()};
-      res.set(http::field::server, "Boost.Beast HTTP Server");
+      res.set(http::field::server, "Bursw server");
       res.set(http::field::content_type, "text/plain");
 
+      // cout << "-------" << endl << req << "------" << endl;
+
       // Подключаемся к серверу БД и отправляем запрос
-      std::string db_response =
-          send_request_to_db(db_ip, db_port, std::string(req.target()));
+      std::string db_response = send_request_to_db(db_ip, db_port, req);
 
       // Ответ от БД
       res.body() = db_response;
@@ -136,9 +139,15 @@ void server_loop(const std::string& address, unsigned short port,
 int main() {
   std::string address =
       "0.0.0.0";  // Локальный адрес Биржи --- когда нули слушает все
-  unsigned short port = 8080;       // Порт Биржи
-  std::string db_ip = "127.0.0.1";  // IP-адрес сервера БД
-  int db_port = 7437;               // Порт сервера БД
+  unsigned short port = 8080;  // Порт Биржи
+
+  std::string db_ip = burse.database_ip;  // IP-адрес сервера БД
+  int db_port = burse.database_port;
+
+  cout << db_ip;
+  cout << endl;
+  cout << db_port;  // Порт сервера БД
+  cout << endl;
 
   server_loop(address, port, db_ip, db_port);  // Запуск серверного цикла
 

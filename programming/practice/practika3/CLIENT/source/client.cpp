@@ -28,7 +28,8 @@ class HttpClient {
       req.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
       req.set("X-Request-Name", "GET");
 
-      std::cout << std::string(req.target()) << std::endl;
+      std::cout << "Sending GET request to: " << target << std::endl;
+
       // Отправка GET запроса
       http::write(socket_, req);
 
@@ -43,16 +44,25 @@ class HttpClient {
     }
   }
 
-  // Функция для отправки POST-запроса
   void send_post_request(const std::string& target, const std::string& body) {
     try {
+      // Убираем все лишние пробелы и символы новой строки из тела
+      std::string cleaned_body = body;
+      cleaned_body.erase(
+          std::remove_if(cleaned_body.begin(), cleaned_body.end(),
+                         [](unsigned char x) { return std::isspace(x); }),
+          cleaned_body.end());
+
+      // Создание POST запроса
       http::request<http::string_body> req{http::verb::post, target, 11};
       req.set(http::field::host, "localhost");
       req.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
       req.set(http::field::content_type, "application/json");
-      req.body() = body;
+      req.set("data",
+              cleaned_body);  // Сохраняем очищенное тело в заголовке "data"
       req.prepare_payload();
       req.set("X-Request-Name", "POST");
+
       // Отправка POST запроса
       http::write(socket_, req);
 
@@ -80,14 +90,12 @@ class HttpClient {
 int main() {
   try {
     asio::io_context ioc;
-    HttpClient client(ioc, "10.241.86.76", "8080");
+    HttpClient client(ioc, "127.0.0.1", "8080");
 
     std::string line, request_type, request_target, body;
 
     while (true) {
-      std::cout
-          << "Enter request (e.g., 'GET /lot' or 'POST /create_lot {\"lot\": "
-             "\"BTC\", \"price\": \"50000 USD\"}') or 'exit' to quit: ";
+      std::cout << ": ";
       std::getline(std::cin, line);  // Чтение всей строки
 
       if (line == "exit") {
@@ -97,17 +105,16 @@ int main() {
       std::istringstream stream(line);
       stream >> request_type >> request_target;
 
-      // Если POST запрос, то нужно прочитать тело запроса
-      // if (request_type == "POST") {
-      //   std::getline(stream, body);  // Чтение тела запроса
-      //   body = body.substr(1);  // Удаление пробела после пути
-      // }
+      // Обработка POST запроса с телом запроса
+      if (request_type == "POST") {
+        // Чтение тела запроса (оно идет после пробела, после target)
+        std::getline(stream, body);  // Чтение тела запроса
+        body = body.substr(1);  // Удаление пробела после пути
 
-      if (request_type == "GET") {
+        // Отправляем POST-запрос с телом в заголовке "data"
+        client.send_post_request(request_target, body);
+      } else if (request_type == "GET") {
         client.send_get_request(request_target);
-      } else if (request_type == "POST") {
-        client.send_get_request(request_target);
-        // client.send_post_request(request_target, body);
       } else {
         std::cout << "Invalid request type. Please use 'GET' or 'POST'.\n";
       }

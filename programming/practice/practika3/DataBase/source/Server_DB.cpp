@@ -38,7 +38,6 @@ void* handle_client(void* arg) {
     string input(buffer, bytesReceived);
     cout << "Получен запрос: " << input << endl;
 
-    cout << input << endl;
     parser.parse(input);
 
     string response = "Запрос выполнен.\n";

@@ -3,61 +3,78 @@
 #include <iostream>
 #include <sstream>
 
-BurseJsonParser::BurseJsonParser() {}
+BurseJsonParser::BurseJsonParser(Burse& burse) : burse(burse) {}
 BurseJsonParser::~BurseJsonParser() {}
 
-json BurseJsonParser::handle_request(const std::string& request) {
-  std::istringstream stream(request);
-  std::string method, path;
-  stream >> method >> path;  // Получаем HTTP метод и путь
+#include <sstream>
+#include <stdexcept>
+
+json BurseJsonParser::handle_request(
+    const http::request<http::string_body>& req) {
+  std::string method = std::string(req.method_string());
+  std::string path = std::string(req.target());
+
+  // Создаем поток для чтения из тела запроса
+  std::istringstream stream(req.body());
 
   if (method == "POST") {
     if (path == "/user") {
       std::string username, key;
       stream >> username >> key;
       return create_user(username, key);
-    } else if (path == "/order") {
-      std::string user_key;
+    }
+
+    if (path == "/order") {
+      std::string user_key, type;
       int pair_id;
       float quantity, price;
-      std::string type;
       stream >> user_key >> pair_id >> quantity >> price >> type;
       return create_order(user_key, pair_id, quantity, price, type);
-    } else if (path == "/config") {
-      std::string config_name, config_value;
-      config_name = "тест_имя";
-      config_value = "тест_значение";
-      // stream >> config_name >> config_value;
-      return set_configuration(config_name, config_value);
-    } else {
-      throw std::invalid_argument("Неизвестный путь для POST: " + path);
     }
-  } else if (method == "GET") {
+
+    if (path == "/config") {
+      std::string config_name = "lot user";
+      // stream >> config_name >> config_value;
+      return set_configuration(config_name);
+    }
+
+    throw std::invalid_argument("Неизвестный путь для POST: " + path);
+  }
+
+  if (method == "GET") {
     if (path == "/order") {
       return get_order();
-    } else if (path == "/lot") {
+    }
+
+    if (path == "/lot") {
       return get_lot();
-    } else if (path == "/pair") {
+    }
+
+    if (path == "/pair") {
       return get_pair();
-    } else if (path == "/balance") {
+    }
+
+    if (path == "/balance") {
       std::string user_key;
       stream >> user_key;
       return get_balance(user_key);
-    } else {
-      throw std::invalid_argument("Неизвестный путь для GET: " + path);
     }
-  } else if (method == "DELETE") {
+
+    throw std::invalid_argument("Неизвестный путь для GET: " + path);
+  }
+
+  if (method == "DELETE") {
     if (path == "/order") {
       std::string user_key;
       int order_id;
       stream >> user_key >> order_id;
       return delete_order(user_key, order_id);
-    } else {
-      throw std::invalid_argument("Неизвестный путь для DELETE: " + path);
     }
-  } else {
-    throw std::invalid_argument("Неизвестный HTTP метод: " + method);
+
+    throw std::invalid_argument("Неизвестный путь для DELETE: " + path);
   }
+
+  throw std::invalid_argument("Неизвестный HTTP метод: " + method);
 }
 
 json BurseJsonParser::create_user(const std::string& username,
@@ -116,10 +133,11 @@ json BurseJsonParser::get_balance(const std::string& user_key) {
   return j;
 }
 
-json BurseJsonParser::set_configuration(const std::string& config_name,
-                                        const std::string& config_value) {
+json BurseJsonParser::set_configuration(const std::string& config_name) {
   json j;
+  j["method"] = "POST";
+  j["path"] = "/config";
   j["config_name"] = config_name;
-  j["config_value"] = config_value;
+  j["config_value"] = burse.lots.to_stringJson();
   return j;
 }

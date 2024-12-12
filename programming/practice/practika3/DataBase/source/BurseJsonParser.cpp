@@ -1,99 +1,108 @@
 #include "../headers/SYBD/BurseJsonParser.hpp"
 
-#include <iostream>
-#include <stdexcept>
+#include <boost/beast.hpp>
+#include <boost/json.hpp>
 
 BurseJsonParser::BurseJsonParser(DB& database) : db(database) {}
 
-void BurseJsonParser::parse(const std::string& query) {
-  std::istringstream stream(query);
-  std::string method, path;
-  stream >> method >> path;  // Считываем HTTP-метод и путь запроса
+void BurseJsonParser::parse(const std::string& jsonStr) {
+  try {
+    // Парсим строку JSON в объект
+    nlohmann::json jsonObj = nlohmann::json::parse(jsonStr);
 
-  if (method == "POST") {
-    if (path == "/user") {
-      handlePostUser(stream);
-    } else if (path == "/order") {
-      handlePostOrder(stream);
-    } else if (path == "/configuration") {
-      handlePostConfiguration(stream);
+    // Выводим распарсенный JSON для отладки
+    std::cout << "Parsed JSON: " << jsonObj.dump(4) << std::endl;
+
+    // В зависимости от данных в JSON, вызывать различные обработчики
+    std::string method = jsonObj["method"];
+    std::string path = jsonObj["path"];
+
+    std::cout << "Method: " << method << ", Path: " << path << std::endl;
+
+    // В зависимости от значения "method" обрабатываем POST, GET или DELETE
+    if (method == "POST") {
+      if (path == "/user") {
+        handlePostUser(jsonObj["data"]);
+      } else if (path == "/order") {
+        handlePostOrder(jsonObj["data"]);
+      } else if (path == "/config") {
+        handlePostConfiguration(jsonObj);
+      } else {
+        throw std::invalid_argument("Unknown POST path: " + path);
+      }
+    } else if (method == "GET") {
+      if (path == "/order") {
+        handleGetOrder(jsonObj["data"]);
+      } else if (path == "/lot") {
+        handleGetLot(jsonObj["data"]);
+      } else if (path == "/pair") {
+        handleGetPair(jsonObj["data"]);
+      } else if (path == "/balance") {
+        handleGetBalance(jsonObj["data"]);
+      } else {
+        throw std::invalid_argument("Unknown GET path: " + path);
+      }
+    } else if (method == "DELETE") {
+      if (path == "/order") {
+        handleDeleteOrder(jsonObj["data"]);
+      } else {
+        throw std::invalid_argument("Unknown DELETE path: " + path);
+      }
     } else {
-      std::cerr << "Неизвестный путь для POST: " + path << std::endl;
+      throw std::invalid_argument("Unknown HTTP method: " + method);
     }
-  } else if (method == "GET") {
-    if (path == "/order") {
-      handleGetOrder(stream);
-    } else if (path == "/lot") {
-      handleGetLot(stream);
-    } else if (path == "/pair") {
-      handleGetPair(stream);
-    } else if (path == "/balance") {
-      handleGetBalance(stream);
-    } else {
-      std::cerr << "Неизвестный путь для GET: " + path << std::endl;
-    }
-  } else if (method == "DELETE") {
-    if (path == "/order") {
-      handleDeleteOrder(stream);
-    } else {
-      std::cerr << "Неизвестный путь для DELETE: " + path << std::endl;
-    }
-  } else {
-    std::cerr << "Неизвестный HTTP-метод: " + method << std::endl;
+
+  } catch (const std::exception& e) {
+    std::cerr << "Error processing JSON: " << e.what() << std::endl;
   }
 }
 
-// Обработка POST запросов
-void BurseJsonParser::handlePostUser(std::istringstream& stream) {
-  std::string userData;
-  std::getline(stream, userData);
-  // Парсим и вставляем данные о пользователе
-  // db.insertUser(userData);
+// Пример реализации метода для обработки POST запроса на создание пользователя
+void BurseJsonParser::handlePostUser(const nlohmann::json& jsonData) {
+  cout << "Post user" << endl;
 }
 
-void BurseJsonParser::handlePostOrder(std::istringstream& stream) {
-  std::string orderData;
-  std::getline(stream, orderData);
-  // Парсим и добавляем новый заказ
-  // db.insertOrder(orderData);
+// Пример метода для создания ответа от базы данных
+std::string BurseJsonParser::createDatabaseResponse(
+    const std::string& queryResult) {
+  cout << "----" << endl;
+  return "---";
 }
 
-void BurseJsonParser::handlePostConfiguration(std::istringstream& stream) {
-  std::string configData;
-  std::getline(stream, configData);
-  // Обрабатываем и обновляем конфигурацию
-  db.updateConfigurationBurse(configData);
+// Пример метода для обработки POST запроса на создание ордера
+void BurseJsonParser::handlePostOrder(const nlohmann::json& jsonData) {
+  cout << "Post order" << endl;
 }
 
-// Обработка GET запросов
-void BurseJsonParser::handleGetOrder(std::istringstream& stream) {
-  // Получаем данные о заказах
-  // std::string orderData = db.getOrders();
-  // std::cout << "Ответ на запрос GET /order: " << orderData << std::endl;
+// Пример метода для обработки POST запроса на настройку
+void BurseJsonParser::handlePostConfiguration(const nlohmann::json& jsonData) {
+  std::string config_value = jsonData["config_value"];
+  db.updateConfigurationBurse(config_value);
+
+  // cout << "--" << config_value << "---\n";
 }
 
-void BurseJsonParser::handleGetLot(std::istringstream& stream) {
-  // Получаем данные о лотах
-  // std::string lotData = db.getLots();
-  // std::cout << "Ответ на запрос GET /lot: " << lotData << std::endl;
+// Пример метода для обработки GET запроса на ордер
+void BurseJsonParser::handleGetOrder(const nlohmann::json& jsonData) {
+  cout << "Get order" << endl;
 }
 
-void BurseJsonParser::handleGetPair(std::istringstream& stream) {
-  // Получаем данные о парах
-  // std::string pairData = db.getPairs();
-  // std::cout << "Ответ на запрос GET /pair: " << pairData << std::endl;
+// Пример метода для обработки GET запроса на лот
+void BurseJsonParser::handleGetLot(const nlohmann::json& jsonData) {
+  cout << "Get Lot" << endl;
 }
 
-void BurseJsonParser::handleGetBalance(std::istringstream& stream) {
-  // Получаем информацию о балансе
-  // std::string balanceData = db.getBalance();
-  // std::cout << "Ответ на запрос GET /balance: " << balanceData << std::endl;
+// Пример метода для обработки GET запроса на пару
+void BurseJsonParser::handleGetPair(const nlohmann::json& jsonData) {
+  cout << "GetPair" << endl;
 }
 
-// Обработка DELETE запросов
-void BurseJsonParser::handleDeleteOrder(std::istringstream& stream) {
-  std::string orderId;
-  stream >> orderId;
-  // Удаляем заказ по идентификатору
-  // db.deleteOrder(orderId);
+// Пример метода для обработки GET запроса на баланс
+void BurseJsonParser::handleGetBalance(const nlohmann::json& jsonData) {
+  cout << "GetBalance" << endl;
+}
+
+// Пример метода для обработки DELETE запроса на удаление ордера
+void BurseJsonParser::handleDeleteOrder(const nlohmann::json& jsonData) {
+  cout << "delete Order" << endl;
 }

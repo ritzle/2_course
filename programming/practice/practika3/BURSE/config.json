@@ -1,5 +1,5 @@
 {
   "lots": ["RUB", "BTC", "ETH", "USDT", "USDC"],
-  "database_ip": "localhost",
-  "database_port": 7432
+  "database_ip": "127.0.0.1",
+  "database_port": 7437
 }

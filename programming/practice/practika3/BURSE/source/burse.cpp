@@ -1,6 +1,9 @@
 #include "../headers/BURSE/burse.hpp"
 
-Burse::Burse() {}
+Burse::Burse() {
+  std::string pathConfigBurse = "../config.json";
+  readingConfiguration(pathConfigBurse);
+}
 
 Burse::~Burse() {}
 

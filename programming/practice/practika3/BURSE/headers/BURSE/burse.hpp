@@ -24,11 +24,13 @@ class Burse {
   string database_ip;
   int database_port;
 
+  Array<string> lots;
+
   void readingConfiguration(string& PathSchema);
   void loadingConfiguration();
 
  private:
-  Array<string> lots;
+  // Array<string> lots;
   // DB replicaDB;
 
   size_t _hash(const std::string& input) {

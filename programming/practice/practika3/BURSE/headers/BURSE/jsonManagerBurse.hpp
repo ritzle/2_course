@@ -1,34 +1,48 @@
 #ifndef BURSE_JSON_PARSER_HPP
 #define BURSE_JSON_PARSER_HPP
 
+#include <boost/asio.hpp>
+#include <boost/beast.hpp>
+#include <boost/lexical_cast.hpp>
+#include <iostream>
 #include <string>
+#include <thread>
+#include <vector>
+
+namespace beast = boost::beast;
+namespace http = beast::http;
+namespace net = boost::asio;
+using tcp = boost::asio::ip::tcp;
 
 #include "../../lib/json.hpp"
+#include "../array.hpp"
 #include "burse.hpp"
 
 using json = nlohmann::json;
 
 class BurseJsonParser {
  public:
-  BurseJsonParser();
+  BurseJsonParser(Burse& burse);
   ~BurseJsonParser();
 
   // Метод для обработки строки запроса и вызова соответствующей функции
-  static json handle_request(const std::string& request);
+  json handle_request(
+      const boost::beast::http::request<boost::beast::http::string_body>& req);
 
  private:
+  Burse& burse;
+
   // Методы для обработки каждого типа запроса
-  static json create_user(const std::string& username, const std::string& key);
-  static json create_order(const std::string& user_key, int pair_id,
-                           float quantity, float price,
-                           const std::string& type);
-  static json get_order();
-  static json delete_order(const std::string& user_key, int order_id);
-  static json get_lot();
-  static json get_pair();
-  static json get_balance(const std::string& user_key);
-  static json set_configuration(const std::string& config_name,
-                                const std::string& config_value);
+  json create_user(const std::string& username, const std::string& key);
+  json create_order(const std::string& user_key, int pair_id, float quantity,
+                    float price, const std::string& type);
+  json get_order();
+  json delete_order(const std::string& user_key, int order_id);
+  json get_lot();
+  json get_pair();
+  json get_balance(const std::string& user_key);
+
+  json set_configuration(const std::string& config_name);  // тестовая
 };
 
 #include "../../source/jsonManagerBurse.cpp"

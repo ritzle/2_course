@@ -2,7 +2,9 @@
 #define ARRAY_HPP
 
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
+#include <string>
 
 template <typename T>
 class Array {
@@ -36,6 +38,8 @@ class Array {
   Array<T> copy() const;
 
   bool contains(const T& value) const;  // Проверка на наличие элемента
+
+  std::string to_stringJson() const;
 
   void print() const;  // Вывод элементов списка
 
