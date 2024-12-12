@@ -1,9 +1,6 @@
 #include "../headers/BURSE/burse.hpp"
 
-Burse::Burse() {
-  db.readingConfiguration(
-      "/home/vlad/vsCode/2_course/programming/practice/practika3/schema.json");
-}
+Burse::Burse() {}
 
 Burse::~Burse() {}
 
@@ -38,32 +35,4 @@ void Burse::readingConfiguration(string& pathSchema) {
   }
 
   file.close();
-}
-
-// FIXME
-void Burse::loadingConfiguration() {
-  // lot
-  Array<string> values;
-  for (int i = 0; i < lots.getSize(); i++) {
-    string nameLot = lots[i];
-
-    values.push_back(to_string(i + 1));
-    values.push_back(nameLot);
-
-    db.insertIntoTable("lot", values);
-    values.clear();
-  }
-
-  // pair
-  int coutPair = 1;
-  for (int i = 1; i <= lots.getSize(); ++i) {
-    for (int j = 1; j <= lots.getSize(); ++j) {
-      values.push_back(to_string(coutPair++));
-      values.push_back(to_string(i));
-      values.push_back(to_string(j));
-
-      db.insertIntoTable("pair", values);
-      values.clear();
-    }
-  }
 }

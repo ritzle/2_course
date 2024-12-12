@@ -11,12 +11,10 @@
 
 #include "../../headers/array.hpp"
 #include "../../lib/json.hpp"
-#include "../SYBD/SYBD.hpp"
+// #include "../SYBD/SYBD.hpp"
 
 using namespace std;
 using json = nlohmann::json;
-
-DB db;
 
 class Burse {
  public:
@@ -31,6 +29,7 @@ class Burse {
 
  private:
   Array<string> lots;
+  // DB replicaDB;
 
   size_t _hash(const std::string& input) {
     return std::hash<std::string>{}(input);

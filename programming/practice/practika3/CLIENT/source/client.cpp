@@ -22,39 +22,54 @@ class HttpClient {
 
   // Функция для отправки GET-запроса
   void send_get_request(const std::string& target) {
-    http::request<http::string_body> req{http::verb::get, target, 11};
-    req.set(http::field::host, "localhost");
-    req.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
+    try {
+      http::request<http::string_body> req{http::verb::get, target, 11};
+      req.set(http::field::host, "localhost");
+      req.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
+      req.set("X-Request-Name", "GET");
 
-    // Отправка GET запроса
-    http::write(socket_, req);
+      std::cout << std::string(req.target()) << std::endl;
+      // Отправка GET запроса
+      http::write(socket_, req);
 
-    // Чтение ответа
-    beast::flat_buffer buffer;
-    http::response<http::string_body> res;
-    http::read(socket_, buffer, res);
+      // Чтение ответа
+      beast::flat_buffer buffer;
+      http::response<http::string_body> res;
+      http::read(socket_, buffer, res);
 
-    std::cout << "Response: " << res.body() << std::endl;
+      std::cout << "Response: " << res.body() << std::endl;
+    } catch (const std::exception& e) {
+      std::cerr << "Error sending GET request: " << e.what() << std::endl;
+    }
   }
 
   // Функция для отправки POST-запроса
   void send_post_request(const std::string& target, const std::string& body) {
-    http::request<http::string_body> req{http::verb::post, target, 11};
-    req.set(http::field::host, "localhost");
-    req.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
-    req.set(http::field::content_type, "application/json");
-    req.body() = body;
-    req.prepare_payload();
+    try {
+      http::request<http::string_body> req{http::verb::post, target, 11};
+      req.set(http::field::host, "localhost");
+      req.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
+      req.set(http::field::content_type, "application/json");
+      req.body() = body;
+      req.prepare_payload();
+      req.set("X-Request-Name", "POST");
+      // Отправка POST запроса
+      http::write(socket_, req);
 
-    // Отправка POST запроса
-    http::write(socket_, req);
+      // Чтение ответа
+      beast::flat_buffer buffer;
+      http::response<http::string_body> res;
+      http::read(socket_, buffer, res);
 
-    // Чтение ответа
-    beast::flat_buffer buffer;
-    http::response<http::string_body> res;
-    http::read(socket_, buffer, res);
+      std::cout << "Response: " << res.body() << std::endl;
+    } catch (const std::exception& e) {
+      std::cerr << "Error sending POST request: " << e.what() << std::endl;
+    }
+  }
 
-    std::cout << "Response: " << res.body() << std::endl;
+  ~HttpClient() {
+    // Закрытие сокета при разрушении объекта
+    socket_.close();
   }
 
  private:
@@ -83,15 +98,16 @@ int main() {
       stream >> request_type >> request_target;
 
       // Если POST запрос, то нужно прочитать тело запроса
-      if (request_type == "POST") {
-        std::getline(stream, body);  // Чтение тела запроса
-        body = body.substr(1);  // Удаление пробела после пути
-      }
+      // if (request_type == "POST") {
+      //   std::getline(stream, body);  // Чтение тела запроса
+      //   body = body.substr(1);  // Удаление пробела после пути
+      // }
 
       if (request_type == "GET") {
         client.send_get_request(request_target);
       } else if (request_type == "POST") {
-        client.send_post_request(request_target, body);
+        client.send_get_request(request_target);
+        // client.send_post_request(request_target, body);
       } else {
         std::cout << "Invalid request type. Please use 'GET' or 'POST'.\n";
       }
