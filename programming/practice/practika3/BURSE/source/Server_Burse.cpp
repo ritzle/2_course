@@ -23,6 +23,9 @@ BurseJsonParser parser(burse);
 std::string send_request_to_db(const std::string& db_ip, int db_port,
                                const http::request<http::string_body>& query) {
   try {
+    parser.db_ip = db_ip;
+    parser.db_port = db_port;
+
     // Создаем IO контекст и сокет для соединения с сервером БД
     net::io_context ioc;
     tcp::socket socket(ioc);
@@ -50,6 +53,29 @@ std::string send_request_to_db(const std::string& db_ip, int db_port,
   }
 }
 
+// Функция для отправки запроса "POST /config " до начала обработки клиентов
+void send_initial_config_request(const std::string& db_ip, int db_port) {
+  try {
+    // Формируем запрос "POST /config "
+    http::request<http::string_body> req;
+    req.method(http::verb::post);
+    req.target("/config");
+    req.set(http::field::content_type, "application/json");
+    req.body() = "{}";  // Пустое тело запроса
+    req.prepare_payload();
+
+    // Отправляем запрос на сервер БД
+    std::string db_response = send_request_to_db(db_ip, db_port, req);
+
+    // Выводим ответ от БД
+    std::cout << "Ответ от БД на запрос POST /config: " << db_response
+              << std::endl;
+  } catch (const std::exception& e) {
+    std::cerr << "Ошибка при отправке начального запроса к БД: " << e.what()
+              << std::endl;
+  }
+}
+
 // Функция для обработки запроса клиента
 void handle_request(tcp::socket& socket, const std::string& db_ip,
                     int db_port) {
@@ -74,6 +100,7 @@ void handle_request(tcp::socket& socket, const std::string& db_ip,
 
       // Формируем HTTP-ответ
       http::response<http::string_body> res{http::status::ok, req.version()};
+
       res.set(http::field::server, "Bursw server");
       res.set(http::field::content_type, "text/plain");
 
@@ -81,6 +108,8 @@ void handle_request(tcp::socket& socket, const std::string& db_ip,
 
       // Подключаемся к серверу БД и отправляем запрос
       std::string db_response = send_request_to_db(db_ip, db_port, req);
+
+      cout << req << endl;
 
       // Ответ от БД
       res.body() = db_response;
@@ -148,6 +177,8 @@ int main() {
   cout << endl;
   cout << db_port;  // Порт сервера БД
   cout << endl;
+
+  send_initial_config_request(db_ip, db_port);
 
   server_loop(address, port, db_ip, db_port);  // Запуск серверного цикла
 

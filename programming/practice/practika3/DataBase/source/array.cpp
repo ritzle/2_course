@@ -155,6 +155,7 @@ Array<T> Array<T>::copy() const {
   return newArray;
 }
 
+// просто через пробел
 template <typename T>
 std::string Array<T>::to_stringJson() const {
   std::stringstream ss;
@@ -169,4 +170,37 @@ std::string Array<T>::to_stringJson() const {
   }
 
   return ss.str();  // Возвращаем строку в формате JSON
+}
+
+template <typename T>
+std::string Array<T>::to_stringComand() const {
+  std::stringstream ss;
+
+  ss << "(";  // Начало строки
+
+  Node* current = head;
+  while (current) {
+    ss << "'" << current->data << "'";  // Добавляем кавычки вокруг данных
+    current = current->next;
+    if (current) {
+      ss << ", ";  // Разделитель для элементов
+    }
+  }
+
+  ss << ")";  // Конец строки
+
+  return ss.str();  // Возвращаем строку в виде команды
+}
+
+template <typename T>
+void Array<T>::from_stringJson(const std::string& input) {
+  std::istringstream stream(
+      input);  // Используем строковый поток для разбора строки
+  T value;
+
+  clear();
+
+  while (stream >> value) {
+    push_back(value);
+  }
 }

@@ -40,6 +40,8 @@ class Array {
   bool contains(const T& value) const;  // Проверка на наличие элемента
 
   std::string to_stringJson() const;
+  std::string to_stringComand() const;
+  void from_stringJson(const std::string& input);
 
   void print() const;  // Вывод элементов списка
 

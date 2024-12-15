@@ -11,12 +11,17 @@
 
 #include "../../headers/array.hpp"
 #include "../../lib/json.hpp"
+#include "../SYBD/SYBD.hpp"
 // #include "../SYBD/SYBD.hpp"
 
 using namespace std;
 using json = nlohmann::json;
 
+class BurseJsonParser;
+
 class Burse {
+  friend class BurseJsonParser;
+
  public:
   Burse();
   ~Burse();
@@ -27,11 +32,10 @@ class Burse {
   Array<string> lots;
 
   void readingConfiguration(string& PathSchema);
-  void loadingConfiguration();
 
  private:
   // Array<string> lots;
-  // DB replicaDB;
+  DB replicaDB;
 
   size_t _hash(const std::string& input) {
     return std::hash<std::string>{}(input);

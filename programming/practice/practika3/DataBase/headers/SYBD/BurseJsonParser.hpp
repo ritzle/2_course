@@ -9,8 +9,8 @@
 #include <sstream>
 #include <string>
 #include <thread>
-#include <vector>
 
+#include "ComandParser.hpp"
 #include "SYBD.hpp"
 
 namespace beast = boost::beast;
@@ -24,13 +24,14 @@ namespace http = beast::http;
 class BurseJsonParser {
  public:
   // Конструктор, который принимает объект DB
-  BurseJsonParser(DB& database);
+  BurseJsonParser(DB& database, SQLParser& SQLparser);
 
   // Метод для обработки запроса
-  void parse(const std::string& jsonStr);
+  json parse(const std::string& jsonStr);
 
  private:
   DB& db;
+  SQLParser& SQLparser;
 
   // Обработка POST запросов
   void handlePostUser(const nlohmann::json& jsonData);
@@ -42,6 +43,7 @@ class BurseJsonParser {
   void handleGetLot(const nlohmann::json& jsonData);
   void handleGetPair(const nlohmann::json& jsonData);
   void handleGetBalance(const nlohmann::json& jsonData);
+  json handleGetDataBase();
 
   // Обработка DELETE запросов
   void handleDeleteOrder(const nlohmann::json& jsonData);

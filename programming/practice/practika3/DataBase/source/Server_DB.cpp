@@ -22,8 +22,8 @@ const int PORT = 7437;
 const char* SERVER_IP = "127.0.0.1";  // Установите ваш IP-адрес
 
 DB dataBase;
-// SQLParser parser(dataBase);
-BurseJsonParser parser(dataBase);
+SQLParser SQLparser(dataBase);
+BurseJsonParser parser(dataBase, SQLparser);
 
 void* handle_client(void* arg) {
   int new_socket = *((int*)arg);
@@ -38,9 +38,7 @@ void* handle_client(void* arg) {
     string input(buffer, bytesReceived);
     cout << "Получен запрос: " << input << endl;
 
-    parser.parse(input);
-
-    string response = "Запрос выполнен.\n";
+    string response = parser.parse(input).dump();
     send(new_socket, response.c_str(), response.size(), 0);
     cout << "Ответ отправлен клиенту." << endl;
   }
@@ -55,6 +53,9 @@ void* handle_client(void* arg) {
 }
 
 int main() {
+  dataBase.readingConfiguration("../schema.json");
+  dataBase.printInfo();
+
   int server_fd, new_socket;
   struct sockaddr_in address;
   int addrlen = sizeof(address);
@@ -90,7 +91,6 @@ int main() {
     return -1;
   }
 
-  dataBase.readingConfiguration("../schema.json");
   cout << "Сервер запущен и ждет соединения на IP " << SERVER_IP << " и порту "
        << PORT << "..." << endl;
 

@@ -3,9 +3,10 @@
 #include <boost/beast.hpp>
 #include <boost/json.hpp>
 
-BurseJsonParser::BurseJsonParser(DB& database) : db(database) {}
+BurseJsonParser::BurseJsonParser(DB& database, SQLParser& parser)
+    : db(database), SQLparser(parser) {}
 
-void BurseJsonParser::parse(const std::string& jsonStr) {
+json BurseJsonParser::parse(const std::string& jsonStr) {
   try {
     // Парсим строку JSON в объект
     nlohmann::json jsonObj = nlohmann::json::parse(jsonStr);
@@ -22,9 +23,9 @@ void BurseJsonParser::parse(const std::string& jsonStr) {
     // В зависимости от значения "method" обрабатываем POST, GET или DELETE
     if (method == "POST") {
       if (path == "/user") {
-        handlePostUser(jsonObj["data"]);
+        handlePostUser(jsonObj);
       } else if (path == "/order") {
-        handlePostOrder(jsonObj["data"]);
+        handlePostOrder(jsonObj);
       } else if (path == "/config") {
         handlePostConfiguration(jsonObj);
       } else {
@@ -32,19 +33,26 @@ void BurseJsonParser::parse(const std::string& jsonStr) {
       }
     } else if (method == "GET") {
       if (path == "/order") {
-        handleGetOrder(jsonObj["data"]);
+        handleGetOrder(jsonObj);
       } else if (path == "/lot") {
-        handleGetLot(jsonObj["data"]);
+        handleGetLot(jsonObj);
       } else if (path == "/pair") {
-        handleGetPair(jsonObj["data"]);
+        handleGetPair(jsonObj);
       } else if (path == "/balance") {
-        handleGetBalance(jsonObj["data"]);
+        handleGetBalance(jsonObj);
+      } else if (path == "/db") {
+        json otvet = handleGetDataBase();
+
+        string TableName = "user";
+        db.unloadSchemaData(TableName);
+
+        return otvet;
       } else {
         throw std::invalid_argument("Unknown GET path: " + path);
       }
     } else if (method == "DELETE") {
       if (path == "/order") {
-        handleDeleteOrder(jsonObj["data"]);
+        handleDeleteOrder(jsonObj);
       } else {
         throw std::invalid_argument("Unknown DELETE path: " + path);
       }
@@ -55,11 +63,35 @@ void BurseJsonParser::parse(const std::string& jsonStr) {
   } catch (const std::exception& e) {
     std::cerr << "Error processing JSON: " << e.what() << std::endl;
   }
+
+  json j;
+  return j;
 }
 
 // Пример реализации метода для обработки POST запроса на создание пользователя
 void BurseJsonParser::handlePostUser(const nlohmann::json& jsonData) {
-  cout << "Post user" << endl;
+  try {
+    // Проверяем наличие поля "commands" и его тип
+    if (!jsonData.contains("command")) {
+      throw std::runtime_error("Missing 'commands' in JSON");
+    }
+    if (!jsonData["command"].is_string()) {
+      throw std::runtime_error("'commands' must be a string");
+    }
+
+    std::string commands = jsonData["command"].get<std::string>();
+    std::istringstream stream(commands);
+    std::string currentCommand;
+
+    while (std::getline(stream, currentCommand, '\n')) {
+      if (!currentCommand.empty()) {
+        SQLparser.parse(currentCommand);  // Парсим каждую команду
+      }
+    }
+  } catch (const std::exception& e) {
+    std::cerr << "Error processing POST configuration: " << e.what()
+              << std::endl;
+  }
 }
 
 // Пример метода для создания ответа от базы данных
@@ -74,12 +106,44 @@ void BurseJsonParser::handlePostOrder(const nlohmann::json& jsonData) {
   cout << "Post order" << endl;
 }
 
-// Пример метода для обработки POST запроса на настройку
+// конфигурация
 void BurseJsonParser::handlePostConfiguration(const nlohmann::json& jsonData) {
-  std::string config_value = jsonData["config_value"];
-  db.updateConfigurationBurse(config_value);
+  try {
+    // Проверяем наличие поля "commands" и его тип
+    if (!jsonData.contains("command")) {
+      throw std::runtime_error("Missing 'commands' in JSON");
+    }
+    if (!jsonData["command"].is_string()) {
+      throw std::runtime_error("'commands' must be a string");
+    }
 
-  // cout << "--" << config_value << "---\n";
+    string TableName = "lot";
+    db.loadExistingSchemaData(TableName);
+    Table& currentTable = db.searchTable(TableName);
+
+    if (currentTable.csv.back().line.getSize() == 0) {
+      // Извлекаем строку из JSON
+      std::string commands = jsonData["command"].get<std::string>();
+      std::istringstream stream(commands);
+      std::string currentCommand;
+
+      // Разбиваем строку на команды и обрабатываем
+      while (std::getline(stream, currentCommand, '\n')) {
+        if (!currentCommand.empty()) {
+          SQLparser.parse(currentCommand);  // Парсим каждую команду
+        }
+      }
+    } else {
+      cout
+          << "таблица lot и pair не пустая, конфигурация не будет загруженна\n";
+    }
+
+    db.unloadSchemaData(TableName);
+
+  } catch (const std::exception& e) {
+    std::cerr << "Error processing POST configuration: " << e.what()
+              << std::endl;
+  }
 }
 
 // Пример метода для обработки GET запроса на ордер
@@ -105,4 +169,11 @@ void BurseJsonParser::handleGetBalance(const nlohmann::json& jsonData) {
 // Пример метода для обработки DELETE запроса на удаление ордера
 void BurseJsonParser::handleDeleteOrder(const nlohmann::json& jsonData) {
   cout << "delete Order" << endl;
+}
+
+json BurseJsonParser::handleGetDataBase() {
+  string TableName = "user";
+  db.loadExistingSchemaData(TableName);
+
+  return db.serialize();
 }
