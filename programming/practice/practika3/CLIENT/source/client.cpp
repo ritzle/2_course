@@ -133,6 +133,8 @@
 #include <sstream>
 #include <string>
 
+#include "../lib/json.hpp"
+
 namespace asio = boost::asio;
 namespace beast = boost::beast;
 namespace http = beast::http;
@@ -190,7 +192,9 @@ class HttpClient {
       http::response<http::string_body> res;
       http::read(socket_, buffer, res);
 
-      std::cout << "Response: " << res.body() << std::endl;
+      nlohmann::json jsonResponse = nlohmann::json::parse(res.body());
+
+      std::cout << "Response: " << jsonResponse.dump(4) << std::endl;
     } catch (const std::exception& e) {
       std::cerr << "Error sending request: " << e.what() << std::endl;
     }

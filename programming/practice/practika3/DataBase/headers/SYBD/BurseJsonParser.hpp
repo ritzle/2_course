@@ -34,7 +34,7 @@ class BurseJsonParser {
   SQLParser& SQLparser;
 
   // Обработка POST запросов
-  void handlePostUser(const nlohmann::json& jsonData);
+  string handlePostUser(const nlohmann::json& jsonData);
   void handlePostOrder(const nlohmann::json& jsonData);
   void handlePostConfiguration(const nlohmann::json& jsonData);
 
@@ -43,7 +43,7 @@ class BurseJsonParser {
   void handleGetLot(const nlohmann::json& jsonData);
   void handleGetPair(const nlohmann::json& jsonData);
   void handleGetBalance(const nlohmann::json& jsonData);
-  json handleGetDataBase();
+  json handleGetDataBase(string tables);
 
   // Обработка DELETE запросов
   void handleDeleteOrder(const nlohmann::json& jsonData);

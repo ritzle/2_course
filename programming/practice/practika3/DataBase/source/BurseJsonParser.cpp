@@ -23,7 +23,20 @@ json BurseJsonParser::parse(const std::string& jsonStr) {
     // В зависимости от значения "method" обрабатываем POST, GET или DELETE
     if (method == "POST") {
       if (path == "/user") {
-        handlePostUser(jsonObj);
+        string key_user = handlePostUser(jsonObj);
+
+        json response;
+        response["request"] = "POST /user";
+
+        if (key_user != "error") {
+          response["request_status"] = "completed";
+          response["user_key"] = key_user;
+        } else {
+          response["request_status"] = "error";
+          response["user_key"] = key_user;
+        }
+
+        return response;
       } else if (path == "/order") {
         handlePostOrder(jsonObj);
       } else if (path == "/config") {
@@ -35,16 +48,22 @@ json BurseJsonParser::parse(const std::string& jsonStr) {
       if (path == "/order") {
         handleGetOrder(jsonObj);
       } else if (path == "/lot") {
-        handleGetLot(jsonObj);
+        return jsonObj;
       } else if (path == "/pair") {
         handleGetPair(jsonObj);
       } else if (path == "/balance") {
         handleGetBalance(jsonObj);
       } else if (path == "/db") {
-        json otvet = handleGetDataBase();
+        string tables = jsonObj["tables"].get<string>();
+        json otvet = handleGetDataBase(tables);
 
-        string TableName = "user";
-        db.unloadSchemaData(TableName);
+        istringstream ss(tables);
+
+        string TableName;
+
+        while (ss >> TableName) {
+          db.unloadSchemaData(TableName);
+        }
 
         return otvet;
       } else {
@@ -69,7 +88,7 @@ json BurseJsonParser::parse(const std::string& jsonStr) {
 }
 
 // Пример реализации метода для обработки POST запроса на создание пользователя
-void BurseJsonParser::handlePostUser(const nlohmann::json& jsonData) {
+string BurseJsonParser::handlePostUser(const nlohmann::json& jsonData) {
   try {
     // Проверяем наличие поля "commands" и его тип
     if (!jsonData.contains("command")) {
@@ -78,6 +97,8 @@ void BurseJsonParser::handlePostUser(const nlohmann::json& jsonData) {
     if (!jsonData["command"].is_string()) {
       throw std::runtime_error("'commands' must be a string");
     }
+
+    string user_key = jsonData["user_key"].get<std::string>();
 
     std::string commands = jsonData["command"].get<std::string>();
     std::istringstream stream(commands);
@@ -88,10 +109,14 @@ void BurseJsonParser::handlePostUser(const nlohmann::json& jsonData) {
         SQLparser.parse(currentCommand);  // Парсим каждую команду
       }
     }
+
+    return user_key;
   } catch (const std::exception& e) {
     std::cerr << "Error processing POST configuration: " << e.what()
               << std::endl;
   }
+
+  return "error";
 }
 
 // Пример метода для создания ответа от базы данных
@@ -171,9 +196,14 @@ void BurseJsonParser::handleDeleteOrder(const nlohmann::json& jsonData) {
   cout << "delete Order" << endl;
 }
 
-json BurseJsonParser::handleGetDataBase() {
-  string TableName = "user";
-  db.loadExistingSchemaData(TableName);
+json BurseJsonParser::handleGetDataBase(string tables) {
+  istringstream ss(tables);
+
+  string TableName;
+
+  while (ss >> TableName) {
+    db.loadExistingSchemaData(TableName);
+  }
 
   return db.serialize();
 }

@@ -54,6 +54,7 @@ void* handle_client(void* arg) {
 
 int main() {
   dataBase.readingConfiguration("../schema.json");
+
   dataBase.printInfo();
 
   int server_fd, new_socket;

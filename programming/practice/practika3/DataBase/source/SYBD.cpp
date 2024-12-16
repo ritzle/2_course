@@ -12,9 +12,10 @@ using namespace std;
 DB::DB(){};
 
 // чтение конфигурации
-// чтение конфигурации
 void DB::readingConfiguration(string PathSchema) {
   ifstream file(PathSchema);
+
+  pathSchema = PathSchema;
 
   if (!file.is_open()) {
     throw runtime_error("Не удалось открыть файл: " + PathSchema);

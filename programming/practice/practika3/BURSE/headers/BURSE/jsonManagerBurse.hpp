@@ -32,7 +32,8 @@ class BurseJsonParser {
   json handle_request(
       const boost::beast::http::request<boost::beast::http::string_body>& req);
 
-  void send_request_to_db(const std::string& db_ip, int db_port);
+  void send_request_to_db(const std::string& db_ip, int db_port,
+                          std::string tables);
 
  private:
   Burse& burse;

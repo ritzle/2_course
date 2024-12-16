@@ -1042,7 +1042,11 @@ void DB::printInfo() const {
 
     // Вывод колонок таблицы
     cout << "Columns: ";
-    structure[i].csv[0].columns.print();
+    if (structure[i].countCSVFile > 0) {
+      structure[i].csv[0].columns.print();
+    } else {
+      cout << endl;
+    }
 
     // Вывод строк данных
     for (auto& csv : structure[i].csv) {

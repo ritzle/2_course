@@ -14,7 +14,7 @@ json BurseJsonParser::handle_request(
   std::string method = std::string(req.method_string());
   std::string path = std::string(req.target());
 
-  cout << req << endl;
+  cout << endl << req << endl;
 
   // Проверяем наличие нужных заголовков
   std::string user_key;
@@ -32,21 +32,39 @@ json BurseJsonParser::handle_request(
 
   if (method == "POST") {
     if (path == "/user") {
-      // FIXME надо написать функцию обращения к бд для получения последнего id
+      // тыблицы которые отправил БД
+      string name_table = "user lot";
 
-      send_request_to_db(db_ip, db_port);
+      send_request_to_db(db_ip, db_port, name_table);
 
-      burse.replicaDB.printInfo();
-      cout << endl;
+      // burse.replicaDB.printInfo();
+      // cout << endl;
 
-      string user_id = "0";  // на 1 больше чем последнее в бд
+      Table& currentTable = burse.replicaDB.searchTable("user");
+      int index_columnId =
+          burse.replicaDB.findColumnIndex(currentTable.csv[0], "user_id");
+
+      // проверка на 1 пользователя
+      string user_id;
+      if (currentTable.csv.back().line.empty()) {
+        user_id = "1";
+      } else {
+        user_id = to_string(
+            stoi(currentTable.csv.back().line.back()[index_columnId]) +
+            1);  // на 1 больше чем последнее в бд
+      }
+
       string user_key = std::to_string(burse._hash(username + user_id));
 
-      string name_table = "user";
-      // burse.replicaDB.unloadSchemaData(name_table);
+      istringstream ss(name_table);
+      string TableName;
 
-      burse.replicaDB.printInfo();
-      cout << endl;
+      while (ss >> TableName) {
+        burse.replicaDB.loadExistingSchemaData(TableName);
+      }
+
+      // burse.replicaDB.printInfo();
+      // cout << endl;
       return create_user(username, user_key, user_id);
     }
 
@@ -81,8 +99,6 @@ json BurseJsonParser::handle_request(
     }
 
     if (path == "/balance") {
-      std::string user_key;
-      stream >> user_key;
       return get_balance(user_key);
     }
 
@@ -103,6 +119,8 @@ json BurseJsonParser::handle_request(
   throw std::invalid_argument("Неизвестный HTTP метод: " + method);
 }
 
+// FIME не знаю буду ли делать но убрать логику заполнения баланася в другу
+// функцию
 json BurseJsonParser::create_user(const std::string& username,
                                   const std::string& key,
                                   const std::string& user_id) {
@@ -111,17 +129,37 @@ json BurseJsonParser::create_user(const std::string& username,
   j["path"] = "/user";
   j["name_table"] = "user";
   j["username"] = username;
-  j["key"] = key;
+  j["user_key"] = key;
 
   Array<string> values;
   values.push_back(user_id);
   values.push_back(username);
   values.push_back(key);
 
-  string commands = "INSERT INTO user VALUES " + values.to_stringComand();
+  string commands =
+      "INSERT INTO user VALUES " + values.to_stringComand() + "\n";
+  values.clear();
+
+  string name_table = "lot";
+  Table& currentTable = burse.replicaDB.searchTable(name_table);
+  int index_lotID =
+      burse.replicaDB.findColumnIndex(currentTable.csv[0], "lot_id");
+
+  // TODO возможна ошибка когда не в 1 файле
+  for (int i = 0; i < currentTable.csv[0].line.getSize(); i++) {
+    string lot_id = currentTable.csv[0].line[i][index_lotID];
+
+    values.push_back(user_id);
+    values.push_back(lot_id);
+    values.push_back("1000");
+
+    commands +=
+        "INSERT INTO user_lot VALUES " + values.to_stringComand() + "\n";
+
+    values.clear();
+  }
   j["command"] = commands;
 
-  values.clear();
   return j;
 }
 
@@ -148,10 +186,57 @@ json BurseJsonParser::delete_order(const std::string& user_key, int order_id) {
 }
 
 json BurseJsonParser::get_lot() {
-  json j;
-  // Пример данных для лотов
-  j["lot_id"] = 5678;
-  return j;
+  string name_table = "lot";
+
+  // Отправка запроса на сервер БД
+  send_request_to_db(db_ip, db_port, name_table);
+
+  // Поиск таблицы "lot" в БД
+  Table& currentTable = burse.replicaDB.searchTable("lot");
+  int index_lotId =
+      burse.replicaDB.findColumnIndex(currentTable.csv[0], "lot_id");
+  int index_name = burse.replicaDB.findColumnIndex(currentTable.csv[0], "name");
+
+  // Массив для хранения данных о лотах
+  json responseArray = json::array();
+
+  // Проверяем, есть ли строки в таблице
+  if (currentTable.csv.back().line.getSize() == 0) {
+    // Если лотов нет, возвращаем ошибку
+    json j;
+    j["error"] = "лотов нет";
+    return j;
+  } else {
+    // Проходим по строкам и формируем JSON
+    for (int i = 0; i < currentTable.csv.back().line.getSize(); i++) {
+      json lotJson;
+      lotJson["lot_id"] =
+          std::stoi(currentTable.csv.back().line[i][index_lotId]);
+      lotJson["name"] =
+          currentTable.csv.back().line[i][index_name];  // Имя из строки
+
+      responseArray.push_back(lotJson);  // Добавляем лот в массив
+    }
+  }
+
+  // Создаем итоговый объект с заголовком "lot"
+  json finalResponse;
+  finalResponse["lot"] = responseArray;
+
+  finalResponse["method"] = "GET";
+  finalResponse["path"] = "/lot";
+
+  // Загружаем и очищаем схему данных
+  string TableName;
+  std::istringstream sss(name_table);
+  while (sss >> TableName) {
+    burse.replicaDB.unloadSchemaData(TableName);
+  }
+
+  // Выводим итоговый JSON (для отладки)
+  cout << finalResponse << endl;
+
+  return finalResponse;  // Возвращаем финальный JSON с заголовком "lot"
 }
 
 json BurseJsonParser::get_pair() {
@@ -202,8 +287,8 @@ json BurseJsonParser::set_configuration(const std::string& config_name) {
   return j;
 }
 
-void BurseJsonParser::send_request_to_db(const std::string& db_ip,
-                                         int db_port) {
+void BurseJsonParser::send_request_to_db(const std::string& db_ip, int db_port,
+                                         std::string name_tables) {
   try {
     // Создаем IO контекст и сокет для соединения с сервером БД
     net::io_context ioc;
@@ -217,6 +302,7 @@ void BurseJsonParser::send_request_to_db(const std::string& db_ip,
     json request_json;
     request_json["method"] = "GET";  // Пример действия
     request_json["path"] = "/db";    // Пример параметра
+    request_json["tables"] = name_tables;
 
     // Сериализуем JSON в строку
     std::string request_data = request_json.dump();
@@ -237,6 +323,7 @@ void BurseJsonParser::send_request_to_db(const std::string& db_ip,
     cout << response_json << endl;
 
     // С десериализацией данных от БД
+
     burse.replicaDB = burse.replicaDB.deserialize(response_json);
 
     // Закрываем сокет
