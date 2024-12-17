@@ -44,15 +44,19 @@ json BurseJsonParser::parse(const std::string& jsonStr) {
       } else {
         throw std::invalid_argument("Unknown POST path: " + path);
       }
-    } else if (method == "GET") {
+    }
+    // TODO хз выглядит как костыть так как быиржа до этого получает инфу с бд и
+    // формирует ответ у себя (но из-за ного как работает сервер он доджен
+    // что-то бд отправит и тольок с бдприходит ответ на биржу и биржа клиенту)
+    else if (method == "GET") {  //
       if (path == "/order") {
         handleGetOrder(jsonObj);
       } else if (path == "/lot") {
         return jsonObj;
       } else if (path == "/pair") {
-        handleGetPair(jsonObj);
+        return jsonObj;
       } else if (path == "/balance") {
-        handleGetBalance(jsonObj);
+        return jsonObj;
       } else if (path == "/db") {
         string tables = jsonObj["tables"].get<string>();
         json otvet = handleGetDataBase(tables);

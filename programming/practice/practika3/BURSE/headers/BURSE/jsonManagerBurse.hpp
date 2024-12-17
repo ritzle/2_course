@@ -19,6 +19,7 @@ using tcp = boost::asio::ip::tcp;
 #include "burse.hpp"
 
 using json = nlohmann::json;
+using ordered_json = nlohmann::ordered_json;
 
 class BurseJsonParser {
  public:

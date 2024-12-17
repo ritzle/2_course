@@ -104,8 +104,6 @@ void handle_request(tcp::socket& socket, const std::string& db_ip,
       res.set(http::field::server, "Bursw server");
       res.set(http::field::content_type, "text/plain");
 
-      // cout << "-------" << endl << req << "------" << endl;
-
       // Подключаемся к серверу БД и отправляем запрос
       std::string db_response = send_request_to_db(db_ip, db_port, req);
 
