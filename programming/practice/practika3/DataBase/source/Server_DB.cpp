@@ -31,7 +31,7 @@ void* handle_client(void* arg) {
 
   cout << "Клиент подключен." << endl;
 
-  char buffer[2048] = {0};
+  char buffer[8192] = {0};
   int bytesReceived;
 
   while ((bytesReceived = read(new_socket, buffer, sizeof(buffer) - 1)) > 0) {

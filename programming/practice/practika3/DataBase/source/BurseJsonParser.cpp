@@ -39,6 +39,10 @@ json BurseJsonParser::parse(const std::string& jsonStr) {
         return response;
       } else if (path == "/order") {
         handlePostOrder(jsonObj);
+
+        json response;
+
+        response["order_id"] = jsonObj["order_id"];
       } else if (path == "/config") {
         handlePostConfiguration(jsonObj);
       } else {
@@ -50,7 +54,7 @@ json BurseJsonParser::parse(const std::string& jsonStr) {
     // что-то бд отправит и тольок с бдприходит ответ на биржу и биржа клиенту)
     else if (method == "GET") {  //
       if (path == "/order") {
-        handleGetOrder(jsonObj);
+        return jsonObj;
       } else if (path == "/lot") {
         return jsonObj;
       } else if (path == "/pair") {
@@ -130,38 +134,36 @@ std::string BurseJsonParser::createDatabaseResponse(
   return "---";
 }
 
-// Пример метода для обработки POST запроса на создание ордера
 void BurseJsonParser::handlePostOrder(const nlohmann::json& jsonData) {
   try {
-    // Проверяем наличие поля "commands" и его тип
-    if (!jsonData.contains("command")) {
-      throw std::runtime_error("Missing 'commands' in JSON");
-    }
-    if (!jsonData["command"].is_string()) {
-      throw std::runtime_error("'commands' must be a string");
-    }
+    string TableName = "lot order pair user user_lot";
+    std::istringstream sss(TableName);
+    string table;
 
-    string TableName = "order";
-    db.loadExistingSchemaData(TableName);
-    Table& currentTable = db.searchTable(TableName);
+    // // Выгружаем таблицы до изменений
+    // while (sss >> table) {
+    //   db.unloadSchemaData(table);
+    // }
 
-    if (currentTable.csv.back().line.getSize() == 0) {
-      // Извлекаем строку из JSON
-      std::string commands = jsonData["command"].get<std::string>();
-      std::istringstream stream(commands);
-      std::string currentCommand;
+    // Десериализуем новые данные
+    db = db.deserialize(jsonData["db"]);
 
-      // Разбиваем строку на команды и обрабатываем
-      while (std::getline(stream, currentCommand, '\n')) {
-        if (!currentCommand.empty()) {
-          SQLparser.parse(currentCommand);  // Парсим каждую команду
-        }
-      }
-    } else {
-      cout << "логика 2";
+    cout << "--------" << endl;
+
+    db.printInfo();
+
+    // Перезаписываем все таблицы после обновления данных
+    std::istringstream rewriteStream(TableName);
+    while (rewriteStream >> table) {
+      Table& currentTable = db.searchTable(table);
+      db.rewriteAllCSVFiles(currentTable);
     }
 
-    db.unloadSchemaData(TableName);
+    // Выгружаем таблицы после перезаписи
+    std::istringstream unloadStream(TableName);
+    while (unloadStream >> table) {
+      db.unloadSchemaData(table);
+    }
 
   } catch (const std::exception& e) {
     std::cerr << "Error processing POST configuration: " << e.what()
@@ -207,26 +209,6 @@ void BurseJsonParser::handlePostConfiguration(const nlohmann::json& jsonData) {
     std::cerr << "Error processing POST configuration: " << e.what()
               << std::endl;
   }
-}
-
-// Пример метода для обработки GET запроса на ордер
-void BurseJsonParser::handleGetOrder(const nlohmann::json& jsonData) {
-  cout << "Get order" << endl;
-}
-
-// Пример метода для обработки GET запроса на лот
-void BurseJsonParser::handleGetLot(const nlohmann::json& jsonData) {
-  cout << "Get Lot" << endl;
-}
-
-// Пример метода для обработки GET запроса на пару
-void BurseJsonParser::handleGetPair(const nlohmann::json& jsonData) {
-  cout << "GetPair" << endl;
-}
-
-// Пример метода для обработки GET запроса на баланс
-void BurseJsonParser::handleGetBalance(const nlohmann::json& jsonData) {
-  cout << "GetBalance" << endl;
 }
 
 // Пример метода для обработки DELETE запроса на удаление ордера

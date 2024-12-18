@@ -42,8 +42,8 @@ class BurseJsonParser {
   // Методы для обработки каждого типа запроса
   json create_user(const std::string& username, const std::string& key,
                    const std::string& user_id);
-  json create_order(int pair_id, int quantity, double price, std::string type,
-                    std::string user_key, std::string closed);
+  json create_order(int pair_id, double quantity, double price,
+                    std::string type, std::string user_key, std::string closed);
   json get_order();
   json delete_order(const std::string& user_key, int order_id);
   json get_lot();
@@ -60,6 +60,19 @@ class BurseJsonParser {
                                 int buy_lot_id, int userID);
   bool is_purchase_possible_sale(int quantity, double price, int sale_lot_id,
                                  int buy_lot_id, int userID);
+
+  double process_existing_orders(int pair_id, double quantity, double price,
+                                 const std::string& type, int userId);
+
+  void reserve_user_funds_or_lots(int userId, int lot_id,
+                                  const std::string& type, double quantity,
+                                  double price);
+
+  void finalize_user_transaction(int user_id, int pair_id,
+                                 const std::string& type, int quantity,
+                                 double price);
+
+  int get_maxIndex_in_order();
 };
 
 #include "../../source/jsonManagerBurse.cpp"

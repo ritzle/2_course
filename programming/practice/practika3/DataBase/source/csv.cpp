@@ -55,7 +55,55 @@ json CSV::serialize() const {
   return j;
 }
 
-// десериализация
+// // десериализация
+// CSV CSV::deserialize(const json& j) {
+//   CSV csv;
+
+//   // Десериализация csvName
+//   if (j.contains("csvName") && j["csvName"].is_string()) {
+//     csv.csvName = j["csvName"];
+//   }
+
+//   // Десериализация columns
+//   if (j.contains("columns") && j["columns"].is_array()) {
+//     Array<std::string> deserializedColumns;
+//     for (const auto& col : j["columns"]) {
+//       if (col.is_string()) {
+//         deserializedColumns.push_back(col.get<std::string>());
+//       }
+//     }
+//     csv.columns = deserializedColumns;
+//   }
+
+//   // Десериализация line как массива строк
+//   if (j.contains("line") && j["line"].is_array()) {
+//     Array<Array<std::string>> deserializedLines;
+
+//     // Перебираем каждую строку в массиве "line"
+//     for (const auto& lineJson : j["line"]) {
+//       if (lineJson.is_string()) {
+//         std::string currentLine = lineJson.get<std::string>();
+
+//         // Разбиваем строку на столбцы, разделенные запятой
+//         std::istringstream lineStream(currentLine);
+//         std::string columnValue;
+
+//         while (std::getline(lineStream, columnValue, ',')) {
+//           Array<std::string> deserializedRow;
+//           deserializedRow.from_stringJson(columnValue);
+
+//           deserializedLines.push_back(deserializedRow);
+//           deserializedRow.clear();
+//         }
+//       }
+//     }
+
+//     csv.line = deserializedLines;  // Добавляем все строки
+//   }
+
+//   return csv;
+// }
+
 CSV CSV::deserialize(const json& j) {
   CSV csv;
 
@@ -65,36 +113,31 @@ CSV CSV::deserialize(const json& j) {
   }
 
   // Десериализация columns
-  if (j.contains("columns") && j["columns"].is_array()) {
+  if (j.contains("columns") && j["columns"].is_string()) {
+    std::string columnsString = j["columns"].get<std::string>();
+    std::string columnValue;
     Array<std::string> deserializedColumns;
-    for (const auto& col : j["columns"]) {
-      if (col.is_string()) {
-        deserializedColumns.push_back(col.get<std::string>());
-      }
-    }
+    deserializedColumns.from_stringJson(columnsString);
+
+    // while (columnsStream >> columnValue) {  // Разделение по пробелам
+    //   deserializedColumns.push_back(columnValue);
+    // }
     csv.columns = deserializedColumns;
   }
 
-  // Десериализация line как массива строк
+  // Десериализация line
   if (j.contains("line") && j["line"].is_array()) {
     Array<Array<std::string>> deserializedLines;
 
-    // Перебираем каждую строку в массиве "line"
     for (const auto& lineJson : j["line"]) {
       if (lineJson.is_string()) {
-        std::string currentLine = lineJson.get<std::string>();
+        std::string lineString = lineJson.get<std::string>();
+        // cout << "--" << lineString << endl;
+        Array<std::string> columnValue;
 
-        // Разбиваем строку на столбцы, разделенные запятой
-        std::istringstream lineStream(currentLine);
-        std::string columnValue;
+        columnValue.from_stringJson(lineString);
 
-        while (std::getline(lineStream, columnValue, ',')) {
-          Array<std::string> deserializedRow;
-          deserializedRow.from_stringJson(columnValue);
-
-          deserializedLines.push_back(deserializedRow);
-          deserializedRow.clear();
-        }
+        deserializedLines.push_back(columnValue);
       }
     }
 
