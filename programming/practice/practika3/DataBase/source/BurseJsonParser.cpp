@@ -132,7 +132,41 @@ std::string BurseJsonParser::createDatabaseResponse(
 
 // Пример метода для обработки POST запроса на создание ордера
 void BurseJsonParser::handlePostOrder(const nlohmann::json& jsonData) {
-  cout << "Post order" << endl;
+  try {
+    // Проверяем наличие поля "commands" и его тип
+    if (!jsonData.contains("command")) {
+      throw std::runtime_error("Missing 'commands' in JSON");
+    }
+    if (!jsonData["command"].is_string()) {
+      throw std::runtime_error("'commands' must be a string");
+    }
+
+    string TableName = "order";
+    db.loadExistingSchemaData(TableName);
+    Table& currentTable = db.searchTable(TableName);
+
+    if (currentTable.csv.back().line.getSize() == 0) {
+      // Извлекаем строку из JSON
+      std::string commands = jsonData["command"].get<std::string>();
+      std::istringstream stream(commands);
+      std::string currentCommand;
+
+      // Разбиваем строку на команды и обрабатываем
+      while (std::getline(stream, currentCommand, '\n')) {
+        if (!currentCommand.empty()) {
+          SQLparser.parse(currentCommand);  // Парсим каждую команду
+        }
+      }
+    } else {
+      cout << "логика 2";
+    }
+
+    db.unloadSchemaData(TableName);
+
+  } catch (const std::exception& e) {
+    std::cerr << "Error processing POST configuration: " << e.what()
+              << std::endl;
+  }
 }
 
 // конфигурация

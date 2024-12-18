@@ -107,7 +107,7 @@ void handle_request(tcp::socket& socket, const std::string& db_ip,
       // Подключаемся к серверу БД и отправляем запрос
       std::string db_response = send_request_to_db(db_ip, db_port, req);
 
-      cout << req << endl;
+      // cout << req << endl;
 
       // Ответ от БД
       res.body() = db_response;

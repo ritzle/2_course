@@ -182,7 +182,7 @@ class HttpClient {
 
       if (request_type == "POST" && target != "/user") {
         req.set(http::field::content_type, "application/json");
-        req.body() = body;
+        req.set("BODY", body);
         req.prepare_payload();
       }
 
@@ -238,6 +238,21 @@ int main() {
         if (request_type == "POST" && request_target == "/order") {
           std::cout << "Enter body: ";
           std::getline(std::cin, body);
+
+          // Проверка количества слов
+          std::istringstream iss(body);
+          int word_count = 0;
+          std::string word;
+
+          while (iss >> word) {
+            word_count++;
+          }
+
+          if (word_count != 4) {
+            std::cout << "Error: Please enter exactly 4 words.\n";
+            continue;
+          }
+
         } else {
           body = "";  // Для DELETE и GET тело не нужно
         }
