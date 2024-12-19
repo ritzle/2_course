@@ -84,19 +84,11 @@ json BurseJsonParser::handle_request(
       std::string user_key = user_secret_key;
       std::string closed = "";
 
-      // Вывод всех переменных
-      cout << "Pair ID: " << pair_id << endl;
-      cout << "Quantity: " << quantity << endl;
-      cout << "Price: " << price << endl;
-      cout << "Type: " << type << endl;
-      cout << "User Key: " << user_key << endl;
-
       return create_order(pair_id, quantity, price, type, user_key, closed);
     }
 
     if (path == "/config") {
       std::string config_name = "lot pair";
-      // stream >> config_name >> config_value;
       return set_configuration(config_name);
     }
 
@@ -105,7 +97,6 @@ json BurseJsonParser::handle_request(
 
   if (method == "GET") {
     if (path == "/order") {
-      // FIXME не сделан
       return get_order();
     }
 
@@ -125,12 +116,14 @@ json BurseJsonParser::handle_request(
   }
 
   if (method == "DELETE") {
-    // FIXME не сделан
     if (path == "/order") {
-      std::string user_key;
-      int order_id;
-      stream >> user_key >> order_id;
-      return delete_order(user_key, order_id);
+      string body;
+      body = std::string(req["BODY"]);
+
+      Array<string> tokens;
+      tokens.from_stringJson(body);
+      int order_id = stoi(tokens[0]);
+      return delete_order(user_secret_key, order_id);
     }
 
     throw std::invalid_argument("Неизвестный путь для DELETE: " + path);
@@ -190,14 +183,194 @@ json BurseJsonParser::create_user(const std::string& username,
   return j;
 }
 
-json BurseJsonParser::get_order() {
-  json j;
-  return j;
+ordered_json BurseJsonParser::get_order() {
+  string name_table = "order";
+
+  // Отправка запроса на сервер БД
+  send_request_to_db(db_ip, db_port, name_table);
+
+  // Получаем таблицу с данными
+  Table& currentTable_order = burse.replicaDB.searchTable("order");
+
+  // Индексы колонок
+  int index_order_id =
+      burse.replicaDB.findColumnIndex(currentTable_order.csv[0], "order_id");
+  int index_user_id =
+      burse.replicaDB.findColumnIndex(currentTable_order.csv[0], "user_id");
+  int index_pair_id =
+      burse.replicaDB.findColumnIndex(currentTable_order.csv[0], "pair_id");
+  int index_quantity =
+      burse.replicaDB.findColumnIndex(currentTable_order.csv[0], "quantity");
+  int index_price =
+      burse.replicaDB.findColumnIndex(currentTable_order.csv[0], "price");
+  int index_type =
+      burse.replicaDB.findColumnIndex(currentTable_order.csv[0], "type");
+  int index_closed =
+      burse.replicaDB.findColumnIndex(currentTable_order.csv[0], "closed");
+
+  // JSON массив для хранения результата
+  ordered_json orders_array = ordered_json::array();
+
+  // Обход всех CSV и строк
+  for (auto& csv : currentTable_order.csv) {
+    for (auto& row : csv.line) {
+      Array<std::string> order_data = row;  // Данные текущего ордера
+
+      // Извлекаем значения из строки с использованием индексов
+      int existing_order_id = std::stoi(order_data[index_order_id]);
+      int existing_user_id = std::stoi(order_data[index_user_id]);
+      int existing_pair_id = std::stoi(order_data[index_pair_id]);
+      double existing_quantity = std::stod(order_data[index_quantity]);
+      double existing_price = std::stod(order_data[index_price]);
+      std::string existing_type = order_data[index_type];
+      std::string existing_closed = order_data[index_closed];
+
+      // Добавляем объект в JSON массив с соблюдением порядка
+      ordered_json order;
+      order["closed"] = existing_closed;
+      order["lot_id"] = existing_pair_id;
+      order["order_id"] = existing_order_id;
+      order["price"] = existing_price;
+      order["quantity"] = existing_quantity;
+      order["type"] = existing_type;
+      order["user_id"] = existing_user_id;
+
+      orders_array.push_back(order);
+    }
+  }
+
+  // Создаём общий JSON с заголовками
+  ordered_json result;
+  result["method"] = "GET";
+  result["path"] = "/order";
+  result["data"] = orders_array;
+
+  return result;
 }
 
 json BurseJsonParser::delete_order(const std::string& user_key, int order_id) {
-  json j;
-  return j;
+  string name_table = "lot order pair user user_lot";
+
+  // Отправка запроса на сервер БД
+  send_request_to_db(db_ip, db_port, name_table);
+
+  int userId = find_id_by_key(user_key);
+
+  if (userId == -1) {
+    json empty_response;
+    empty_response["method"] = "DELETE";
+    empty_response["path"] = "/order";
+    empty_response["error"] = "Пользователь не найден";
+    return empty_response;
+  }
+
+  Table& currentTable_order = burse.replicaDB.searchTable("order");
+
+  // Индексы колонок
+  int index_order_pk =
+      burse.replicaDB.findColumnIndex(currentTable_order.csv[0], "order_pk");
+  int index_order_id =
+      burse.replicaDB.findColumnIndex(currentTable_order.csv[0], "order_id");
+  int index_user_id =
+      burse.replicaDB.findColumnIndex(currentTable_order.csv[0], "user_id");
+  int index_pair_id =
+      burse.replicaDB.findColumnIndex(currentTable_order.csv[0], "pair_id");
+  int index_quantity =
+      burse.replicaDB.findColumnIndex(currentTable_order.csv[0], "quantity");
+  int index_price =
+      burse.replicaDB.findColumnIndex(currentTable_order.csv[0], "price");
+  int index_type =
+      burse.replicaDB.findColumnIndex(currentTable_order.csv[0], "type");
+  int index_closed =
+      burse.replicaDB.findColumnIndex(currentTable_order.csv[0], "closed");
+
+  bool order_found = false;
+
+  for (int i = 0; i < currentTable_order.csv.getSize(); ++i) {
+    for (int j = 0; j < currentTable_order.csv[i].line.getSize(); ++j) {
+      Array<std::string>& order_data =
+          currentTable_order.csv[i].line[j];  // Данные текущего ордера
+
+      // Извлекаем значения из строки с использованием индексов
+      int existing_order_id = std::stoi(order_data[index_order_id]);
+      int existing_user_id = std::stoi(order_data[index_user_id]);
+
+      if (existing_order_id == order_id && existing_user_id == userId) {
+        order_found = true;
+
+        // Возвращаем средства пользователю
+        double existing_quantity = std::stod(order_data[index_quantity]);
+        double existing_price = std::stod(order_data[index_price]);
+        int pair_id = stoi(order_data[index_pair_id]);
+        string type = order_data[index_type];
+
+        Array<int> Sale_buy_lot_ID_Arr = find_sale_buy_lot_id(pair_id);
+        int sale_lot_id = Sale_buy_lot_ID_Arr[0];
+        int buy_lot_id = Sale_buy_lot_ID_Arr[1];
+
+        if (sale_lot_id == -1 ||
+            buy_lot_id == -1) {  // Если pair_id не существует
+          json empty_response;
+          empty_response["method"] = "DELETE";
+          empty_response["path"] = "/order";
+          empty_response["error"] =
+              "Не существует такой пары, неизвестный pair_id: " +
+              std::to_string(pair_id);
+
+          string TableName;
+          std::istringstream sss(name_table);
+          while (sss >> TableName) {
+            burse.replicaDB.unloadSchemaData(TableName);
+          }
+
+          return empty_response;
+        }
+
+        return_funds(userId, sale_lot_id, type, existing_quantity,
+                     existing_price);
+
+        // Удаляем ордер
+        currentTable_order.csv[i].line.erase(j);
+      }
+    }
+
+    ///
+
+    // Возвращаем ответ с данными нового ордера
+    json response;
+
+    response["method"] = "DELETE";  // Пример действия
+    response["path"] = "/order";    // Пример параметра
+    response["user_key"] = user_key;
+
+    json db = burse.replicaDB.serialize();
+
+    cout << endl << db.dump(4);
+
+    response["db"] = db;
+
+    string TableName;
+    std::istringstream sss(name_table);
+    while (sss >> TableName) {
+      burse.replicaDB.unloadSchemaData(TableName);
+    }
+
+    if (!order_found) {
+      json error_response;
+      error_response["method"] = "DELETE";
+      error_response["path"] = "/order";
+      error_response["error"] = "Ордер не найден";
+      return error_response;
+    }
+
+    return response;
+  }
+
+  json unknown_error_response;
+  unknown_error_response["method"] = "DELETE";
+  unknown_error_response["path"] = "/order";
+  unknown_error_response["error"] = "Неизвестная ошибка";
+  return unknown_error_response;
 }
 
 json BurseJsonParser::get_lot() {
@@ -219,7 +392,16 @@ json BurseJsonParser::get_lot() {
   if (currentTable.csv.back().line.getSize() == 0) {
     // Если лотов нет, возвращаем ошибку
     json j;
+    j["method"] = "GET";
+    j["path"] = "/lot";
     j["error"] = "лотов нет";
+
+    string TableName;
+    std::istringstream sss(name_table);
+    while (sss >> TableName) {
+      burse.replicaDB.unloadSchemaData(TableName);
+    }
+
     return j;
   } else {
     // Проходим по строкам и формируем JSON
@@ -283,7 +465,16 @@ json BurseJsonParser::get_pair() {
   if (currentTable.csv.back().line.getSize() == 0) {
     // Если лотов нет, возвращаем ошибку
     ordered_json j;
+    j["method"] = "GET";
+    j["path"] = "/pair";
+
     j["error"] = "пар нет";
+
+    string TableName;
+    std::istringstream sss(name_table);
+    while (sss >> TableName) {
+      burse.replicaDB.unloadSchemaData(TableName);
+    }
     return j;
   } else {
     // Проходим по строкам и формируем JSON
@@ -307,7 +498,6 @@ json BurseJsonParser::get_pair() {
     }
   }
 
-  // Создаем итоговый объект с заголовком "lot"
   ordered_json finalResponse;
   finalResponse["pair"] = responseArray;
 
@@ -320,9 +510,6 @@ json BurseJsonParser::get_pair() {
   while (sss >> TableName) {
     burse.replicaDB.unloadSchemaData(TableName);
   }
-
-  // Выводим итоговый JSON (для отладки)
-  cout << finalResponse << endl;
 
   return finalResponse;  // "pair"
 }
@@ -337,7 +524,15 @@ json BurseJsonParser::get_balance(const std::string& user_key) {
 
   if (user_id == -1) {  // Если user_id не изменился
     json empty_response;
+    empty_response["method"] = "GET";
+    empty_response["path"] = "/balance";
     empty_response["error"] = "пользователь не найден";
+
+    string TableName;
+    std::istringstream sss(name_table);
+    while (sss >> TableName) {
+      burse.replicaDB.unloadSchemaData(TableName);
+    }
     return empty_response;
   }
 
@@ -356,7 +551,15 @@ json BurseJsonParser::get_balance(const std::string& user_key) {
   if (currentTable.csv.back().line.getSize() == 0) {
     // Если лотов нет, возвращаем ошибку
     ordered_json j;
+    j["method"] = "GET";
+    j["path"] = "/balance";
     j["error"] = "пар нет";
+
+    string TableName;
+    std::istringstream sss(name_table);
+    while (sss >> TableName) {
+      burse.replicaDB.unloadSchemaData(TableName);
+    }
     return j;
   } else {
     // Проходим по строкам и формируем JSON
@@ -430,6 +633,13 @@ json BurseJsonParser::set_configuration(const std::string& config_name) {
   }
 
   values.clear();
+
+  string TableName = "lot pair";
+  string table_past;
+  std::istringstream unloadStream_(TableName);
+  while (unloadStream_ >> table_past) {
+    burse.replicaDB.unloadSchemaData(table_past);
+  }
 
   //"INSERT INTO lots VALUES('тест', 'тест', 'тест') ";
   j["command"] = commands;
@@ -600,6 +810,8 @@ json BurseJsonParser::create_order(int pair_id, double quantity, double price,
 
   if (userId == -1) {  // Если user_id не найден
     json empty_response;
+    empty_response["method"] = "POST";
+    empty_response["path"] = "/order";
     empty_response["error"] = "Пользователь не найден";
     return empty_response;
   }
@@ -610,9 +822,28 @@ json BurseJsonParser::create_order(int pair_id, double quantity, double price,
 
   if (sale_lot_id == -1 || buy_lot_id == -1) {  // Если pair_id не существует
     json empty_response;
+    empty_response["method"] = "POST";
+    empty_response["path"] = "/order";
     empty_response["error"] =
         "Не существует такой пары, неизвестный pair_id: " +
         std::to_string(pair_id);
+    return empty_response;
+  }
+
+  bool is_check_operaci;
+  if (type == "buy") {
+    is_check_operaci = is_purchase_possible_buy(quantity, price, sale_lot_id,
+                                                buy_lot_id, userId);
+  } else if (type == "sale") {
+    is_check_operaci = is_purchase_possible_sale(quantity, price, sale_lot_id,
+                                                 buy_lot_id, userId);
+  }
+
+  if (!is_check_operaci) {
+    json empty_response;
+    empty_response["method"] = "POST";
+    empty_response["path"] = "/order";
+    empty_response["error"] = "не хватает баланса";
     return empty_response;
   }
 
@@ -722,7 +953,8 @@ double BurseJsonParser::process_existing_orders(int pair_id, double quantity,
       int sale_lot_id = Sale_buy_lot_ID_Arr[0];
       int buy_lot_id = Sale_buy_lot_ID_Arr[1];
 
-      // Проверяем, что ордер соответствует (не закрыт, подходит по типу и цене)
+      // Проверяем, что ордер соответствует (не закрыт, подходит по типу и
+      // цене)
       if (existing_closed == "-" && existing_pair_id == pair_id &&
           existing_type != type &&
           ((type == "buy" && existing_price <= price) ||
@@ -905,7 +1137,38 @@ int BurseJsonParser::get_maxIndex_in_order() {
   }
 
   if (max_order_id == -1) {
-    return 1;
+    return 0;
   }
   return max_order_id;
+}
+
+void BurseJsonParser::return_funds(int user_id, int lot_id,
+                                   const std::string& type, int quantity,
+                                   double price) {
+  Table& userTable = burse.replicaDB.searchTable("user_lot");
+
+  int index_user_id =
+      burse.replicaDB.findColumnIndex(userTable.csv[0], "user_id");
+  int index_lot_id =
+      burse.replicaDB.findColumnIndex(userTable.csv[0], "lot_id");
+  int index_quantity =
+      burse.replicaDB.findColumnIndex(userTable.csv[0], "quantity");
+
+  // Находим строку пользователя в таблице
+  for (auto& row : userTable.csv.back().line) {
+    if (std::stoi(row[index_user_id]) == user_id &&
+        std::stoi(row[index_lot_id]) == lot_id) {
+      double balance = std::stod(row[index_quantity]);
+
+      double total_value = quantity * price;
+
+      if (type == "buy") {
+        row[index_quantity] =
+            to_string(stoi(row[index_quantity]) + quantity * price);
+      } else if (type == "sale") {
+        row[index_quantity] = to_string(stoi(row[index_quantity]) + quantity);
+      }
+      break;
+    }
+  }
 }

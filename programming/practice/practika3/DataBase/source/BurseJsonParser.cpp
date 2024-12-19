@@ -38,11 +38,15 @@ json BurseJsonParser::parse(const std::string& jsonStr) {
 
         return response;
       } else if (path == "/order") {
-        handlePostOrder(jsonObj);
-
-        json response;
-
-        response["order_id"] = jsonObj["order_id"];
+        //
+        if (jsonObj.contains("error")) {
+          return jsonObj;
+        } else {
+          json response;
+          handlePostOrder(jsonObj);
+          response["order_id"] = jsonObj["order_id"];
+          return response;
+        }
       } else if (path == "/config") {
         handlePostConfiguration(jsonObj);
       } else {
@@ -79,7 +83,15 @@ json BurseJsonParser::parse(const std::string& jsonStr) {
       }
     } else if (method == "DELETE") {
       if (path == "/order") {
+        if (jsonObj.contains("error")) {
+          return jsonObj;
+        }
         handleDeleteOrder(jsonObj);
+
+        json j;
+        j["statud"] = "ордер удален";
+        return j;
+
       } else {
         throw std::invalid_argument("Unknown DELETE path: " + path);
       }
@@ -213,7 +225,35 @@ void BurseJsonParser::handlePostConfiguration(const nlohmann::json& jsonData) {
 
 // Пример метода для обработки DELETE запроса на удаление ордера
 void BurseJsonParser::handleDeleteOrder(const nlohmann::json& jsonData) {
-  cout << "delete Order" << endl;
+  try {
+    string TableName = "order user_lot";
+    std::istringstream sss(TableName);
+    string table;
+
+    // Десериализуем новые данные
+    db = db.deserialize(jsonData["db"]);
+
+    // cout << "--------" << endl;
+
+    // db.printInfo();
+
+    // Перезаписываем все таблицы после обновления данных
+    std::istringstream rewriteStream(TableName);
+    while (rewriteStream >> table) {
+      Table& currentTable = db.searchTable(table);
+      db.rewriteAllCSVFiles(currentTable);
+    }
+
+    // Выгружаем таблицы после перезаписи
+    std::istringstream unloadStream(TableName);
+    while (unloadStream >> table) {
+      db.unloadSchemaData(table);
+    }
+
+  } catch (const std::exception& e) {
+    std::cerr << "Error processing POST configuration: " << e.what()
+              << std::endl;
+  }
 }
 
 json BurseJsonParser::handleGetDataBase(string tables) {

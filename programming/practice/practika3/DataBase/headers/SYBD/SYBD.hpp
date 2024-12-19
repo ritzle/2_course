@@ -49,6 +49,10 @@ class DB {
   json serialize() const;
   DB deserialize(const json& j);
 
+  void unloadSchemaData(Array<string>& tableNames);
+  void unloadSchemaData(const Array<string>& tableNames);
+  void unloadSchemaData(string& tableNames);
+
  private:
   Table& searchTable(const string& TableName);
   string trim(const string& str);
@@ -56,10 +60,6 @@ class DB {
   void loadExistingSchemaData(Array<string>& tableNames);
   void loadExistingSchemaData(const Array<string>& tableNames);
   void loadExistingSchemaData(string& tableName);
-
-  void unloadSchemaData(Array<string>& tableNames);
-  void unloadSchemaData(const Array<string>& tableNames);
-  void unloadSchemaData(string& tableNames);
 
   Array<string> parseCSVLine(const string& line);
 

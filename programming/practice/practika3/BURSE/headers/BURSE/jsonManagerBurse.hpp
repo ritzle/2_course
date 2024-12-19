@@ -44,7 +44,7 @@ class BurseJsonParser {
                    const std::string& user_id);
   json create_order(int pair_id, double quantity, double price,
                     std::string type, std::string user_key, std::string closed);
-  json get_order();
+  ordered_json get_order();
   json delete_order(const std::string& user_key, int order_id);
   json get_lot();
   json get_pair();
@@ -71,6 +71,9 @@ class BurseJsonParser {
   void finalize_user_transaction(int user_id, int pair_id,
                                  const std::string& type, int quantity,
                                  double price);
+
+  void return_funds(int user_id, int lot_id, const std::string& type,
+                    int quantity, double price);
 
   int get_maxIndex_in_order();
 };

@@ -29,6 +29,13 @@ void* handle_client(void* arg) {
   int new_socket = *((int*)arg);
   delete (int*)arg;
 
+  string TableName = "lot order pair user user_lot";
+  string table_past;
+  std::istringstream unloadStream_(TableName);
+  while (unloadStream_ >> table_past) {
+    dataBase.unloadSchemaData(table_past);
+  }
+
   cout << "Клиент подключен." << endl;
 
   char buffer[8192] = {0};
@@ -49,13 +56,20 @@ void* handle_client(void* arg) {
 
   close(new_socket);
   cout << "Клиент отключен." << endl;
+
+  string table;
+  std::istringstream unloadStream(TableName);
+  while (unloadStream >> table) {
+    dataBase.unloadSchemaData(table);
+  }
+
   return nullptr;
 }
 
 int main() {
   dataBase.readingConfiguration("../schema.json");
 
-  dataBase.printInfo();
+  // dataBase.printInfo();
 
   int server_fd, new_socket;
   struct sockaddr_in address;
